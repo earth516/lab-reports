@@ -624,7 +624,7 @@ const drawTS = () => {
     const pts = [];
     for (let i = 0; i <= 120; i++) {
       const s = S0 + (S1 - S0)*i/120;
-      let lo = T0 - 6, hi = T1 + 6;
+      let lo = T0, hi = T1;  /* 밀도-수온 관계가 단조인 화면 표시 범위 안에서만 찾는다 */
       if ((density(s,lo) - r) * (density(s,hi) - r) > 0) continue;
       for (let it = 0; it < 40; it++) {
         const mid = (lo + hi)/2;
@@ -642,6 +642,9 @@ const drawTS = () => {
     ctx.fillText((r/1000).toFixed(stp < 1 ? 4 : 3), X(ls) + 4, Y(lt) - 5);
   }
   ctx.restore();
+
+  ctx.strokeStyle = C.grid; ctx.lineWidth = 1;
+  ctx.strokeRect(P.l, P.t, px, py);
 
   ctx.strokeStyle = C.pencil; ctx.lineWidth = 1.2;
   ctx.beginPath();
@@ -718,7 +721,7 @@ const drawPracticeTS = () => {
     const pts = [];
     for (let i = 0; i <= 120; i++) {
       const s = S0 + (S1 - S0)*i/120;
-      let lo = T0 - 6, hi = T1 + 6;
+      let lo = T0, hi = T1;  /* 밀도-수온 관계가 단조인 화면 표시 범위 안에서만 찾는다 */
       if ((density(s,lo) - r) * (density(s,hi) - r) > 0) continue;
       for (let it = 0; it < 40; it++) {
         const mid = (lo + hi)/2;
@@ -736,6 +739,9 @@ const drawPracticeTS = () => {
     ctx.fillText((r/1000).toFixed(stp < 1 ? 4 : 3), X(ls) + 4, Y(lt) - 5);
   }
   ctx.restore();
+
+  ctx.strokeStyle = C.grid; ctx.lineWidth = 1;
+  ctx.strokeRect(P.l, P.t, px, py);
 
   ctx.strokeStyle = C.pencil; ctx.lineWidth = 1.2;
   ctx.beginPath();
