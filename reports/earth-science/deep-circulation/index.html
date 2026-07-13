@@ -389,17 +389,17 @@ a.submit:hover{background:#333}
   <hr class="rule">
 
   <h3 style="font-size:1.05rem;margin-bottom:.3rem">실험 결과 사진</h3>
-  <p class="hint">아이폰에서 사진이 올라가지 않으면 설정 &gt; 카메라 &gt; 포맷 &gt; 높은 호환성으로 바꾼 뒤 다시 찍어 주세요.</p>
+  <p class="hint">카메라로 새로 찍거나, 사진 보관함(갤러리)에 있는 사진을 골라 올릴 수 있습니다. 아이폰에서 사진이 올라가지 않으면 설정 &gt; 카메라 &gt; 포맷 &gt; 높은 호환성으로 바꾼 뒤 다시 찍어 주세요.</p>
   <div class="two">
     <div>
       <label>실험 1 · 수온 차이</label>
       <div class="drop" id="up1"><span>클릭하여 사진 선택</span></div>
-      <input type="file" id="ph1" accept="image/*" capture="environment" hidden>
+      <input type="file" id="ph1" accept="image/*" hidden>
     </div>
     <div>
       <label>실험 2 · 염분 차이</label>
       <div class="drop" id="up2"><span>클릭하여 사진 선택</span></div>
-      <input type="file" id="ph2" accept="image/*" capture="environment" hidden>
+      <input type="file" id="ph2" accept="image/*" hidden>
     </div>
   </div>
 </section>
@@ -441,7 +441,7 @@ a.submit:hover{background:#333}
   <div id="msg" class="note"></div>
   <div id="link-area"></div>
 
-  <div style="margin-top:2rem;border:1px solid var(--rule)">
+  <div style="margin-top:2rem;border:1px solid var(--line)">
     <div id="report">
       <div class="r-head">
         <h2>심층순환 실험 보고서</h2>
@@ -504,7 +504,7 @@ a.submit:hover{background:#333}
 /* ─────────────────────────────────────────────────────────
    선생님 설정 — 제출 링크
    주소 뒤에 ?link=... 를 붙이면 그 링크가 06 탭에 나타납니다.
-     예) report.html?link=https://classroom.google.com/c/AAA/a/BBB
+     예) index.html?link=https://classroom.google.com/c/AAA/a/BBB
    매번 같은 링크라면 아래에 넣어 두세요.
    ───────────────────────────────────────────────────────── */
 const DEFAULT_SUBMIT_URL = "";
@@ -572,7 +572,7 @@ const readAll = () => {
   return { d, complete };
 };
 
-/* 수온-염분도 — 노트의 모눈 위에 그린 것처럼 */
+/* 수온-염분도 */
 const drawTS = () => {
   const { d, complete } = readAll();
   KEYS.forEach(k => $(k+'_r').textContent = d[k].ok ? (d[k].rho/1000).toFixed(3) : '—');
@@ -721,7 +721,7 @@ const drawPracticeTS = () => {
     const pts = [];
     for (let i = 0; i <= 120; i++) {
       const s = S0 + (S1 - S0)*i/120;
-      let lo = T0, hi = T1;  /* 밀도-수온 관계가 단조인 화면 표시 범위 안에서만 찾는다 */
+      let lo = T0, hi = T1;
       if ((density(s,lo) - r) * (density(s,hi) - r) > 0) continue;
       for (let it = 0; it < 40; it++) {
         const mid = (lo + hi)/2;
