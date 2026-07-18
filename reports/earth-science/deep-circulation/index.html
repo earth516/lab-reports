@@ -276,6 +276,12 @@ a.submit:hover{background:#62beb3}
   <table class="info-form">
     <tbody>
       <tr>
+        <td class="lbl">일시</td>
+        <td><input type="date" id="f_date" class="save mono" required></td>
+        <td class="lbl">장소</td>
+        <td colspan="3"><input id="f_place" class="save" required></td>
+      </tr>
+      <tr>
         <td class="lbl">반</td>
         <td>
           <div class="suffix-field-compact">
@@ -284,17 +290,13 @@ a.submit:hover{background:#62beb3}
           </div>
         </td>
         <td class="lbl">학번</td>
-        <td><input id="f_id" class="save mono" inputmode="numeric" placeholder="20100" required></td>
+        <td><input id="f_id" class="save mono" inputmode="numeric" required></td>
         <td class="lbl">이름</td>
-        <td><input id="f_name" class="save" placeholder="홍길동" required></td>
+        <td><input id="f_name" class="save" required></td>
       </tr>
       <tr>
         <td class="lbl">역할</td>
-        <td><input id="f_role" class="save" required></td>
-        <td class="lbl">일시</td>
-        <td><input type="date" id="f_date" class="save mono" required></td>
-        <td class="lbl">장소</td>
-        <td><input id="f_place" class="save" placeholder="지구과학 실험실" required></td>
+        <td colspan="5"><input id="f_role" class="save" required></td>
       </tr>
     </tbody>
   </table>
