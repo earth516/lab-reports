@@ -1013,16 +1013,25 @@ const exportPDF = () => {
   const tag = `${classTag}_${$('f_id').value}_${$('f_name').value}`;
   const btn = $('pdf-btn');
   btn.disabled = true; btn.textContent = '저장 중…';
+
+  /* PDF로 캡처하는 순간에만 #report 자체 패딩을 0으로 내리고,
+     대신 html2pdf의 margin 옵션으로 페이지마다 동일한 여백을 준다.
+     화면(06 탭)에 보이는 패딩은 저장이 끝나면 즉시 원래대로 복구되므로
+     사용자가 보는 화면은 전혀 바뀌지 않는다. */
+  const reportEl = $('report');
+  const restorePadding = () => { reportEl.style.padding = ''; };
+  reportEl.style.padding = '0';
+
   html2pdf().set({
-    margin: 0,
+    margin: [20, 16, 20, 16],
     filename: `심층순환_실험보고서_${tag}.pdf`,
     image: { type:'jpeg', quality:.95 },
     html2canvas: { scale:2, useCORS:true, backgroundColor:'#ffffff' },
     jsPDF: { unit:'mm', format:'a4', orientation:'portrait' },
-    pagebreak: { mode:['css','legacy'] },
-  }).from($('report')).save()
-    .then(() => { btn.disabled=false; btn.textContent='PDF로 저장'; showMsg('PDF를 저장했습니다. 제출 링크에 올려 주세요.', true); })
-    .catch(() => { btn.disabled=false; btn.textContent='PDF로 저장'; showMsg('PDF 저장에 실패했습니다. 다시 시도해 주세요.', false); });
+    pagebreak: { mode:['css'] },
+  }).from(reportEl).save()
+    .then(() => { restorePadding(); btn.disabled=false; btn.textContent='PDF로 저장'; showMsg('PDF를 저장했습니다. 제출 링크에 올려 주세요.', true); })
+    .catch(() => { restorePadding(); btn.disabled=false; btn.textContent='PDF로 저장'; showMsg('PDF 저장에 실패했습니다. 다시 시도해 주세요.', false); });
 };
 
 /* 이벤트 */
