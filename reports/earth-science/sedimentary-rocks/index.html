@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>퇴적암 관찰하기 · 활동 보고서</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root{
+  --paper:#0c0e12; --surface:#171a20; --sunk:#1e222b;
+  --ink:#e8eaee; --body:#b4b9c4; --faint:#8b909b;
+  --line:#2a2e37; --line-soft:#22262b;
+  --sea:#7dd3c8; --sea-deep:#7dd3c8; --sea-soft:rgba(125,211,200,.14);
+  --coral:#e06a5b;
+
+  --sans:'Pretendard','Pretendard Variable',-apple-system,system-ui,sans-serif;
+  --mono:var(--sans);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);
+  font-size:17px;line-height:1.75;letter-spacing:-.01em;word-break:keep-all;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3{margin:0;letter-spacing:-.025em;line-height:1.4}
+.mono{font-family:var(--mono)}
+
+.sheet{max-width:1060px;margin:0 auto;background:var(--surface);
+  border-left:1px solid var(--line);border-right:1px solid var(--line);min-height:100vh}
+@media(max-width:820px){.sheet{border:0}}
+
+header.top{background:#101216;color:#e8eaee;padding:1.5rem 2.6rem;border-bottom:1px solid var(--line)}
+header.top .kicker{font-family:var(--sans);font-size:.9rem;font-weight:600;
+  color:var(--sea);letter-spacing:-.01em;margin-bottom:.15rem}
+header.top h1{font-family:var(--sans);font-size:1.4rem;font-weight:700;color:#fff;letter-spacing:-.03em}
+@media(max-width:700px){header.top{padding:1.2rem 1.4rem}header.top h1{font-size:1.2rem}}
+
+nav{display:flex;background:var(--sunk);border-bottom:1px solid var(--line);
+  overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:20}
+nav::-webkit-scrollbar{display:none}
+.tab{flex:1 0 auto;padding:1rem 1.2rem;background:none;border:0;border-bottom:2px solid transparent;
+  font-family:var(--sans);font-size:.95rem;font-weight:600;color:var(--body);cursor:pointer;
+  white-space:nowrap;display:flex;gap:.6rem;align-items:baseline;transition:.16s;letter-spacing:-.01em}
+.tab .n{font-family:var(--mono);font-size:.78rem;color:var(--ink);font-weight:500;letter-spacing:0}
+.tab:hover{background:rgba(255,255,255,.6);color:var(--ink)}
+.tab.active{background:var(--surface);color:var(--sea);border-bottom-color:var(--sea);font-weight:700}
+.tab.done .n::after{content:"✓";margin-left:.25rem;color:var(--ink)}
+
+.wrap{padding:3rem 2.6rem 1rem}
+@media(max-width:700px){.wrap{padding:1.8rem 1.4rem .5rem}}
+.step{display:none}
+.step.active{display:block;animation:in .3s cubic-bezier(.16,1,.3,1)}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+h2.head{font-size:1.55rem;font-weight:700;margin-bottom:.4rem;
+  display:flex;align-items:baseline;gap:.75rem;letter-spacing:-.03em}
+h2.head .n{font-family:var(--mono);font-size:.8rem;color:var(--ink);font-weight:500;
+  letter-spacing:.06em;background:none;padding:0}
+.lead{color:var(--body);font-size:1.02rem;margin:0 0 2.6rem;padding-bottom:1.3rem;
+  border-bottom:1px solid var(--line)}
+
+.block{margin-bottom:2.4rem}
+.block h3{font-size:1.15rem;font-weight:700;margin-bottom:.5rem;color:var(--sea)}
+.block p{margin:0 0 .5rem;color:var(--body)}
+.block p:last-child{margin-bottom:0}
+.block b{color:var(--ink);font-weight:600}
+.rule{border:0;border-top:1px solid var(--line-soft);margin:2.6rem 0}
+.rules{margin:0;padding-left:1.3rem;color:var(--body)}
+.rules li{margin-bottom:.4rem}
+.rules li:last-child{margin-bottom:0}
+.check-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  padding:.9rem 1.1rem;border:1.5px solid var(--line);border-radius:10px;background:var(--sunk);
+  margin-top:1.2rem;font-size:1rem;color:var(--ink);transition:.14s}
+.check-toggle{display:flex;align-items:center;gap:.55rem;cursor:pointer;white-space:nowrap;font-weight:600}
+.check-toggle input[type="checkbox"]{width:18px;height:18px;flex:0 0 auto;accent-color:var(--ink);cursor:pointer}
+.check-row:has(input.invalid){border-color:var(--coral);background:rgba(224,106,91,.08)}
+
+.panel{background:var(--sunk);border:1px solid var(--line);border-radius:14px;padding:1.8rem}
+label{display:block;font-size:.85rem;color:var(--faint);margin-bottom:.5rem;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase}
+input,select,textarea{width:100%;padding:.65rem .8rem;border:1.5px solid var(--line);border-radius:12px;
+  background:var(--paper);font-family:var(--sans);font-size:1.03rem;color:var(--ink);
+  letter-spacing:-.01em;transition:.14s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--sea);
+  box-shadow:0 0 0 3px var(--sea-soft)}
+input::placeholder,textarea::placeholder{color:#bcc5c9}
+textarea{resize:vertical;line-height:1.95}
+.invalid{border-color:var(--coral)!important;background:rgba(224,106,91,.1)}
+.blank{display:inline-block;width:6.6rem;padding:.05rem .4rem;border:0;
+  border-bottom:2px solid var(--ink);border-radius:4px 4px 0 0;text-align:center;font-weight:600;
+  color:var(--ink);font-size:1.02rem;background:var(--paper);letter-spacing:-.01em}
+.blank::placeholder{color:#6f747f;font-weight:400;font-size:.85em;letter-spacing:0}
+.blank:focus{outline:none;box-shadow:none;background:var(--surface);border-bottom-color:var(--sea)}
+.blank.invalid{border-bottom-color:var(--coral)!important;background:rgba(224,106,91,.1)}
+.suffix-field{display:flex;align-items:stretch;border:1.5px solid var(--line);border-radius:12px;
+  background:var(--paper);overflow:hidden;transition:.14s}
+.suffix-field:focus-within{border-color:var(--sea);box-shadow:0 0 0 3px var(--sea-soft)}
+.suffix-field input{flex:1;min-width:0;border:0;border-radius:0;box-shadow:none!important}
+.suffix-field .suffix{display:flex;align-items:center;padding:0 .85rem;font-size:1.03rem;
+  color:var(--body);background:var(--sunk);border-left:1px solid var(--line);white-space:nowrap}
+.suffix-field:has(input.invalid){border-color:var(--coral)!important}
+.counter{text-align:right;font-family:var(--mono);font-size:.8rem;color:var(--faint);margin-top:.4rem}
+.hint{font-size:.92rem;color:var(--faint);margin:-.1rem 0 .75rem;letter-spacing:-.005em}
+
+.info-form{width:100%;border-collapse:collapse;background:var(--surface);
+  border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.info-form td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);
+  padding:0;vertical-align:middle}
+.info-form tr:last-child td{border-bottom:0}
+.info-form td:last-child{border-right:0}
+.info-form td.lbl{width:1%;padding:0 1rem;font-size:.85rem;font-weight:700;color:var(--sea);
+  letter-spacing:.03em;background:var(--sunk);white-space:nowrap}
+.info-form input{width:100%;border:0;border-radius:0;background:transparent;
+  padding:.85rem 1rem;font-family:var(--sans);font-size:1.02rem;color:var(--ink);letter-spacing:-.01em}
+.info-form input:focus{outline:none;box-shadow:none;background:var(--sea-soft)}
+.info-form input.invalid{background:rgba(224,106,91,.1)}
+.suffix-field-compact{display:flex;align-items:stretch}
+.suffix-field-compact input{flex:1;min-width:0}
+.suffix-field-compact .suffix{display:flex;align-items:center;padding:0 .9rem;
+  font-size:1.02rem;color:var(--body);border-left:1px solid var(--line);white-space:nowrap}
+@media(max-width:700px){
+  .info-form, .info-form tbody, .info-form tr, .info-form td{display:block;width:100%}
+  .info-form td{border-right:0}
+  .info-form td.lbl{border-bottom:0;padding:.6rem 1rem .2rem}
+  .info-form td:not(.lbl){padding-bottom:.2rem}
+}
+.fixed-note{display:flex;gap:.8rem;align-items:baseline;padding:.75rem 1.05rem;
+  background:var(--sunk);border:1px solid var(--line);border-radius:10px;margin-bottom:.8rem}
+.fixed-note:last-of-type{margin-bottom:1.6rem}
+.fixed-note b{flex:none;font-size:.82rem;font-weight:700;color:var(--sea);letter-spacing:.04em}
+.fixed-note span{color:var(--body)}
+.fossil-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.fossil-fields{display:flex;flex-direction:column;height:100%}
+.fossil-fields .grow{flex:1;display:flex;flex-direction:column;margin-top:1rem}
+.fossil-fields .grow textarea{flex:1;resize:none;min-height:80px}
+.fossil-grid .drop{min-height:180px}
+@media(max-width:700px){.fossil-grid{grid-template-columns:1fr}.fossil-grid .drop{min-height:160px;margin-top:1rem}}
+
+.drop{border:1px dashed var(--line);border-radius:10px;min-height:140px;display:flex;
+  align-items:center;justify-content:center;cursor:pointer;color:var(--faint);font-size:.95rem;
+  position:relative;overflow:hidden;background:var(--sunk);transition:.16s}
+.drop:hover{border-color:var(--sea);background:var(--sea-soft);color:var(--sea)}
+.drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.drop .ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(10,61,71,.62);color:#fff;font-size:.9rem;font-weight:500}
+
+.extra-card{border:1px solid var(--line);border-radius:12px;padding:1.4rem;background:var(--sunk);
+  margin-bottom:1.2rem}
+.extra-card:last-child{margin-bottom:0}
+
+.bar{display:flex;gap:.7rem;align-items:center;padding:1.6rem 2.6rem 3.2rem;
+  border-top:1px solid var(--line);margin-top:1.6rem;background:var(--sunk)}
+@media(max-width:700px){.bar{padding:1.2rem 1.4rem 2.4rem}}
+.btn{font-family:var(--sans);font-size:1rem;font-weight:700;padding:.72rem 1.7rem;border-radius:999px;
+  border:1.5px solid #39404b;background:var(--surface);color:var(--ink);cursor:pointer;
+  transition:.16s;letter-spacing:-.01em}
+.btn:hover{background:var(--sea-soft)}
+.btn:disabled{opacity:.3;cursor:not-allowed;background:var(--surface)}
+.btn.solid{background:var(--sea);color:#0c0e12;border-color:var(--sea)}
+.btn.solid:hover{background:#62beb3;border-color:#62beb3}
+.btn.quiet{border-color:transparent;color:var(--faint);background:transparent;padding:.5rem 1rem}
+.btn.quiet:hover{color:var(--body);background:transparent}
+.btn.small{font-size:.85rem;padding:.45rem 1rem}
+.grow{flex:1}
+
+.note{padding:.9rem 1.15rem;font-size:.95rem;border-radius:8px;margin-top:1.2rem;display:none}
+.note.err{display:block;background:rgba(224,106,91,.12);color:#f0a99e;border-left:3px solid var(--coral)}
+.note.ok{display:block;background:var(--sea-soft);color:var(--ink);border-left:3px solid var(--sea)}
+
+a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radius:999px;
+  background:var(--sea);color:#0c0e12;text-decoration:none;font-size:1rem;font-weight:700;
+  letter-spacing:-.01em;transition:.14s}
+a.submit:hover{background:#62beb3}
+
+#report{background:#fff;padding:20mm 16mm;color:#141414;font-size:15px;line-height:1.85;
+  font-family:var(--sans);
+  --ink:#141414;--body:#4a4a4a;--faint:#9a9a9a;--line:#e0e0e0;--line-soft:#ececec;
+  --sea:#141414;--sea-deep:#000000;--sea-soft:#ececec}
+#report .r-head{border-bottom:2px solid var(--sea);padding-bottom:.8rem;margin-bottom:.5rem;
+  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem;
+  page-break-inside:avoid}
+#report .r-head h2{font-size:1.3rem;font-weight:700;color:var(--sea-deep)}
+#report .r-head .who{display:block;font-family:var(--mono);font-size:.82rem;color:var(--body)}
+#report .r-sec{margin-top:1.8rem}
+#report .r-lab{font-family:var(--sans);font-size:1.05rem;font-weight:700;letter-spacing:.02em;
+  color:var(--sea);border-bottom:1px solid var(--line);padding-bottom:.3rem;margin-bottom:.7rem;
+  display:block;background:none;page-break-after:avoid}
+#report .r-sub{font-family:var(--sans);font-size:.95rem;font-weight:700;color:var(--ink);
+  margin:1.1rem 0 .5rem;page-break-after:avoid}
+#report .r-sub:first-of-type{margin-top:0}
+#report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3}
+#report .r-fossil{display:grid;grid-template-columns:1.4fr 1fr;gap:1rem;align-items:start;
+  page-break-inside:avoid;margin-bottom:1.2rem}
+#report .r-fossil:last-child{margin-bottom:0}
+#report .r-fossil img{width:100%;height:120px;object-fit:cover;border:1px solid var(--line);display:block}
+#report table.r-info{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:.92rem;
+  table-layout:fixed;page-break-inside:avoid}
+#report table.r-info td{border:1px solid var(--line);text-align:left;padding:.6rem .85rem;
+  color:#38484f;vertical-align:top}
+#report table.r-info td.k{background:#f5f5f5;font-weight:700;color:#141414;
+  width:19%;white-space:nowrap}
+@media print{nav,header.top,.bar{display:none!important}}
+.fill-table{width:100%;border-collapse:collapse;background:var(--surface);
+  border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:.96rem}
+.fill-table th,.fill-table td{border:1px solid var(--line);padding:.7rem .9rem;text-align:left;vertical-align:middle}
+.fill-table thead th{background:var(--sunk);color:var(--faint);font-size:.78rem;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase}
+.fill-table td:first-child,.fill-table td:nth-child(2){color:var(--body);font-size:.92rem}
+.fill-table .blank{width:5.2rem}
+@media(max-width:700px){
+  .fill-table{font-size:.86rem}
+  .fill-table th,.fill-table td{padding:.5rem .55rem}
+}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<header class="top">
+  <div class="kicker">지구과학 탐구활동지</div>
+  <h1>퇴적암 관찰하기 🔎</h1>
+</header>
+
+<nav>
+  <button class="tab active" data-step="1"><span class="n">01</span>정보 입력</button>
+  <button class="tab" data-step="2"><span class="n">02</span>활동 안내</button>
+  <button class="tab" data-step="3"><span class="n">03</span>이론적 배경</button>
+  <button class="tab" data-step="4"><span class="n">04</span>퇴적암 관찰</button>
+  <button class="tab" data-step="5"><span class="n">05</span>퀴즈</button>
+  <button class="tab" data-step="6"><span class="n">06</span>보고서</button>
+</nav>
+
+<div class="wrap">
+
+<!-- 01 정보 입력 -->
+<section class="step active" data-step="1">
+  <h2 class="head"><span class="n">01</span>정보 입력</h2>
+  <p class="lead">보고서에 표시될 정보입니다.</p>
+
+  <table class="info-form">
+    <tbody>
+      <tr>
+        <td class="lbl">반</td>
+        <td>
+          <div class="suffix-field-compact">
+            <input id="f_class" class="save" placeholder="A 또는 1-9" maxlength="6" required>
+            <span class="suffix">반</span>
+          </div>
+        </td>
+        <td class="lbl">학번</td>
+        <td><input id="f_id" class="save mono" inputmode="numeric" placeholder="20100" required></td>
+        <td class="lbl">이름</td>
+        <td><input id="f_name" class="save" placeholder="홍길동" required></td>
+      </tr>
+      <tr>
+        <td class="lbl">일시</td>
+        <td><input type="date" id="f_date" class="save mono" required></td>
+        <td class="lbl">장소</td>
+        <td colspan="3"><input id="f_place" class="save" placeholder="지구과학 실험실" required></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 02 활동 안내 -->
+<section class="step" data-step="2">
+  <h2 class="head"><span class="n">02</span>활동 안내</h2>
+  <p class="lead">퇴적암 표본을 다루기 전에 꼭 읽어 주세요.</p>
+
+  <div class="fixed-note"><b>목표</b><span id="disp_goal"></span></div>
+  <div class="fixed-note"><b>준비물</b><span id="disp_materials"></span></div>
+
+  <div class="block">
+    <h3>유의사항</h3>
+    <ul class="rules">
+      <li>암석 표본을 조심히 다루며, 던지거나 강하게 부딪히지 않는다.</li>
+      <li>표본은 책상 위에서만 관찰하고, 바닥에 떨어뜨리지 않도록 주의한다.</li>
+      <li>확대경으로 관찰할 때 표본을 긁거나 손상시키지 않도록 주의한다.</li>
+      <li>관찰이 끝난 표본은 원래 있던 자리에 그대로 돌려놓는다.</li>
+      <li>표본을 만진 뒤에는 손을 씻는다.</li>
+    </ul>
+  </div>
+
+  <div class="check-row">
+    <span>위 유의사항을 모두 확인하였나요?</span>
+    <label class="check-toggle">
+      <input type="checkbox" id="chk_safety" class="save" required>
+      <span>확인하였습니다.</span>
+    </label>
+  </div>
+</section>
+
+<!-- 03 이론적 배경 -->
+<section class="step" data-step="3">
+  <h2 class="head"><span class="n">03</span>이론적 배경</h2>
+  <p class="lead">퇴적암을 관찰하기 전에 이론적 배경을 빈칸을 채우며 읽어보세요.</p>
+
+  <div class="block">
+    <h3>퇴적물과 퇴적암</h3>
+    <p>지표의 암석이 풍화·침식 작용을 받아 생긴 쇄설물, 호수나 바다에 녹아 있던 물질, 생물의 유해 등이 쌓인 것을 <input class="blank save" id="b1" placeholder="ㅌㅈㅁ" required>이라 하고, <input class="blank save" id="b2" placeholder="ㅌㅈㅁ" required>이 굳어져서 만들어진 암석을 <input class="blank save" id="b3" placeholder="ㅌㅈㅇ" required>이라고 한다.</p>
+  </div>
+
+  <div class="block">
+    <h3>퇴적암의 분류</h3>
+    <p>퇴적암은 퇴적 물질의 기원에 따라 <input class="blank save" id="b4" placeholder="ㅅㅅㅅ" required> 퇴적암, <input class="blank save" id="b5" placeholder="ㅎㅎㅈ" required> 퇴적암, <input class="blank save" id="b6" placeholder="ㅇㄱㅈ" required> 퇴적암으로 분류한다.</p>
+  </div>
+
+  <div class="block">
+    <h3>쇄설성 퇴적암</h3>
+    <p>쇄설성 퇴적암은 암석의 풍화·침식 작용으로 생성된 입자들이 운반되어 쌓이거나 화산 활동으로 생성된 화산재 등이 쌓여서 만들어진 암석으로, 역암, 사암, 셰일, 응회암 등이 있다.</p>
+  </div>
+
+  <div class="block">
+    <h3>화학적 퇴적암</h3>
+    <p>화학적 퇴적암은 호수나 바다에서 물속에 녹아 있던 물질이 화학적으로 침전되거나 물이 증발하면서 침전되어 만들어진 암석으로, <input class="blank save" id="b7" placeholder="ㅇㅇ" required>, 석회암, 처트 등이 있다.</p>
+  </div>
+
+  <div class="block">
+    <h3>유기적 퇴적암</h3>
+    <p>유기적 퇴적암은 동식물이나 미생물의 유해가 쌓여 만들어진 암석으로, 석탄, 석회암, 처트 등이 있다.</p>
+  </div>
+</section>
+
+<!-- 04 퇴적암 관찰 -->
+<section class="step" data-step="4">
+  <h2 class="head"><span class="n">04</span>퇴적암 관찰</h2>
+  <p class="lead">주어진 퇴적암 표본 3개를 관찰하고, 추가로 관찰한 퇴적암을 1개 이상 더 기록하세요.</p>
+
+  <div class="block">
+    <h3>역암</h3>
+    <div class="fossil-grid">
+      <div class="fossil-fields">
+        <div class="grow"><label for="rock_conglomerate_feature">관찰한 특징</label><textarea id="rock_conglomerate_feature" class="save" rows="4" required></textarea></div>
+      </div>
+      <div class="drop" id="up_conglomerate"><span>클릭하여 사진 선택 (선택)</span></div>
+    </div>
+    <input type="file" accept="image/*" id="ph_conglomerate" hidden>
+  </div>
+
+  <hr class="rule">
+
+  <div class="block">
+    <h3>사암</h3>
+    <div class="fossil-grid">
+      <div class="fossil-fields">
+        <div class="grow"><label for="rock_sandstone_feature">관찰한 특징</label><textarea id="rock_sandstone_feature" class="save" rows="4" required></textarea></div>
+      </div>
+      <div class="drop" id="up_sandstone"><span>클릭하여 사진 선택 (선택)</span></div>
+    </div>
+    <input type="file" accept="image/*" id="ph_sandstone" hidden>
+  </div>
+
+  <hr class="rule">
+
+  <div class="block">
+    <h3>이암</h3>
+    <div class="fossil-grid">
+      <div class="fossil-fields">
+        <div class="grow"><label for="rock_mudstone_feature">관찰한 특징</label><textarea id="rock_mudstone_feature" class="save" rows="4" required></textarea></div>
+      </div>
+      <div class="drop" id="up_mudstone"><span>클릭하여 사진 선택 (선택)</span></div>
+    </div>
+    <input type="file" accept="image/*" id="ph_mudstone" hidden>
+  </div>
+
+  <hr class="rule">
+
+  <div class="block">
+    <h3>추가로 관찰한 퇴적암</h3>
+    <p class="hint">역암·사암·이암 외에 더 관찰한 퇴적암이 있다면 최소 1개 이상 기록하세요. (예: 석회암, 응회암, 셰일 등)</p>
+    <div class="extra-list" id="extra-list"></div>
+    <button type="button" class="btn quiet small" id="add-extra">+ 퇴적암 추가</button>
+  </div>
+</section>
+
+<!-- 05 퀴즈 -->
+<section class="step" data-step="5">
+  <h2 class="head"><span class="n">05</span>퀴즈</h2>
+  <p class="lead">관찰한 내용과 이론적 배경을 바탕으로 아래 표의 빈칸을 채워 보세요. (보고서에는 포함되지 않아요)</p>
+
+  <table class="fill-table">
+    <thead>
+      <tr><th>구분</th><th>퇴적물의 기원</th><th>구성 물질</th><th>퇴적암</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td rowspan="3">쇄설성 퇴적암</td>
+        <td rowspan="3">풍화와 침식에 의한 쇄설물</td>
+        <td>자갈 (2mm 이상)</td>
+        <td>역암</td>
+      </tr>
+      <tr>
+        <td>모래 (1/16~2mm)</td>
+        <td>사암</td>
+      </tr>
+      <tr>
+        <td>진흙 (1/256mm 이하)</td>
+        <td><input class="blank save" id="d1" placeholder="ㅇㅇ" required></td>
+      </tr>
+      <tr>
+        <td rowspan="4">화학적 퇴적암</td>
+        <td rowspan="2">물에 녹아있던 물질의 침전물</td>
+        <td>CaCO₃</td>
+        <td><input class="blank save" id="d2" placeholder="ㅅㅎㅇ" required></td>
+      </tr>
+      <tr>
+        <td>SiO₂</td>
+        <td>처트</td>
+      </tr>
+      <tr>
+        <td rowspan="2">증발 잔류물</td>
+        <td>CaSO₄·H₂O</td>
+        <td><input class="blank save" id="d3" placeholder="ㅅㄱ" required></td>
+      </tr>
+      <tr>
+        <td>NaCl</td>
+        <td><input class="blank save" id="d4" placeholder="ㅇㅇ" required></td>
+      </tr>
+      <tr>
+        <td rowspan="2">유기적 퇴적암</td>
+        <td rowspan="2">동식물의 유해</td>
+        <td>식물체</td>
+        <td><input class="blank save" id="d5" placeholder="ㅅㅌ" required></td>
+      </tr>
+      <tr>
+        <td>석회질 생물체</td>
+        <td><input class="blank save" id="d6" placeholder="ㅅㅎㅇ" required></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 06 보고서 -->
+<section class="step" data-step="6">
+  <h2 class="head"><span class="n">06</span>보고서</h2>
+  <p class="lead">확인한 뒤 PDF로 저장하고, 제출 링크에 올려 주세요.</p>
+
+  <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+    <button class="btn solid" id="pdf-btn">PDF로 저장</button>
+  </div>
+  <div id="msg" class="note"></div>
+  <div id="link-area"></div>
+
+  <div style="margin-top:2rem;border:1px solid var(--line)">
+    <div id="report">
+      <div class="r-head">
+        <h2>퇴적암 관찰하기 활동 보고서</h2>
+        <div class="who mono"><span id="p_class"></span> · <span id="p_id"></span> <span id="p_name"></span></div>
+      </div>
+
+      <div class="r-sec" style="margin-top:1.4rem">
+        <table class="r-info">
+          <tbody>
+            <tr><td class="k">일시</td><td id="p_date"></td><td class="k">장소</td><td id="p_place"></td></tr>
+            <tr><td class="k">준비물</td><td colspan="3" id="p_materials"></td></tr>
+            <tr><td class="k">목표</td><td colspan="3" id="p_goal"></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="r-sec">
+        <div class="r-lab">1. 개념 확인</div>
+        <div class="r-txt" id="p_concept"></div>
+      </div>
+
+      <div class="r-sec">
+        <div class="r-lab">2. 퇴적암 관찰</div>
+
+        <div class="r-sub">가. 역암</div>
+        <div class="r-fossil"><div class="r-txt" id="rep_conglomerate"></div><img id="rep_conglomerate_photo" style="display:none"></div>
+
+        <div class="r-sub">나. 사암</div>
+        <div class="r-fossil"><div class="r-txt" id="rep_sandstone"></div><img id="rep_sandstone_photo" style="display:none"></div>
+
+        <div class="r-sub">다. 이암</div>
+        <div class="r-fossil"><div class="r-txt" id="rep_mudstone"></div><img id="rep_mudstone_photo" style="display:none"></div>
+
+        <div class="r-sub">라. 추가로 관찰한 퇴적암</div>
+        <div id="p_extra"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="bar">
+  <button class="btn" id="prev">이전</button>
+  <button class="btn grow" id="next">다음</button>
+  <button class="btn quiet" id="reset">초기화</button>
+</div>
+
+</div>
+
+<script>
+/* ─────────────────────────────────────────────────────────
+   선생님 설정 — 제출 링크
+   주소 뒤에 ?link=... 를 붙이면 그 링크가 06 탭에 나타납니다.
+     예) index.html?link=https://classroom.google.com/c/AAA/a/BBB
+   매번 같은 링크라면 아래에 넣어 두세요.
+   ───────────────────────────────────────────────────────── */
+const DEFAULT_SUBMIT_URL = "";
+
+/* ─────────────────────────────────────────────────────────
+   선생님 설정 — 목표 · 준비물 (고정값)
+   02 탭과 보고서에 그대로 표시됩니다. 학생이 수정할 수 없습니다.
+   다른 실험지에 이 폼을 재사용할 때는 이 두 값만 바꾸면 됩니다.
+   ───────────────────────────────────────────────────────── */
+const FIXED_GOAL = "여러 가지 퇴적암을 관찰하고 물질의 기원, 입자 크기, 화학 성분 등에 따라 분류할 수 있다.";
+const FIXED_MATERIALS = "퇴적암 표본(역암, 사암, 이암 등), 확대경, 관찰 기록지";
+
+document.addEventListener('DOMContentLoaded', () => {
+const $ = id => document.getElementById(id);
+const KEY = 'sedimentary_';
+const TOTAL = 6;
+let step = 1;
+
+const ROCKS = ['conglomerate','sandstone','mudstone'];
+const ROCK_LABEL = { conglomerate:'역암', sandstone:'사암', mudstone:'이암' };
+const photos = {}; ROCKS.forEach(r => photos[r] = null);
+
+/* 제출 링크 */
+const submitUrl = () => {
+  const raw = new URLSearchParams(location.search).get('link') || DEFAULT_SUBMIT_URL;
+  if (!raw) return null;
+  try { const u = new URL(raw); return /^https?:$/.test(u.protocol) ? u.href : null; }
+  catch { return null; }
+};
+const renderLink = () => {
+  const u = submitUrl();
+  $('link-area').innerHTML = u
+    ? `<a class="submit" href="${u}" target="_blank" rel="noopener">저장한 PDF 제출하러 가기 →</a>`
+    : `<p class="hint" style="margin-top:1rem">제출 링크가 설정되지 않았습니다. 선생님이 안내한 곳에 PDF를 올려 주세요.</p>`;
+};
+const renderFixedInfo = () => {
+  $('disp_materials').textContent = FIXED_MATERIALS;
+  $('disp_goal').textContent = FIXED_GOAL;
+};
+
+/* 추가 관찰 행 — 최소 1개는 필수. 이름·특징·사진(선택)까지 넣는다. */
+let extraSeq = 0;
+const extraPhotos = {};
+const paintExtraDrop = rid => {
+  const box = $('up_' + rid);
+  if (!box) return;
+  box.innerHTML = extraPhotos[rid]
+    ? `<img src="${extraPhotos[rid]}" alt=""><div class="ov">선택 완료 · 다시 눌러 변경</div>`
+    : '<span>클릭하여 사진 선택 (선택)</span>';
+};
+const pickExtraPhoto = async (rid, file) => {
+  try { extraPhotos[rid] = await shrink(file); paintExtraDrop(rid); hideMsg(); }
+  catch (e) { showMsg(e.message, false); }
+};
+const addExtraRow = (required = false) => {
+  extraSeq++;
+  const rid = 'extra_' + extraSeq;
+  const row = document.createElement('div');
+  row.className = 'block extra-card';
+  row.dataset.rid = rid;
+  row.innerHTML = `
+    <div class="fossil-grid">
+      <div class="fossil-fields">
+        <div><label for="name_${rid}">퇴적암 이름</label><input id="name_${rid}" class="extra-name"${required ? ' required' : ''}></div>
+        <div class="grow"><label for="info_${rid}">관찰한 특징</label><textarea id="info_${rid}" class="extra-info" rows="3"></textarea></div>
+      </div>
+      <div class="drop" id="up_${rid}"><span>클릭하여 사진 선택 (선택)</span></div>
+    </div>
+    <input type="file" accept="image/*" id="ph_${rid}" hidden>
+    <div style="display:flex;justify-content:flex-end;margin-top:.7rem">
+      <button type="button" class="btn quiet small del">삭제</button>
+    </div>
+  `;
+  $('extra-list').appendChild(row);
+  $('up_' + rid).addEventListener('click', () => $('ph_' + rid).click());
+  $('ph_' + rid).addEventListener('change', e => e.target.files[0] && pickExtraPhoto(rid, e.target.files[0]));
+  const del = row.querySelector('.del');
+  if (required) del.style.display = 'none';
+  else del.addEventListener('click', () => { delete extraPhotos[rid]; row.remove(); });
+};
+$('add-extra').addEventListener('click', () => addExtraRow(false));
+addExtraRow(true);
+
+/* 사진 */
+const shrink = async file => {
+  let bmp;
+  try { bmp = await createImageBitmap(file, { imageOrientation:'from-image' }); }
+  catch { throw new Error('사진 형식을 읽을 수 없습니다. HEIC 대신 JPG로 다시 시도해 주세요.'); }
+  const MAX = 1100, k = Math.min(1, MAX / Math.max(bmp.width, bmp.height));
+  const w = Math.round(bmp.width*k), h = Math.round(bmp.height*k);
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const x = c.getContext('2d');
+  x.fillStyle = '#fff'; x.fillRect(0,0,w,h); x.drawImage(bmp,0,0,w,h); bmp.close();
+  return c.toDataURL('image/jpeg', .72);
+};
+const paintDrop = rock => {
+  const box = $('up_' + rock);
+  box.innerHTML = photos[rock]
+    ? `<img src="${photos[rock]}" alt=""><div class="ov">선택 완료 · 다시 눌러 변경</div>`
+    : '<span>클릭하여 사진 선택 (선택)</span>';
+};
+const pickPhoto = async (rock, file) => {
+  try { photos[rock] = await shrink(file); paintDrop(rock); save(); hideMsg(); }
+  catch (e) { showMsg(e.message, false); }
+};
+
+/* 저장 / 복원 — 표준 퇴적암 필드·체크박스만 자동 저장됩니다.
+   '추가 관찰' 행은 자동 저장 대상이 아니라, 새로고침하면 사라집니다. */
+const savers = () => [...document.querySelectorAll('.save')];
+const save = () => {
+  try {
+    savers().forEach(el => localStorage.setItem(KEY + el.id, el.type === 'checkbox' ? (el.checked ? '1' : '') : el.value));
+    ROCKS.forEach(r => localStorage.setItem(KEY + 'ph_' + r, photos[r] || ''));
+  } catch {
+    showMsg('저장 공간이 부족해 사진이 자동 저장되지 않았습니다. 작성 후 바로 PDF로 저장해 주세요.', false);
+  }
+};
+const restore = () => {
+  savers().forEach(el => {
+    const v = localStorage.getItem(KEY + el.id);
+    if (v === null) return;
+    if (el.type === 'checkbox') el.checked = v === '1';
+    else if (v) el.value = v;
+  });
+  ROCKS.forEach(r => {
+    const v = localStorage.getItem(KEY + 'ph_' + r);
+    if (v) photos[r] = v;
+    paintDrop(r);
+  });
+};
+const clearAll = () => {
+  if (!confirm('작성한 내용을 모두 지웁니다. 계속할까요?')) return;
+  savers().forEach(el => localStorage.removeItem(KEY + el.id));
+  ROCKS.forEach(r => localStorage.removeItem(KEY + 'ph_' + r));
+  location.reload();
+};
+
+/* 단계 */
+const MSG = {
+  1:'반, 학번, 이름, 일시, 장소를 모두 입력해 주세요.',
+  2:'유의사항을 확인했다면 체크해 주세요.',
+  3:'이론적 배경의 빈칸을 모두 채워 주세요.',
+  4:'세 암석의 관찰한 특징과, 추가로 관찰한 퇴적암 1개 이상을 모두 입력해 주세요.',
+  5:'퀴즈 표의 빈칸을 모두 채워 주세요.',
+};
+const secOf = n => document.querySelector(`.step[data-step="${n}"]`);
+const isFilled = i => i.type === 'checkbox' ? i.checked : i.value.trim() !== '';
+const stepValid = n => [...secOf(n).querySelectorAll('[required]')].every(isFilled);
+const markInvalid = n => {
+  let first = null;
+  secOf(n).querySelectorAll('[required]').forEach(i => {
+    const bad = !isFilled(i);
+    i.classList.toggle('invalid', bad);
+    if (bad && !first) first = i;
+  });
+  if (first) first.focus();
+};
+const showMsg = (t, ok) => { const m = $('msg'); m.textContent = t; m.className = 'note ' + (ok ? 'ok' : 'err'); };
+const hideMsg = () => { $('msg').className = 'note'; };
+const flash = n => {
+  const el = secOf(n);
+  el.querySelectorAll('.flash').forEach(x => x.remove());
+  const d = document.createElement('div');
+  d.className = 'note err flash'; d.textContent = MSG[n];
+  el.appendChild(d);
+  setTimeout(() => d.remove(), 4000);
+};
+
+const render = () => {
+  document.querySelectorAll('.step').forEach(el => el.classList.toggle('active', +el.dataset.step === step));
+  document.querySelectorAll('.tab').forEach(t => {
+    const n = +t.dataset.step;
+    t.classList.toggle('active', n === step);
+    t.classList.toggle('done', n !== step && n < TOTAL && stepValid(n));
+  });
+  $('prev').disabled = step === 1;
+  $('next').disabled = step === TOTAL;
+  $('next').textContent = step === TOTAL ? '완료' : '다음';
+  if (step === TOTAL) buildReport();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+const goTo = n => { step = Math.min(TOTAL, Math.max(1, n)); render(); };
+
+/* 보고서 */
+const CONCEPT_PARTS = [
+  '가. 지표의 암석이 풍화·침식 작용을 받아 생긴 쇄설물, 호수나 바다에 녹아 있던 물질, 생물의 유해 등이 쌓인 것을 {b1}이라 하고, {b2}이 굳어져서 만들어진 암석을 {b3}이라고 한다.',
+  '나. 퇴적암은 퇴적 물질의 기원에 따라 {b4} 퇴적암, {b5} 퇴적암, {b6} 퇴적암으로 분류한다.',
+  '다. 쇄설성 퇴적암은 암석의 풍화·침식 작용으로 생성된 입자들이 운반되어 쌓이거나 화산 활동으로 생성된 화산재 등이 쌓여서 만들어진 암석으로, 역암, 사암, 셰일, 응회암 등이 있다.',
+  '라. 화학적 퇴적암은 호수나 바다에서 물속에 녹아 있던 물질이 화학적으로 침전되거나 물이 증발하면서 침전되어 만들어진 암석으로, {b7}, 석회암, 처트 등이 있다.',
+  '마. 유기적 퇴적암은 동식물이나 미생물의 유해가 쌓여 만들어진 암석으로, 석탄, 석회암, 처트 등이 있다.',
+];
+const buildReport = () => {
+  const v = id => ($(id).value || '').trim();
+  $('p_class').textContent = v('f_class') ? v('f_class') + '반' : '';
+  ['id','name'].forEach(f => $('p_'+f).textContent = v('f_'+f));
+
+  const dateRaw = v('f_date');
+  const dateTxt = dateRaw ? new Date(dateRaw + 'T00:00:00').toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' }) : '(미입력)';
+  $('p_date').textContent = dateTxt;
+  $('p_place').textContent = v('f_place') || '(미입력)';
+  $('p_materials').textContent = FIXED_MATERIALS;
+  $('p_goal').textContent = FIXED_GOAL;
+
+  $('p_concept').textContent = CONCEPT_PARTS.map(t => t.replace(/\{(b[1-7])\}/g, (_, id) => v(id) || '(빈칸)')).join('\n\n');
+
+  ROCKS.forEach(rock => {
+    const feature = v('rock_' + rock + '_feature') || '(미입력)';
+    $('rep_' + rock).textContent = `${ROCK_LABEL[rock]} — ${feature}`;
+    const img = $('rep_' + rock + '_photo');
+    if (photos[rock]) { img.src = photos[rock]; img.style.display = ''; }
+    else { img.style.display = 'none'; }
+  });
+
+  const extraCards = [...document.querySelectorAll('#extra-list .extra-card')]
+    .map(card => {
+      const name = card.querySelector('.extra-name').value.trim();
+      if (!name) return '';
+      const info = card.querySelector('.extra-info').value.trim();
+      const photo = extraPhotos[card.dataset.rid];
+      return `<div class="r-fossil" style="margin-bottom:1.1rem">
+        <div class="r-txt">${name}${info ? ' — ' + info : ''}</div>
+        ${photo ? `<img src="${photo}">` : ''}
+      </div>`;
+    })
+    .filter(Boolean);
+  $('p_extra').innerHTML = extraCards.length ? extraCards.join('') : '<div class="r-txt">(작성되지 않음)</div>';
+};
+
+/* PDF */
+const exportPDF = () => {
+  for (let n = 1; n < TOTAL; n++) {
+    if (!stepValid(n)) { goTo(n); markInvalid(n); flash(n); return; }
+  }
+  buildReport(); hideMsg();
+  const classTag = $('f_class').value ? $('f_class').value + '반' : '';
+  const tag = `${classTag}_${$('f_id').value}_${$('f_name').value}`;
+  const btn = $('pdf-btn');
+  btn.disabled = true; btn.textContent = '저장 중…';
+  html2pdf().set({
+    margin: 0,
+    filename: `퇴적암관찰하기_활동보고서_${tag}.pdf`,
+    image: { type:'jpeg', quality:.95 },
+    html2canvas: { scale:2, useCORS:true, backgroundColor:'#ffffff' },
+    jsPDF: { unit:'mm', format:'a4', orientation:'portrait' },
+    pagebreak: { mode:['css','legacy'] },
+  }).from($('report')).save()
+    .then(() => { btn.disabled=false; btn.textContent='PDF로 저장'; showMsg('PDF를 저장했습니다. 제출 링크에 올려 주세요.', true); })
+    .catch(() => { btn.disabled=false; btn.textContent='PDF로 저장'; showMsg('PDF 저장에 실패했습니다. 다시 시도해 주세요.', false); });
+};
+
+/* 이벤트 */
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => goTo(+t.dataset.step)));
+$('next').addEventListener('click', () => {
+  if (step < TOTAL && !stepValid(step)) { markInvalid(step); flash(step); return; }
+  goTo(step + 1);
+});
+$('prev').addEventListener('click', () => goTo(step - 1));
+$('reset').addEventListener('click', clearAll);
+$('pdf-btn').addEventListener('click', exportPDF);
+
+ROCKS.forEach(rock => {
+  $('up_' + rock).addEventListener('click', () => $('ph_' + rock).click());
+  $('ph_' + rock).addEventListener('change', e => e.target.files[0] && pickPhoto(rock, e.target.files[0]));
+});
+
+document.addEventListener('input', e => {
+  e.target.classList.remove('invalid');
+  if (e.target.id === 'f_class') {
+    const pos = e.target.selectionStart;
+    const before = e.target.value.length;
+    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+    const diff = before - e.target.value.length;
+    if (pos !== null) e.target.setSelectionRange(pos - diff, pos - diff);
+  }
+  if (e.target.classList.contains('save')) save();
+});
+
+/* 시작 */
+restore();
+renderLink();
+renderFixedInfo();
+render();
+});
+</script>
+</body>
+</html>
