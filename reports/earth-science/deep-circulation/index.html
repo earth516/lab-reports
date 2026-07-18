@@ -212,7 +212,7 @@ a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radi
   letter-spacing:-.01em;transition:.14s}
 a.submit:hover{background:#62beb3}
 
-#report{background:#fff;padding:0;color:#141414;font-size:15px;line-height:1.85;overflow-wrap:break-word;word-break:break-word;
+#report{background:#fff;padding:20mm 16mm;color:#141414;font-size:15px;line-height:1.85;overflow-wrap:break-word;word-break:break-word;
   font-family:var(--sans);
   --ink:#141414;--body:#4a4a4a;--faint:#9a9a9a;--line:#e0e0e0;--line-soft:#ececec;
   --sea:#141414;--sea-deep:#000000;--sea-soft:#ececec}
@@ -502,7 +502,7 @@ a.submit:hover{background:#62beb3}
   <div id="msg" class="note"></div>
   <div id="link-area"></div>
 
-  <div style="margin-top:2rem;border:1px solid var(--line);padding:24px">
+  <div style="margin-top:2rem;border:1px solid var(--line)">
     <div id="report">
       <div class="r-head">
         <h2>심층순환 실험 보고서</h2>
@@ -1014,7 +1014,7 @@ const exportPDF = () => {
   const btn = $('pdf-btn');
   btn.disabled = true; btn.textContent = '저장 중…';
   html2pdf().set({
-    margin: [20, 16, 20, 16],
+    margin: 0,
     filename: `심층순환_실험보고서_${tag}.pdf`,
     image: { type:'jpeg', quality:.95 },
     html2canvas: { scale:2, useCORS:true, backgroundColor:'#ffffff' },
