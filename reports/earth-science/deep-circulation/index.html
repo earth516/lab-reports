@@ -212,7 +212,7 @@ a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radi
   letter-spacing:-.01em;transition:.14s}
 a.submit:hover{background:#62beb3}
 
-#report{background:#fff;padding:20mm 16mm;color:#141414;font-size:15px;line-height:1.85;
+#report{background:#fff;padding:0;color:#141414;font-size:15px;line-height:1.85;overflow-wrap:break-word;word-break:break-word;
   font-family:var(--sans);
   --ink:#141414;--body:#4a4a4a;--faint:#9a9a9a;--line:#e0e0e0;--line-soft:#ececec;
   --sea:#141414;--sea-deep:#000000;--sea-soft:#ececec}
@@ -279,7 +279,7 @@ a.submit:hover{background:#62beb3}
         <td class="lbl">일시</td>
         <td><input type="date" id="f_date" class="save mono" required></td>
         <td class="lbl">장소</td>
-        <td colspan="3"><input id="f_place" class="save" required></td>
+        <td colspan="3"><input id="f_place" class="save" maxlength="30" required></td>
       </tr>
       <tr>
         <td class="lbl">반</td>
@@ -290,9 +290,9 @@ a.submit:hover{background:#62beb3}
           </div>
         </td>
         <td class="lbl">학번</td>
-        <td><input id="f_id" class="save mono" inputmode="numeric" required></td>
+        <td><input id="f_id" class="save mono" inputmode="numeric" maxlength="10" required></td>
         <td class="lbl">이름</td>
-        <td><input id="f_name" class="save" required></td>
+        <td><input id="f_name" class="save" maxlength="20" required></td>
       </tr>
       <tr>
         <td class="lbl">역할</td>
@@ -502,7 +502,7 @@ a.submit:hover{background:#62beb3}
   <div id="msg" class="note"></div>
   <div id="link-area"></div>
 
-  <div style="margin-top:2rem;border:1px solid var(--line)">
+  <div style="margin-top:2rem;border:1px solid var(--line);padding:24px">
     <div id="report">
       <div class="r-head">
         <h2>심층순환 실험 보고서</h2>
@@ -1014,7 +1014,7 @@ const exportPDF = () => {
   const btn = $('pdf-btn');
   btn.disabled = true; btn.textContent = '저장 중…';
   html2pdf().set({
-    margin: [40, 40, 40, 40],  /* TEMP TEST - remove after checking */
+    margin: [20, 16, 20, 16],
     filename: `심층순환_실험보고서_${tag}.pdf`,
     image: { type:'jpeg', quality:.95 },
     html2canvas: { scale:2, useCORS:true, backgroundColor:'#ffffff' },
