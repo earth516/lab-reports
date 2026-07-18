@@ -1014,7 +1014,7 @@ const exportPDF = () => {
   const btn = $('pdf-btn');
   btn.disabled = true; btn.textContent = '저장 중…';
   html2pdf().set({
-    margin: 0,
+    margin: [40, 40, 40, 40],  /* TEMP TEST - remove after checking */
     filename: `심층순환_실험보고서_${tag}.pdf`,
     image: { type:'jpeg', quality:.95 },
     html2canvas: { scale:2, useCORS:true, backgroundColor:'#ffffff' },
