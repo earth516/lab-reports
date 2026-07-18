@@ -1019,11 +1019,12 @@ const exportPDF = () => {
      화면(06 탭)에 보이는 패딩은 저장이 끝나면 즉시 원래대로 복구되므로
      사용자가 보는 화면은 전혀 바뀌지 않는다. */
   const reportEl = $('report');
-  const restorePadding = () => { reportEl.style.padding = ''; };
-  reportEl.style.padding = '0';
+  const restorePadding = () => { reportEl.style.paddingTop = ''; reportEl.style.paddingBottom = ''; };
+  reportEl.style.paddingTop = '0';
+  reportEl.style.paddingBottom = '0';
 
   html2pdf().set({
-    margin: [20, 16, 20, 16],
+    margin: [20, 0, 20, 0],
     filename: `심층순환_실험보고서_${tag}.pdf`,
     image: { type:'jpeg', quality:.95 },
     html2canvas: { scale:2, useCORS:true, backgroundColor:'#ffffff' },
