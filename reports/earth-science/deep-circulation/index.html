@@ -9,12 +9,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root{
-  --paper:#fafafa; --surface:#ffffff; --sunk:#f2f2f2;
-  --ink:#141414; --body:#4a4a4a; --faint:#9a9a9a;
-  --line:#e0e0e0; --line-soft:#ececec;
-  --sea:#141414; --sea-deep:#000000; --sea-soft:#ececec;
-  --amber:#141414; --amber-soft:#f0f0f0;
-  --coral:#c0392b; --blue:#141414;
+  --paper:#0c0e12; --surface:#171a20; --sunk:#1e222b;
+  --ink:#e8eaee; --body:#b4b9c4; --faint:#8b909b;
+  --line:#2a2e37; --line-soft:#22262b;
+  --sea:#7dd3c8; --sea-deep:#7dd3c8; --sea-soft:rgba(125,211,200,.14);
+  --amber:#8b909b; --amber-soft:#1e222b;
+  --coral:#e06a5b; --blue:#7dd3c8;
   --grid:#eeeeee; --grid-major:#cfcfcf;
 
   --sans:'Pretendard','Pretendard Variable',-apple-system,system-ui,sans-serif;
@@ -32,9 +32,9 @@ h1,h2,h3{margin:0;letter-spacing:-.025em;line-height:1.4}
   border-left:1px solid var(--line);border-right:1px solid var(--line);min-height:100vh}
 @media(max-width:820px){.sheet{border:0}}
 
-header.top{background:var(--ink);color:#fff;padding:1.5rem 2.6rem;border-bottom:1px solid var(--ink)}
-header.top .kicker{font-family:var(--sans);font-size:.9rem;font-weight:500;
-  color:#c9c9c9;letter-spacing:-.01em;margin-bottom:.15rem}
+header.top{background:#101216;color:#e8eaee;padding:1.5rem 2.6rem;border-bottom:1px solid var(--line)}
+header.top .kicker{font-family:var(--sans);font-size:.9rem;font-weight:600;
+  color:var(--sea);letter-spacing:-.01em;margin-bottom:.15rem}
 header.top h1{font-family:var(--sans);font-size:1.4rem;font-weight:700;color:#fff;letter-spacing:-.03em}
 @media(max-width:700px){header.top{padding:1.2rem 1.4rem}header.top h1{font-size:1.2rem}}
 
@@ -75,13 +75,13 @@ h2.head .n{font-family:var(--mono);font-size:.8rem;color:var(--amber);font-weigh
   margin-top:1.2rem;font-size:1rem;color:var(--ink);transition:.14s}
 .check-toggle{display:flex;align-items:center;gap:.55rem;cursor:pointer;white-space:nowrap;font-weight:600}
 .check-toggle input[type="checkbox"]{width:18px;height:18px;flex:0 0 auto;accent-color:var(--ink);cursor:pointer}
-.check-row:has(input.invalid){border-color:var(--coral);background:#fdf5f3}
+.check-row:has(input.invalid){border-color:var(--coral);background:rgba(224,106,91,.08)}
 
 .panel{background:var(--sunk);border:1px solid var(--line);border-radius:14px;padding:1.8rem}
 label{display:block;font-size:.85rem;color:var(--faint);margin-bottom:.5rem;font-weight:600;
   letter-spacing:.08em;text-transform:uppercase}
 input,select,textarea{width:100%;padding:.65rem .8rem;border:1.5px solid var(--line);border-radius:12px;
-  background:var(--surface);font-family:var(--sans);font-size:1.03rem;color:var(--ink);
+  background:var(--paper);font-family:var(--sans);font-size:1.03rem;color:var(--ink);
   letter-spacing:-.01em;transition:.14s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--sea);
   box-shadow:0 0 0 3px var(--sea-soft)}
@@ -89,9 +89,9 @@ select{border-radius:12px}
 input::placeholder,textarea::placeholder{color:#bcc5c9}
 select{cursor:pointer}
 textarea{resize:vertical;line-height:1.95}
-.invalid{border-color:var(--coral)!important;background:#fdf5f3}
+.invalid{border-color:var(--coral)!important;background:rgba(224,106,91,.1)}
 .suffix-field{display:flex;align-items:stretch;border:1.5px solid var(--line);border-radius:12px;
-  background:var(--surface);overflow:hidden;transition:.14s}
+  background:var(--paper);overflow:hidden;transition:.14s}
 .suffix-field:focus-within{border-color:var(--sea);box-shadow:0 0 0 3px var(--sea-soft)}
 .suffix-field input{flex:1;min-width:0;border:0;border-radius:0;box-shadow:none!important}
 .suffix-field input:focus{border:0;box-shadow:none}
@@ -104,21 +104,50 @@ textarea{resize:vertical;line-height:1.95}
 
 .who{display:grid;grid-template-columns:repeat(5,1fr);gap:1.1rem}
 @media(max-width:700px){.who{grid-template-columns:repeat(2,1fr)}}
-.practice-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.1rem;margin-top:1.2rem}
-@media(max-width:700px){.practice-grid{grid-template-columns:repeat(2,1fr)}}
 
-.concept{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--sea);
+.info-form{width:100%;border-collapse:collapse;background:var(--surface);
+  border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.info-form td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);
+  padding:0;vertical-align:middle}
+.info-form tr:last-child td{border-bottom:0}
+.info-form td:last-child{border-right:0}
+.info-form td.lbl{width:1%;padding:0 1rem;font-size:.85rem;font-weight:700;color:var(--sea);
+  letter-spacing:.03em;background:var(--sunk);white-space:nowrap}
+.info-form input{width:100%;border:0;border-radius:0;background:transparent;
+  padding:.85rem 1rem;font-family:var(--sans);font-size:1.02rem;color:var(--ink);letter-spacing:-.01em}
+.info-form input:focus{outline:none;box-shadow:none;background:var(--sea-soft)}
+.info-form input.invalid{background:rgba(224,106,91,.1)}
+.suffix-field-compact{display:flex;align-items:stretch}
+.suffix-field-compact input{flex:1;min-width:0}
+.suffix-field-compact .suffix{display:flex;align-items:center;padding:0 .9rem;
+  font-size:1.02rem;color:var(--body);border-left:1px solid var(--line);white-space:nowrap}
+.info-form td.fixed-val{padding:.85rem 1rem;font-size:1rem;color:var(--body)}
+.fixed-note{display:flex;gap:.8rem;align-items:baseline;padding:.75rem 1.05rem;
+  background:var(--sunk);border:1px solid var(--line);border-radius:10px;margin-bottom:.8rem}
+.fixed-note:last-of-type{margin-bottom:1.6rem}
+.fixed-note b{flex:none;font-size:.82rem;font-weight:700;color:var(--sea);letter-spacing:.04em}
+.fixed-note span{color:var(--body)}
+@media(max-width:700px){
+  .info-form, .info-form tbody, .info-form tr, .info-form td{display:block;width:100%}
+  .info-form td{border-right:0}
+  .info-form td.lbl{border-bottom:0;padding:.6rem 1rem .2rem}
+  .info-form td:not(.lbl){padding-bottom:.2rem}
+}
+.practice-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1.1rem;margin-top:1.2rem}
+@media(max-width:820px){.practice-grid{grid-template-columns:repeat(2,1fr)}}
+
+.concept{background:var(--sunk);border:1px solid var(--line);border-left:3px solid var(--sea);
   border-radius:0 10px 10px 0;padding:1.6rem 1.8rem;margin-bottom:1.4rem;line-height:2.75}
 .concept h3{font-size:1.08rem;font-weight:600;color:var(--sea);margin-bottom:.6rem;line-height:1.5}
 .concept p{margin:0 0 .2rem;color:var(--ink);letter-spacing:-.012em}
 .concept .muted{color:var(--faint)}
 .blank{display:inline-block;width:6.6rem;padding:.05rem .4rem;border:0;
   border-bottom:2px solid var(--ink);border-radius:4px 4px 0 0;text-align:center;font-weight:600;
-  color:var(--ink);font-size:1.02rem;background:var(--sunk);letter-spacing:-.01em}
-.blank::placeholder{color:#aaaaaa;font-weight:400;font-size:.85em;letter-spacing:0}
-.blank:focus{outline:none;box-shadow:none;background:#fff;border-bottom-color:var(--ink)}
+  color:var(--ink);font-size:1.02rem;background:var(--paper);letter-spacing:-.01em}
+.blank::placeholder{color:#6f747f;font-weight:400;font-size:.85em;letter-spacing:0}
+.blank:focus{outline:none;box-shadow:none;background:var(--surface);border-bottom-color:var(--sea)}
 .blank:not(:placeholder-shown){width:5.2rem}
-.blank.invalid{border-bottom-color:var(--coral)!important;background:#fdf5f3}
+.blank.invalid{border-bottom-color:var(--coral)!important;background:rgba(224,106,91,.1)}
 
 .lab{display:grid;grid-template-columns:minmax(280px,350px) 1fr;gap:2.4rem;align-items:start}
 @media(max-width:920px){.lab{grid-template-columns:1fr}}
@@ -146,7 +175,7 @@ table.m input{text-align:right;font-family:var(--mono);font-size:.98rem;padding:
   padding-bottom:.55rem;border-bottom:1px solid var(--line)}
 .chart-head h3{font-size:1.08rem;font-weight:600;color:var(--sea)}
 .chart-head span{font-family:var(--mono);font-size:.8rem;color:var(--faint)}
-canvas{width:100%;height:auto;display:block;background:var(--surface);
+canvas{width:100%;height:auto;display:block;background:#ffffff;
   border:1px solid var(--line);border-radius:10px}
 .legend{display:flex;flex-wrap:wrap;gap:1.2rem;margin-top:.9rem;font-size:.9rem;color:var(--body)}
 
@@ -164,43 +193,56 @@ canvas{width:100%;height:auto;display:block;background:var(--surface);
   border-top:1px solid var(--line);margin-top:1.6rem;background:var(--sunk)}
 @media(max-width:700px){.bar{padding:1.2rem 1.4rem 2.4rem}}
 .btn{font-family:var(--sans);font-size:1rem;font-weight:700;padding:.72rem 1.7rem;border-radius:999px;
-  border:1.5px solid var(--ink);background:var(--surface);color:var(--ink);cursor:pointer;
+  border:1.5px solid #39404b;background:var(--surface);color:var(--ink);cursor:pointer;
   transition:.16s;letter-spacing:-.01em}
 .btn:hover{background:var(--sea-soft)}
 .btn:disabled{opacity:.3;cursor:not-allowed;background:var(--surface)}
-.btn.solid{background:var(--ink);color:#fff;border-color:var(--ink)}
-.btn.solid:hover{background:#333}
+.btn.solid{background:var(--sea);color:#0c0e12;border-color:var(--sea)}
+.btn.solid:hover{background:#62beb3;border-color:#62beb3}
 .btn.quiet{border-color:transparent;color:var(--faint);background:transparent}
 .btn.quiet:hover{color:var(--body);background:transparent}
 .grow{flex:1}
 
 .note{padding:.9rem 1.15rem;font-size:.95rem;border-radius:8px;margin-top:1.2rem;display:none}
-.note.err{display:block;background:#fbeeec;color:#8f3b2c;border-left:3px solid var(--coral)}
-.note.ok{display:block;background:var(--sea-soft);color:var(--ink);border-left:3px solid var(--ink)}
+.note.err{display:block;background:rgba(224,106,91,.12);color:#f0a99e;border-left:3px solid var(--coral)}
+.note.ok{display:block;background:var(--sea-soft);color:var(--ink);border-left:3px solid var(--sea)}
 
 a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radius:999px;
-  background:var(--ink);color:#fff;text-decoration:none;font-size:1rem;font-weight:700;
+  background:var(--sea);color:#0c0e12;text-decoration:none;font-size:1rem;font-weight:700;
   letter-spacing:-.01em;transition:.14s}
-a.submit:hover{background:#333}
+a.submit:hover{background:#62beb3}
 
-#report{background:#fff;padding:20mm 16mm;color:var(--ink);font-size:15px;line-height:1.85;
-  font-family:var(--sans)}
+#report{background:#fff;padding:20mm 16mm;color:#141414;font-size:15px;line-height:1.85;
+  font-family:var(--sans);
+  --ink:#141414;--body:#4a4a4a;--faint:#9a9a9a;--line:#e0e0e0;--line-soft:#ececec;
+  --sea:#141414;--sea-deep:#000000;--sea-soft:#ececec}
 #report .r-head{border-bottom:2px solid var(--sea);padding-bottom:.8rem;margin-bottom:.5rem;
-  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem}
+  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem;
+  page-break-inside:avoid}
 #report .r-head h2{font-size:1.3rem;font-weight:700;color:var(--sea-deep)}
 #report .r-head .who{display:block;font-family:var(--mono);font-size:.82rem;color:var(--body)}
-#report .r-sec{margin-top:1.8rem;page-break-inside:avoid}
+#report .r-sec{margin-top:1.8rem}
 #report .r-lab{font-family:var(--sans);font-size:1.05rem;font-weight:700;letter-spacing:.02em;
   color:var(--sea);border-bottom:1px solid var(--line);padding-bottom:.3rem;margin-bottom:.7rem;
-  display:block;background:none}
-#report .r-txt{white-space:pre-wrap;color:#38484f}
-#report table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.86rem}
+  display:block;background:none;page-break-after:avoid}
+#report .r-sub{font-family:var(--sans);font-size:.95rem;font-weight:700;color:var(--ink);
+  margin:1.1rem 0 .5rem;page-break-after:avoid}
+#report .r-sub:first-of-type{margin-top:0}
+#report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3}
+#report table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.86rem;
+  page-break-inside:avoid}
 #report table th{font-weight:400;color:var(--faint);text-align:right;padding:.3rem .5rem;
   border-bottom:1px solid var(--line)}
 #report table th:first-child,#report table td:first-child{text-align:left;font-family:var(--sans)}
 #report table td{text-align:right;padding:.38rem .5rem;border-bottom:1px solid #f2ede5}
+#report table.r-info{font-family:var(--sans);font-size:.92rem;table-layout:fixed}
+#report table.r-info td{border:1px solid var(--line);border-bottom:1px solid var(--line);
+  text-align:left;padding:.6rem .85rem;color:#38484f;vertical-align:top}
+#report table.r-info td.k{background:#f5f5f5;font-weight:700;color:#141414;
+  width:19%;white-space:nowrap}
+#report .r-ts{page-break-inside:avoid}
 #report .r-ts img{display:block;width:84%;margin:.5rem auto 0;border:1px solid var(--line)}
-#report .r-ph{display:flex;gap:10px}
+#report .r-ph{display:flex;gap:10px;page-break-inside:avoid}
 #report .r-ph figure{flex:1;margin:0}
 #report .r-ph img{width:100%;border:1px solid var(--line)}
 #report .r-ph figcaption{font-size:.8rem;color:var(--faint);text-align:center;margin-top:.35rem}
@@ -218,7 +260,7 @@ a.submit:hover{background:#333}
 <nav>
   <button class="tab active" data-step="1"><span class="n">01</span>정보 입력</button>
   <button class="tab" data-step="2"><span class="n">02</span>실험 소개</button>
-  <button class="tab" data-step="3"><span class="n">03</span>개념</button>
+  <button class="tab" data-step="3"><span class="n">03</span>이론적 배경</button>
   <button class="tab" data-step="4"><span class="n">04</span>실험</button>
   <button class="tab" data-step="5"><span class="n">05</span>결론 및 고찰</button>
   <button class="tab" data-step="6"><span class="n">06</span>보고서</button>
@@ -231,23 +273,39 @@ a.submit:hover{background:#333}
   <h2 class="head"><span class="n">01</span>정보 입력</h2>
   <p class="lead">보고서에 표시될 정보입니다.</p>
 
-  <div class="panel who">
-    <div><label for="f_class">반</label>
-      <div class="suffix-field">
-        <input id="f_class" class="save" placeholder="A" maxlength="6" required>
-        <span class="suffix">반</span>
-      </div>
-    </div>
-    <div><label for="f_group">팀명</label><input id="f_group" class="save" placeholder="자유롭게 입력" required></div>
-    <div><label for="f_id">학번</label><input id="f_id" class="save mono" inputmode="numeric" placeholder="20100" required></div>
-    <div><label for="f_name">이름</label><input id="f_name" class="save" placeholder="홍길동" required></div>
-    <div><label for="f_role">역할</label><input id="f_role" class="save" required></div>
-  </div>
+  <table class="info-form">
+    <tbody>
+      <tr>
+        <td class="lbl">반</td>
+        <td>
+          <div class="suffix-field-compact">
+            <input id="f_class" class="save" placeholder="A 또는 1-9" maxlength="6" required>
+            <span class="suffix">반</span>
+          </div>
+        </td>
+        <td class="lbl">학번</td>
+        <td><input id="f_id" class="save mono" inputmode="numeric" placeholder="20100" required></td>
+        <td class="lbl">이름</td>
+        <td><input id="f_name" class="save" placeholder="홍길동" required></td>
+      </tr>
+      <tr>
+        <td class="lbl">역할</td>
+        <td><input id="f_role" class="save" required></td>
+        <td class="lbl">일시</td>
+        <td><input type="date" id="f_date" class="save mono" required></td>
+        <td class="lbl">장소</td>
+        <td><input id="f_place" class="save" placeholder="지구과학 실험실" required></td>
+      </tr>
+    </tbody>
+  </table>
 </section>
 
 <!-- 02 실험 소개 -->
 <section class="step" data-step="2">
   <h2 class="head"><span class="n">02</span>실험 소개</h2>
+
+  <div class="fixed-note"><b>목표</b><span id="disp_goal"></span></div>
+  <div class="fixed-note"><b>준비물</b><span id="disp_materials"></span></div>
 
   <div class="block">
     <h3>실험 1 · 수온 차이</h3>
@@ -287,9 +345,9 @@ a.submit:hover{background:#333}
   </div>
 </section>
 
-<!-- 03 개념 -->
+<!-- 03 이론적 배경 -->
 <section class="step" data-step="3">
-  <h2 class="head"><span class="n">03</span>개념</h2>
+  <h2 class="head"><span class="n">03</span>이론적 배경</h2>
   <p class="lead">교과서 <span id="tb-pages" class="mono">24~25</span>쪽을 참고하며 빈칸을 채워 보세요.</p>
 
   <div class="concept">
@@ -299,15 +357,16 @@ a.submit:hover{background:#333}
 
   <div class="block">
     <h3>T-S도 읽어보기</h3>
-    <p class="hint" style="margin-top:-.2rem">아래는 완성된 수온-염분도입니다. 점선을 따라가면 두 축에서 값을 바로 읽을 수 있어요. A, B 두 점의 수온과 염분을 적어보세요.</p>
+    <p class="hint" style="margin-top:-.2rem">아래는 완성된 수온-염분도입니다. 점선을 따라가면 두 축에서 값을 바로 읽을 수 있어요. a, b 두 점의 수온과 염분을 적어보세요.</p>
     <div style="max-width:440px">
       <canvas id="ts-practice" width="640" height="500"></canvas>
     </div>
     <div class="practice-grid">
-      <div><label for="pr_a_t">A 수온 (°C)</label><input type="number" step="0.1" class="save mono" id="pr_a_t" required></div>
-      <div><label for="pr_a_s">A 염분 (psu)</label><input type="number" step="0.1" class="save mono" id="pr_a_s" required></div>
-      <div><label for="pr_b_t">B 수온 (°C)</label><input type="number" step="0.1" class="save mono" id="pr_b_t" required></div>
-      <div><label for="pr_b_s">B 염분 (psu)</label><input type="number" step="0.1" class="save mono" id="pr_b_s" required></div>
+      <div><label for="pr_a_t">a 수온 (°C)</label><input type="number" step="0.1" class="save mono" id="pr_a_t" required></div>
+      <div><label for="pr_a_s">a 염분 (psu)</label><input type="number" step="0.1" class="save mono" id="pr_a_s" required></div>
+      <div><label for="pr_a_rho">a 밀도 (g/cm³)</label><input type="number" step="0.001" class="save mono" id="pr_a_rho" required></div>
+      <div><label for="pr_b_t">b 수온 (°C)</label><input type="number" step="0.1" class="save mono" id="pr_b_t" required></div>
+      <div><label for="pr_b_s">b 염분 (psu)</label><input type="number" step="0.1" class="save mono" id="pr_b_s" required></div>
     </div>
     <button class="btn" type="button" id="check-practice" style="margin-top:1.1rem">정답 확인하기</button>
     <div id="practice-result" class="note"></div>
@@ -445,29 +504,36 @@ a.submit:hover{background:#333}
     <div id="report">
       <div class="r-head">
         <h2>심층순환 실험 보고서</h2>
-        <div class="who mono"><span id="p_class"></span> <span id="p_group"></span> · <span id="p_id"></span> <span id="p_name"></span> · <span id="p_role"></span></div>
+        <div class="who mono"><span id="p_class"></span> · <span id="p_id"></span> <span id="p_name"></span> · <span id="p_role"></span></div>
+      </div>
+
+      <div class="r-sec" style="margin-top:1.4rem">
+        <table class="r-info">
+          <tbody>
+            <tr><td class="k">일시</td><td id="p_date"></td><td class="k">장소</td><td id="p_place"></td></tr>
+            <tr><td class="k">준비물</td><td colspan="3" id="p_materials"></td></tr>
+            <tr><td class="k">목표</td><td colspan="3" id="p_goal"></td></tr>
+          </tbody>
+        </table>
       </div>
 
       <div class="r-sec">
-        <div class="r-lab">개념 확인</div>
+        <div class="r-lab">1. 개념 확인</div>
         <div class="r-txt" id="p_concept"></div>
       </div>
 
       <div class="r-sec">
-        <div class="r-lab">측정값</div>
+        <div class="r-lab">2. 실험 결과</div>
+        <div class="r-sub">가. 측정값</div>
         <table>
           <thead><tr><th>시료</th><th>수온 °C</th><th>염분 psu</th><th>밀도 g/cm³</th></tr></thead>
           <tbody id="p_table"></tbody>
         </table>
-      </div>
 
-      <div class="r-sec r-ts">
-        <div class="r-lab">수온-염분도</div>
-        <img id="p_ts" alt="">
-      </div>
+        <div class="r-sub">나. 수온-염분도</div>
+        <div class="r-ts"><img id="p_ts" alt=""></div>
 
-      <div class="r-sec">
-        <div class="r-lab">실험 결과 사진</div>
+        <div class="r-sub">다. 실험 결과 사진</div>
         <div class="r-ph">
           <figure><img id="p_ph1" alt=""><figcaption>실험 1 · 수온 차이</figcaption></figure>
           <figure><img id="p_ph2" alt=""><figcaption>실험 2 · 염분 차이</figcaption></figure>
@@ -475,16 +541,16 @@ a.submit:hover{background:#333}
       </div>
 
       <div class="r-sec">
-        <div class="r-lab">1. 실험 결과 해석</div>
+        <div class="r-lab">3. 실험 결과 해석</div>
         <div class="r-txt" id="p_analysis"></div>
       </div>
       <div class="r-sec">
-        <div class="r-lab">2. 결론 및 고찰</div>
+        <div class="r-lab">4. 결론 및 고찰</div>
         <div class="r-txt" id="p_conclusion"></div>
-      </div>
-      <div class="r-sec" id="p_extra_box">
-        <div class="r-lab">3. 기타</div>
-        <div class="r-txt" id="p_extra"></div>
+        <div id="p_extra_box" style="margin-top:1rem">
+          <div class="r-sub">기타</div>
+          <div class="r-txt" id="p_extra"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -516,6 +582,14 @@ const DEFAULT_SUBMIT_URL = "";
    ───────────────────────────────────────────────────────── */
 const TEXTBOOK_PAGES = "24~25";
 
+/* ─────────────────────────────────────────────────────────
+   선생님 설정 — 목표 · 준비물 (고정값)
+   01 정보 입력 탭과 보고서에 그대로 표시됩니다. 학생이 수정할 수 없습니다.
+   다른 실험지에 이 폼을 재사용할 때는 이 두 값만 바꾸면 됩니다.
+   ───────────────────────────────────────────────────────── */
+const FIXED_GOAL = "심층 순환의 발생 원리를 알아보고 이를 설명할 수 있다.";
+const FIXED_MATERIALS = "칸막이 장치, 컵, 물, 얼음, 소금, 색소, 막대";
+
 document.addEventListener('DOMContentLoaded', () => {
 const $ = id => document.getElementById(id);
 const KEY = 'deepcirc_';
@@ -544,6 +618,10 @@ const submitUrl = () => {
 const renderTextbookPages = () => {
   const el = $('tb-pages');
   if (el) el.textContent = TEXTBOOK_PAGES;
+};
+const renderFixedInfo = () => {
+  $('disp_materials').textContent = FIXED_MATERIALS;
+  $('disp_goal').textContent = FIXED_GOAL;
 };
 const renderLink = () => {
   const u = submitUrl();
@@ -657,10 +735,10 @@ const drawTS = () => {
   ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
   for (let i = 0; i <= 5; i++) { const t = T0 + (T1-T0)*i/5; ctx.fillText(t.toFixed(1), P.l - 10, Y(t)); }
 
-  ctx.fillStyle = C.faint; ctx.font = '12px Pretendard, sans-serif';
+  ctx.fillStyle = C.pencil; ctx.font = '600 14px Pretendard, sans-serif';
   ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-  ctx.fillText('염분 (psu)', P.l + px/2, H - 22);
-  ctx.save(); ctx.translate(20, P.t + py/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('염분 (psu)', P.l + px/2, H - 24);
+  ctx.save(); ctx.translate(18, P.t + py/2); ctx.rotate(-Math.PI/2);
   ctx.fillText('수온 (°C)', 0, 0); ctx.restore();
 
   ctx.lineWidth = 1;
@@ -686,7 +764,7 @@ const drawTS = () => {
 };
 
 /* T-S도 읽기 연습 — 고정된 두 점(A, B)을 보여주는 정적 다이어그램 */
-const PRACTICE = { A:{ s:32.0, t:4.0 }, B:{ s:28.0, t:16.0 } };
+const PRACTICE = { A:{ s:34.0, t:20.0 }, B:{ s:36.0, t:15.0 } };
 const drawPracticeTS = () => {
   const cv = $('ts-practice'); if (!cv) return;
   const ctx = cv.getContext('2d');
@@ -697,11 +775,11 @@ const drawPracticeTS = () => {
   ctx.clearRect(0,0,W,H);
   ctx.fillStyle = C.paper; ctx.fillRect(0,0,W,H);
 
-  const S0 = 20, S1 = 40, T0 = 0, T1 = 20;
+  const S0 = 32, S1 = 37, T0 = -2, T1 = 27;
   const X = s => P.l + (s - S0)/(S1 - S0)*px;
   const Y = t => P.t + (1 - (t - T0)/(T1 - T0))*py;
-  const S_TICKS = [20,24,28,32,36,40];
-  const T_TICKS = [0,4,8,12,16,20];
+  const S_TICKS = [33,34,35,36];
+  const T_TICKS = [0,5,10,15,20,25];
 
   /* 눈금과 정확히 맞물리는 격자선 — 이 선을 따라가면 값을 읽을 수 있다 */
   ctx.strokeStyle = C.grid; ctx.lineWidth = 1;
@@ -712,7 +790,7 @@ const drawPracticeTS = () => {
 
   const cor = [density(S0,T0), density(S0,T1), density(S1,T0), density(S1,T1)];
   const rMin = Math.min(...cor), rMax = Math.max(...cor);
-  const stp = [0.2,0.5,1,2,5].find(v => v >= (rMax - rMin)/8) || 10;
+  const stp = [0.2,0.5,1,2,5].find(v => v >= (rMax - rMin)/10) || 10;
 
   ctx.save();
   ctx.beginPath(); ctx.rect(P.l, P.t, px, py); ctx.clip();
@@ -730,12 +808,12 @@ const drawPracticeTS = () => {
       pts.push([s, (lo+hi)/2]);
     }
     if (pts.length < 2) continue;
-    ctx.strokeStyle = C.gridMajor; ctx.lineWidth = 1.2;
+    ctx.strokeStyle = '#e0812f'; ctx.lineWidth = 1.7;
     ctx.beginPath();
     pts.forEach(([s,t], i) => i ? ctx.lineTo(X(s), Y(t)) : ctx.moveTo(X(s), Y(t)));
     ctx.stroke();
-    const [ls, lt] = pts[Math.floor(pts.length * .84)];
-    ctx.fillStyle = C.faint; ctx.textAlign = 'left';
+    const [ls, lt] = pts[Math.floor(pts.length * .12)];
+    ctx.fillStyle = C.ink; ctx.textAlign = 'left';
     ctx.fillText((r/1000).toFixed(stp < 1 ? 4 : 3), X(ls) + 4, Y(lt) - 5);
   }
   ctx.restore();
@@ -754,10 +832,10 @@ const drawPracticeTS = () => {
   ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
   T_TICKS.forEach(t => ctx.fillText(t.toFixed(0), P.l - 10, Y(t)));
 
-  ctx.fillStyle = C.faint; ctx.font = '12px Pretendard, sans-serif';
+  ctx.fillStyle = C.pencil; ctx.font = '600 14px Pretendard, sans-serif';
   ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-  ctx.fillText('염분 (psu)', P.l + px/2, H - 22);
-  ctx.save(); ctx.translate(20, P.t + py/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('염분 (psu)', P.l + px/2, H - 24);
+  ctx.save(); ctx.translate(18, P.t + py/2); ctx.rotate(-Math.PI/2);
   ctx.fillText('수온 (°C)', 0, 0); ctx.restore();
 
   /* 점에서 두 축까지 이어지는 보조선 — 값을 어디서 읽는지 안내 */
@@ -772,9 +850,9 @@ const drawPracticeTS = () => {
   ctx.setLineDash([]);
 
   ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-  [['A', PRACTICE.A], ['B', PRACTICE.B]].forEach(([label, p]) => {
+  [['a', PRACTICE.A], ['b', PRACTICE.B]].forEach(([label, p]) => {
     const x = X(p.s), y = Y(p.t);
-    ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI*2);
+    ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI*2);
     ctx.fillStyle = C.ink; ctx.fill();
     ctx.fillStyle = C.ink; ctx.font = 'bold 15px Pretendard, sans-serif';
     ctx.fillText(label, x + 12, y - 13);
@@ -837,7 +915,7 @@ const clearAll = () => {
 
 /* 단계 */
 const MSG = {
-  1:'반, 팀명, 학번, 이름, 역할을 모두 입력해 주세요.',
+  1:'반, 학번, 이름, 역할, 일시, 장소를 모두 입력해 주세요.',
   2:'실험 소개와 안전 수칙을 확인했다면 체크해 주세요.',
   3:'개념 빈칸을 모두 채워 주세요.',
   4:'네 시료의 수온·염분과 사진 2장을 모두 채워 주세요.',
@@ -887,14 +965,22 @@ const goTo = n => { step = Math.min(TOTAL, Math.max(1, n)); render(); };
 
 /* 보고서 */
 const CONCEPT_PARTS = [
-  '1) 해수의 밀도는 주로 수온과 염분에 따라 결정되는데, 수온이 {b8}, 염분이 {b9} 밀도가 크다.',
-  '2) 해수는 해역에 따라 수온과 염분 등이 다르기 때문에 밀도의 차이가 발생한다. 밀도가 균일하게 분포하지 않을 경우, 밀도가 {b1} 해수는 아래쪽으로, 밀도가 {b2} 해수는 위쪽으로 움직이며, 이러한 과정으로 발생하는 해류를 {b3}라고 한다.',
-  '3) 극 해역의 해수는 표층 수온이 매우 낮고, 결빙이 일어나면 주변 해수의 염분이 {b4} 밀도가 {b5}. 이렇게 밀도가 커진 해수는 {b6}하여 같은 밀도의 해수가 분포하는 수심에 도달한 후 수평 방향으로 이동하다가, 온대나 열대 해역에서 서서히 상승하는데, 이러한 심층 해수의 움직임을 {b7}이라고 한다.',
+  '가. 해수의 밀도는 주로 수온과 염분에 따라 결정되는데, 수온이 {b8}, 염분이 {b9} 밀도가 크다.',
+  '나. 해수는 해역에 따라 수온과 염분 등이 다르기 때문에 밀도의 차이가 발생한다. 밀도가 균일하게 분포하지 않을 경우, 밀도가 {b1} 해수는 아래쪽으로, 밀도가 {b2} 해수는 위쪽으로 움직이며, 이러한 과정으로 발생하는 해류를 {b3}라고 한다.',
+  '다. 극 해역의 해수는 표층 수온이 매우 낮고, 결빙이 일어나면 주변 해수의 염분이 {b4} 밀도가 {b5}. 이렇게 밀도가 커진 해수는 {b6}하여 같은 밀도의 해수가 분포하는 수심에 도달한 후 수평 방향으로 이동하다가, 온대나 열대 해역에서 서서히 상승하는데, 이러한 심층 해수의 움직임을 {b7}이라고 한다.',
 ];
 const buildReport = () => {
   const v = id => ($(id).value || '').trim();
   $('p_class').textContent = v('f_class') ? v('f_class') + '반' : '';
-  ['group','id','name','role'].forEach(f => $('p_'+f).textContent = v('f_'+f));
+  ['id','name','role'].forEach(f => $('p_'+f).textContent = v('f_'+f));
+
+  const dateRaw = v('f_date');
+  const dateTxt = dateRaw ? new Date(dateRaw + 'T00:00:00').toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' }) : '(미입력)';
+  $('p_date').textContent = dateTxt;
+  $('p_place').textContent = v('f_place') || '(미입력)';
+  $('p_materials').textContent = FIXED_MATERIALS;
+  $('p_goal').textContent = FIXED_GOAL;
+
   const concept = CONCEPT_PARTS.map(t => t.replace(/\{(b[1-9])\}/g, (_, id) => v(id) || '(빈칸)')).join('\n\n');
   $('p_concept').textContent = concept;
 
@@ -922,7 +1008,7 @@ const exportPDF = () => {
   }
   buildReport(); hideMsg();
   const classTag = $('f_class').value ? $('f_class').value + '반' : '';
-  const tag = `${classTag}_${$('f_group').value}_${$('f_id').value}_${$('f_name').value}`;
+  const tag = `${classTag}_${$('f_id').value}_${$('f_name').value}`;
   const btn = $('pdf-btn');
   btn.disabled = true; btn.textContent = '저장 중…';
   html2pdf().set({
@@ -948,12 +1034,13 @@ $('reset').addEventListener('click', clearAll);
 $('pdf-btn').addEventListener('click', exportPDF);
 $('check-practice').addEventListener('click', () => {
   const rows = [
-    ['A 수온', $('pr_a_t').value, PRACTICE.A.t, '°C'],
-    ['A 염분', $('pr_a_s').value, PRACTICE.A.s, 'psu'],
-    ['B 수온', $('pr_b_t').value, PRACTICE.B.t, '°C'],
-    ['B 염분', $('pr_b_s').value, PRACTICE.B.s, 'psu'],
+    ['a 수온', $('pr_a_t').value, PRACTICE.A.t, '°C'],
+    ['a 염분', $('pr_a_s').value, PRACTICE.A.s, 'psu'],
+    ['a 밀도', $('pr_a_rho').value, +(density(PRACTICE.A.s, PRACTICE.A.t)/1000).toFixed(4), 'g/cm³'],
+    ['b 수온', $('pr_b_t').value, PRACTICE.B.t, '°C'],
+    ['b 염분', $('pr_b_s').value, PRACTICE.B.s, 'psu'],
   ];
-  const tol = { '°C':1, 'psu':1 };
+  const tol = { '°C':1, 'psu':1, 'g/cm³':0.002 };
   const lines = rows.map(([label, raw, actual, unit]) => {
     const mine = parseFloat(raw);
     const okNum = Number.isFinite(mine);
@@ -975,7 +1062,7 @@ document.addEventListener('input', e => {
   if (e.target.id === 'f_class') {
     const pos = e.target.selectionStart;
     const before = e.target.value.length;
-    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g, '');
+    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
     const diff = before - e.target.value.length;
     if (pos !== null) e.target.setSelectionRange(pos - diff, pos - diff);
   }
@@ -993,6 +1080,7 @@ document.querySelectorAll('[data-count]').forEach(c => {
 });
 renderLink();
 renderTextbookPages();
+renderFixedInfo();
 drawTS();
 drawPracticeTS();
 render();
