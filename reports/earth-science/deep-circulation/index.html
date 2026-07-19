@@ -240,8 +240,10 @@ a.submit:hover{background:#62beb3}
   text-align:left;padding:.6rem .85rem;color:#38484f;vertical-align:top}
 #report table.r-info td.k{background:#f5f5f5;font-weight:700;color:#141414;
   width:19%;white-space:nowrap}
+#report .r-result-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:1.4rem;align-items:start;
+  page-break-inside:avoid}
 #report .r-ts{page-break-inside:avoid}
-#report .r-ts img{display:block;width:84%;margin:.5rem auto 0;border:1px solid var(--line)}
+#report .r-ts img{display:block;width:100%;margin:0;border:1px solid var(--line)}
 #report .r-ph{display:flex;gap:10px;page-break-inside:avoid}
 #report .r-ph figure{flex:1;margin:0}
 #report .r-ph img{width:100%;border:1px solid var(--line)}
@@ -378,9 +380,7 @@ a.submit:hover{background:#62beb3}
     <h3>2) 밀도류</h3>
     <p>해수는 해역에 따라 수온과 염분 등이 다르기 때문에 밀도의 차이가 발생한다. 밀도가 균일하게 분포하지 않을 경우, 밀도가
       <input class="blank save" id="b1" placeholder="큰 / 작은" required> 해수는 아래쪽으로, 밀도가
-      <input class="blank save" id="b2" placeholder="큰 / 작은" required> 해수는 위쪽으로 움직인다.</p>
-    <p>→ 이러한 과정으로 발생하는 해류를 <input class="blank save" id="b3" placeholder="ㅁㄷㄹ" required>라고 한다.</p>
-    <p class="muted">→ 심층에서 해수의 이동은 주로 밀도류에 의해 발생한다.</p>
+      <input class="blank save" id="b2" placeholder="큰 / 작은" required> 해수는 위쪽으로 움직인다. 이러한 과정으로 발생하는 해류를 <input class="blank save" id="b3" placeholder="ㅁㄷㄹ" required>라고 한다. 심층에서 해수의 이동은 주로 밀도류에 의해 발생한다.</p>
   </div>
 
   <div class="concept">
@@ -403,7 +403,7 @@ a.submit:hover{background:#62beb3}
     <div>
       <table class="m">
         <caption><b>실험 1</b> · 수온 차이</caption>
-        <thead><tr><th>시료</th><th>수온 °C</th><th>염분 psu</th><th>밀도 g/cm³</th></tr></thead>
+        <thead><tr><th>구분</th><th>수온 °C</th><th>염분 psu</th><th>밀도 g/cm³</th></tr></thead>
         <tbody>
           <tr><td><span class="dot r-open"></span>따뜻한 물</td>
             <td><input type="number" step="0.1" min="-2" max="40" class="save m-in" id="e1a_t" placeholder="20.0" required></td>
@@ -418,7 +418,7 @@ a.submit:hover{background:#62beb3}
 
       <table class="m">
         <caption><b>실험 2</b> · 염분 차이</caption>
-        <thead><tr><th>시료</th><th>수온 °C</th><th>염분 psu</th><th>밀도 g/cm³</th></tr></thead>
+        <thead><tr><th>구분</th><th>수온 °C</th><th>염분 psu</th><th>밀도 g/cm³</th></tr></thead>
         <tbody>
           <tr><td><span class="dot b-open"></span>염분 낮은 물</td>
             <td><input type="number" step="0.1" min="-2" max="40" class="save m-in" id="e2a_t" placeholder="15.0" required></td>
@@ -526,14 +526,19 @@ a.submit:hover{background:#62beb3}
 
       <div class="r-sec">
         <div class="r-lab">2. 실험 결과</div>
-        <div class="r-sub">가. 측정값</div>
-        <table>
-          <thead><tr><th>시료</th><th>수온 °C</th><th>염분 psu</th><th>밀도 g/cm³</th></tr></thead>
-          <tbody id="p_table"></tbody>
-        </table>
-
-        <div class="r-sub">나. 수온-염분도</div>
-        <div class="r-ts"><img id="p_ts" alt=""></div>
+        <div class="r-result-grid">
+          <div>
+            <div class="r-sub">가. 측정값</div>
+            <table>
+              <thead><tr><th>구분</th><th>수온 °C</th><th>염분 psu</th><th>밀도 g/cm³</th></tr></thead>
+              <tbody id="p_table"></tbody>
+            </table>
+          </div>
+          <div>
+            <div class="r-sub">나. 수온-염분도</div>
+            <div class="r-ts"><img id="p_ts" alt=""></div>
+          </div>
+        </div>
 
         <div class="r-sub">다. 실험 결과 사진</div>
         <div class="r-ph">
@@ -968,7 +973,7 @@ const goTo = n => { step = Math.min(TOTAL, Math.max(1, n)); render(); };
 /* 보고서 */
 const CONCEPT_PARTS = [
   '가. 해수의 밀도는 주로 수온과 염분에 따라 결정되는데, 수온이 {b8}, 염분이 {b9} 밀도가 크다.',
-  '나. 해수는 해역에 따라 수온과 염분 등이 다르기 때문에 밀도의 차이가 발생한다. 밀도가 균일하게 분포하지 않을 경우, 밀도가 {b1} 해수는 아래쪽으로, 밀도가 {b2} 해수는 위쪽으로 움직이며, 이러한 과정으로 발생하는 해류를 {b3}라고 한다.',
+  '나. 해수는 해역에 따라 수온과 염분 등이 다르기 때문에 밀도의 차이가 발생한다. 밀도가 균일하게 분포하지 않을 경우, 밀도가 {b1} 해수는 아래쪽으로, 밀도가 {b2} 해수는 위쪽으로 움직인다. 이러한 과정으로 발생하는 해류를 {b3}라고 한다. 심층에서 해수의 이동은 주로 밀도류에 의해 발생한다.',
   '다. 극 해역의 해수는 표층 수온이 매우 낮고, 결빙이 일어나면 주변 해수의 염분이 {b4} 밀도가 {b5}. 이렇게 밀도가 커진 해수는 {b6}하여 같은 밀도의 해수가 분포하는 수심에 도달한 후 수평 방향으로 이동하다가, 온대나 열대 해역에서 서서히 상승하는데, 이러한 심층 해수의 움직임을 {b7}이라고 한다.',
 ];
 const buildReport = () => {
