@@ -117,10 +117,6 @@ textarea{resize:vertical;line-height:1.95}
   padding:.85rem 1rem;font-family:var(--sans);font-size:1.02rem;color:var(--ink);letter-spacing:-.01em}
 .info-form input:focus{outline:none;box-shadow:none;background:var(--sea-soft)}
 .info-form input.invalid{background:rgba(224,106,91,.1)}
-.suffix-field-compact{display:flex;align-items:stretch}
-.suffix-field-compact input{flex:1;min-width:0}
-.suffix-field-compact .suffix{display:flex;align-items:center;padding:0 .9rem;
-  font-size:1.02rem;color:var(--body);border-left:1px solid var(--line);white-space:nowrap}
 .info-form td.fixed-val{padding:.85rem 1rem;font-size:1rem;color:var(--body)}
 .fixed-note{display:flex;gap:.8rem;align-items:baseline;padding:.75rem 1.05rem;
   background:var(--sunk);border:1px solid var(--line);border-radius:10px;margin-bottom:.8rem}
@@ -148,6 +144,8 @@ textarea{resize:vertical;line-height:1.95}
 .blank:focus{outline:none;box-shadow:none;background:var(--surface);border-bottom-color:var(--sea)}
 .blank:not(:placeholder-shown){width:5.2rem}
 .blank.invalid{border-bottom-color:var(--coral)!important;background:rgba(224,106,91,.1)}
+.blank.correct{border-bottom-color:#4ade80!important;background:rgba(74,222,128,.1)}
+.correct{border-color:#4ade80!important;background:rgba(74,222,128,.1)}
 
 .lab{display:grid;grid-template-columns:minmax(280px,350px) 1fr;gap:2.4rem;align-items:start}
 @media(max-width:920px){.lab{grid-template-columns:1fr}}
@@ -185,7 +183,7 @@ canvas{width:100%;height:auto;display:block;background:#ffffff;
   align-items:center;justify-content:center;cursor:pointer;color:var(--faint);font-size:.95rem;
   position:relative;overflow:hidden;background:var(--sunk);transition:.16s}
 .drop:hover{border-color:var(--sea);background:var(--sea-soft);color:var(--sea)}
-.drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--sunk)}
 .drop .ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   background:rgba(10,61,71,.62);color:#fff;font-size:.9rem;font-weight:500}
 
@@ -230,8 +228,7 @@ a.submit:hover{background:#62beb3}
 #report .r-sub:first-of-type{margin-top:0}
 #report .r-pagebreak{page-break-before:always;break-before:page}
 #report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3}
-#report table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.86rem;
-  page-break-inside:avoid}
+#report table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.86rem}
 #report table th{font-weight:400;color:var(--faint);text-align:right;padding:.3rem .5rem;
   border-bottom:1px solid var(--line)}
 #report table th:first-child,#report table td:first-child{text-align:left;font-family:var(--sans)}
@@ -287,10 +284,7 @@ a.submit:hover{background:#62beb3}
       <tr>
         <td class="lbl">반</td>
         <td>
-          <div class="suffix-field-compact">
-            <input id="f_class" class="save" placeholder="A 또는 1-9" maxlength="6" required>
-            <span class="suffix">반</span>
-          </div>
+          <input id="f_class" class="save" placeholder="선택A 또는 1-9" maxlength="6" required>
         </td>
         <td class="lbl">학번</td>
         <td><input id="f_id" class="save mono" inputmode="numeric" maxlength="10" required></td>
@@ -393,6 +387,9 @@ a.submit:hover{background:#62beb3}
       같은 밀도의 해수가 분포하는 수심에 도달한 후 수평 방향으로 이동하다가, 온대나 열대 해역에서 서서히 상승한다.</p>
     <p>→ 이러한 심층 해수의 움직임을 <input class="blank save" id="b7" placeholder="ㅅㅊ ㅅㅎ" required>이라고 한다.</p>
   </div>
+
+  <button class="btn" type="button" id="check-theory" style="margin-top:.6rem">정답 확인하기</button>
+  <div id="theory-result" class="note"></div>
 </section>
 
 
@@ -630,6 +627,27 @@ const renderTextbookPages = () => {
 const renderFixedInfo = () => {
   $('disp_materials').textContent = FIXED_MATERIALS;
   $('disp_goal').textContent = FIXED_GOAL;
+};
+
+/* 03 이론적 배경 빈칸 정답 확인 — 띄어쓰기 차이는 무시하고 채점, 맞으면 초록/틀리면 빨강으로 표시 */
+const THEORY_ANSWERS = {
+  b1:'큰', b2:'작은', b3:'밀도류',
+  b4:'높아져', b5:'커진다', b6:'침강', b7:'심층순환',
+  b8:'낮을수록', b9:'높을수록',
+};
+const norm = s => (s || '').replace(/\s+/g, '');
+const checkTheory = () => {
+  const lines = Object.entries(THEORY_ANSWERS).map(([id, answer]) => {
+    const el = $(id);
+    const mine = el.value;
+    const ok = norm(mine) === norm(answer);
+    el.classList.toggle('correct', ok);
+    el.classList.toggle('invalid', !ok);
+    return `${id.toUpperCase()} — 내 답: ${mine || '미입력'} · 정답: ${answer}${ok ? ' ✓' : ''}`;
+  });
+  const box = $('theory-result');
+  box.innerHTML = lines.join('<br>');
+  box.className = 'note ok';
 };
 const renderLink = () => {
   const u = submitUrl();
@@ -1010,7 +1028,15 @@ const buildReport = () => {
 };
 
 /* PDF */
-const exportPDF = () => {
+const waitForImages = async root => {
+  const imgs = [...root.querySelectorAll('img')].filter(img => img.src);
+  await Promise.all(imgs.map(img => {
+    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+    return img.decode ? img.decode().catch(() => {}) : new Promise(res => { img.onload = res; img.onerror = res; });
+  }));
+};
+
+const exportPDF = async () => {
   for (let n = 1; n <= 5; n++) {
     if (!stepValid(n)) { goTo(n); markInvalid(n); flash(n); return; }
   }
@@ -1028,6 +1054,11 @@ const exportPDF = () => {
   const restorePadding = () => { reportEl.style.paddingTop = ''; reportEl.style.paddingBottom = ''; };
   reportEl.style.paddingTop = '0';
   reportEl.style.paddingBottom = '0';
+
+  /* 사진이 여러 장일 때, 캡처 시작 시점에 이미지 디코딩이 덜 끝나 있으면
+     페이지 나누기 계산이 어긋나 위쪽에 빈 공간이 생길 수 있다.
+     캡처 전에 모든 사진이 완전히 로딩됐는지 명시적으로 기다린다. */
+  await waitForImages(reportEl);
 
   html2pdf().set({
     margin: [20, 0, 20, 0],
@@ -1050,19 +1081,23 @@ $('next').addEventListener('click', () => {
 $('prev').addEventListener('click', () => goTo(step - 1));
 $('reset').addEventListener('click', clearAll);
 $('pdf-btn').addEventListener('click', exportPDF);
+$('check-theory').addEventListener('click', checkTheory);
 $('check-practice').addEventListener('click', () => {
   const rows = [
-    ['a 수온', $('pr_a_t').value, PRACTICE.A.t, '°C'],
-    ['a 염분', $('pr_a_s').value, PRACTICE.A.s, 'psu'],
-    ['a 밀도', $('pr_a_rho').value, +(density(PRACTICE.A.s, PRACTICE.A.t)/1000).toFixed(4), 'g/cm³'],
-    ['b 수온', $('pr_b_t').value, PRACTICE.B.t, '°C'],
-    ['b 염분', $('pr_b_s').value, PRACTICE.B.s, 'psu'],
+    ['a 수온', 'pr_a_t', PRACTICE.A.t, '°C'],
+    ['a 염분', 'pr_a_s', PRACTICE.A.s, 'psu'],
+    ['a 밀도', 'pr_a_rho', +(density(PRACTICE.A.s, PRACTICE.A.t)/1000).toFixed(4), 'g/cm³'],
+    ['b 수온', 'pr_b_t', PRACTICE.B.t, '°C'],
+    ['b 염분', 'pr_b_s', PRACTICE.B.s, 'psu'],
   ];
   const tol = { '°C':1, 'psu':1, 'g/cm³':0.002 };
-  const lines = rows.map(([label, raw, actual, unit]) => {
-    const mine = parseFloat(raw);
+  const lines = rows.map(([label, id, actual, unit]) => {
+    const el = $(id);
+    const mine = parseFloat(el.value);
     const okNum = Number.isFinite(mine);
     const close = okNum && Math.abs(mine - actual) <= tol[unit];
+    el.classList.toggle('correct', close);
+    el.classList.toggle('invalid', !close);
     const mineTxt = okNum ? `${mine}${unit}` : '미입력';
     return `${label} — 내 답 ${mineTxt} · 실제 값 ${actual}${unit}${close ? ' ✓' : ''}`;
   });
@@ -1077,6 +1112,7 @@ $('ph2').addEventListener('change', e => e.target.files[0] && pickPhoto('ph2', e
 
 document.addEventListener('input', e => {
   e.target.classList.remove('invalid');
+  e.target.classList.remove('correct');
   if (e.target.id === 'f_class') {
     const pos = e.target.selectionStart;
     const before = e.target.value.length;
