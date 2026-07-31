@@ -217,36 +217,60 @@ const TABS = [
   { id: 'integrated', label: '통합과학·과학탐구실험', subs: ['물리학', '화학', '생명과학', '지구과학'] },
 ];
 
+/* url 경로의 2번째 폴더(reports/ 바로 다음)로 tab을,
+   3번째 폴더(그 다음)로 subcategory를 자동으로 정한다.
+   즉 파일을 어느 폴더에 두느냐가 곧 분류가 된다 — 아래 두 표에 폴더명만 등록해 두면 된다. */
+const TAB_FOLDERS = {
+  'earth-science': 'earth',
+  'integrated-science': 'integrated',
+};
+const SUB_FOLDERS = {
+  'atmosphere-ocean': '대기·해양',
+  'geology': '지질',
+  'astronomy': '우주',
+  'fusion': '융합',
+  'physics': '물리학',
+  'chemistry': '화학',
+  'biology': '생명과학',
+  'earth-science': '지구과학',
+};
+
+function deriveMeta(url) {
+  const parts = url.split('/'); // ['reports','earth-science','geology','igneous-rocks','index.html']
+  return {
+    tab: TAB_FOLDERS[parts[1]] || TABS[0].id,
+    subcategory: SUB_FOLDERS[parts[2]] || '융합',
+  };
+}
+
+/* url만 정확한 폴더 경로로 넣으면 tab·subcategory는 자동으로 계산된다.
+   (폴더 구조는 README.md 참고) */
 const REPORTS = [
   {
-    tab: 'earth', subcategory: '대기·해양',
     name: '심층 순환의 발생 원리 추론하기',
     desc: '수온·염분 차이로 밀도류와 심층 순환이 일어나는 원리를 추론해요',
     emoji: '🌊',
-    url: 'reports/earth-science/deep-circulation/index.html'
+    url: 'reports/earth-science/atmosphere-ocean/deep-circulation/index.html'
   },
   {
-    tab: 'earth', subcategory: '지질',
     name: '화성암 관찰하기 🔎',
     desc: '화성암의 색과 결정 크기를 관찰하고 특징에 따라 분류해요',
     emoji: '🌋',
-    url: 'reports/earth-science/igneous-rocks/index.html'
+    url: 'reports/earth-science/geology/igneous-rocks/index.html'
   },
   {
-    tab: 'earth', subcategory: '지질',
     name: '퇴적암 관찰하기 🔎',
     desc: '퇴적암을 기원·입자 크기·성분에 따라 관찰하고 분류해요',
     emoji: '🪨',
-    url: 'reports/earth-science/sedimentary-rocks/index.html'
+    url: 'reports/earth-science/geology/sedimentary-rocks/index.html'
   },
   {
-    tab: 'integrated', subcategory: '지구과학',
     name: '지질시대 화석 박람회',
     desc: '지질시대의 대표 표준화석을 관찰하고 정보를 찾아 기록해요',
     emoji: '🦴',
-    url: 'reports/integrated-science/geo-eras-expo/index.html'
+    url: 'reports/integrated-science/earth-science/geo-eras-expo/index.html'
   }
-];
+].map(r => Object.assign(r, deriveMeta(r.url)));
 
 const tabbarEl = document.getElementById('tabbar');
 const contentEl = document.getElementById('content');
