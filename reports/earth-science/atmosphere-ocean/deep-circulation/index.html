@@ -267,6 +267,13 @@ a.submit:hover{background:#62beb3}
 #report .r-ph figure{flex:1;margin:0}
 #report .r-ph img{width:100%;border:1px solid var(--line)}
 #report .r-ph figcaption{font-size:.8rem;color:var(--faint);text-align:center;margin-top:.35rem}
+.modal-overlay{position:fixed;inset:0;background:rgba(6,8,11,.72);display:flex;
+  align-items:center;justify-content:center;z-index:100;padding:1.5rem}
+.modal-box{background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  padding:1.8rem;max-width:440px;width:100%;max-height:82vh;overflow-y:auto;
+  box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.modal-box h3{font-size:1.15rem;font-weight:800;color:var(--sea);margin-bottom:.3rem}
+.modal-box .r-txt{white-space:pre-wrap;color:var(--body);line-height:1.9}
 @media print{nav,header.top,.bar{display:none!important}}
 </style>
 </head>
@@ -388,8 +395,8 @@ a.submit:hover{background:#62beb3}
       <div><label for="pr_b_t">b 수온 (°C)</label><input type="number" step="0.1" class="save mono" id="pr_b_t" required></div>
       <div><label for="pr_b_s">b 염분 (psu)</label><input type="number" step="0.1" class="save mono" id="pr_b_s" required></div>
     </div>
-    <button class="btn" type="button" id="check-practice" style="margin-top:1.1rem">정답 확인하기</button>
-    <div id="practice-result" class="note"></div>
+    <button class="btn" type="button" id="check-practice" style="margin-top:1.1rem">채점하기</button>
+    <div id="practice-note" class="note"></div>
   </div>
 
   <div class="concept">
@@ -409,8 +416,17 @@ a.submit:hover{background:#62beb3}
     <p>→ 이러한 심층 해수의 움직임을 <input class="blank save" id="b7" placeholder="ㅅㅊ ㅅㅎ" required>이라고 한다.</p>
   </div>
 
-  <button class="btn" type="button" id="check-theory" style="margin-top:.6rem">정답 확인하기</button>
-  <div id="theory-result" class="note"></div>
+  <button class="btn" type="button" id="check-theory" style="margin-top:.6rem">채점하기</button>
+  <div id="theory-note" class="note"></div>
+
+  <div class="modal-overlay" id="answerModal" style="display:none">
+    <div class="modal-box">
+      <h3 id="answerModalTitle">정답 안내</h3>
+      <p class="hint" style="margin-top:-.3rem" id="answerModalHint"></p>
+      <div id="answerModalBody" class="r-txt"></div>
+      <button class="btn solid" type="button" id="closeAnswerModal" style="margin-top:1.2rem">확인했어요</button>
+    </div>
+  </div>
 </section>
 
 
@@ -664,25 +680,121 @@ const renderFixedInfo = () => {
   $('disp_goal').textContent = FIXED_GOAL;
 };
 
-/* 03 이론적 배경 빈칸 정답 확인 — 띄어쓰기 차이는 무시하고 채점, 맞으면 초록/틀리면 빨강으로 표시 */
+/* 공용 정답 안내 팝업 — 이론적 배경 빈칸, T-S도 연습 둘 다에서 함께 쓴다.
+   틀린 것만 보여주고, 2회 시도 후에는 정답을 공개한 뒤 팝업을 닫으면 틀린 칸을 비워
+   학생이 직접 다시 입력하게 한다. */
+let answerModalCb = null;
+const showAnswerModal = (title, hint, wrong, revealAnswer, onClose) => {
+  $('answerModalTitle').textContent = title;
+  $('answerModalHint').textContent = hint;
+  $('answerModalBody').innerHTML = wrong
+    .map(r => revealAnswer ? `${r.label} — 정답: ${r.answerText}` : r.label)
+    .join('<br>');
+  $('answerModal').style.display = 'flex';
+  answerModalCb = onClose || null;
+};
+const closeAnswerModal = () => {
+  $('answerModal').style.display = 'none';
+  if (answerModalCb) { const cb = answerModalCb; answerModalCb = null; cb(); }
+};
+$('closeAnswerModal').addEventListener('click', closeAnswerModal);
+
+/* 03-1) 이론적 배경 빈칸(b1~b9) — 띄어쓰기 차이는 무시하고 채점 */
+const norm = s => (s || '').replace(/\s+/g, '');
 const THEORY_ANSWERS = {
   b1:'큰', b2:'작은', b3:'밀도류',
   b4:'높아져', b5:'커진다', b6:'침강', b7:'심층순환',
   b8:'낮을수록', b9:'높을수록',
 };
-const norm = s => (s || '').replace(/\s+/g, '');
+const BLANK_LABELS = {
+  b8:'수온이 낮을수록/높을수록 중 밀도가 큰 쪽',
+  b9:'염분이 낮을수록/높을수록 중 밀도가 큰 쪽',
+  b1:'밀도가 큰/작은 해수 중 아래로 가는 쪽',
+  b2:'밀도가 큰/작은 해수 중 위로 가는 쪽',
+  b3:'밀도 차이로 생기는 해류의 이름',
+  b4:'결빙이 일어나면 염분이 높아지는지/낮아지는지',
+  b5:'염분이 높아지면 밀도가 커지는지/작아지는지',
+  b6:'밀도가 커진 해수가 아래로 가라앉는 것을 이르는 말',
+  b7:'심층 해수의 이런 움직임을 부르는 이름',
+};
+let theoryAttempts = 0;
+let theoryPassed = false;
 const checkTheory = () => {
-  const lines = Object.entries(THEORY_ANSWERS).map(([id, answer]) => {
+  const results = Object.entries(THEORY_ANSWERS).map(([id, answer]) => {
     const el = $(id);
     const mine = el.value;
     const ok = norm(mine) === norm(answer);
     el.classList.toggle('correct', ok);
     el.classList.toggle('invalid', !ok);
-    return `${id.toUpperCase()} — 내 답: ${mine || '미입력'} · 정답: ${answer}${ok ? ' ✓' : ''}`;
+    return { id, answer, ok, label: BLANK_LABELS[id] || `${id.toUpperCase()}번 칸`, answerText: answer };
   });
-  const box = $('theory-result');
-  box.innerHTML = lines.join('<br>');
-  box.className = 'note ok';
+  const wrong = results.filter(r => !r.ok);
+
+  if (wrong.length === 0) {
+    theoryPassed = true;
+    const note = $('theory-note');
+    note.textContent = '모두 정답이에요! 다음 단계로 진행할 수 있어요.';
+    note.className = 'note ok';
+    return;
+  }
+  $('theory-note').className = 'note';
+  theoryAttempts++;
+  if (theoryAttempts >= 2) {
+    theoryPassed = true;
+    showAnswerModal(
+      '정답 안내',
+      '틀린 칸의 정답이에요. 팝업을 닫으면 틀린 칸이 비워지니, 직접 다시 입력해 보세요.',
+      wrong, true,
+      () => { wrong.forEach(r => { $(r.id).classList.remove('invalid', 'correct'); $(r.id).value = ''; }); $(wrong[0].id).focus(); save(); }
+    );
+  } else {
+    showAnswerModal('다시 확인해 보세요', `빨갛게 표시된 칸 중 ${wrong.length}개가 틀렸어요. 다시 한번 확인해 보세요. (${theoryAttempts}/2회)`, wrong, false);
+  }
+};
+
+/* 03-2) T-S도 읽기 연습(a/b 두 점) — 오차 허용 범위 안이면 정답 처리 */
+const PRACTICE_ROWS = [
+  ['a 수온', 'pr_a_t', () => PRACTICE.A.t, '°C', 1],
+  ['a 염분', 'pr_a_s', () => PRACTICE.A.s, 'psu', 1],
+  ['a 밀도', 'pr_a_rho', () => +(density(PRACTICE.A.s, PRACTICE.A.t)/1000).toFixed(4), 'g/cm³', 0.002],
+  ['b 수온', 'pr_b_t', () => PRACTICE.B.t, '°C', 1],
+  ['b 염분', 'pr_b_s', () => PRACTICE.B.s, 'psu', 1],
+];
+let practiceAttempts = 0;
+let practicePassed = false;
+const checkPractice = () => {
+  const results = PRACTICE_ROWS.map(([label, id, actualFn, unit, tol]) => {
+    const el = $(id);
+    const mine = parseFloat(el.value);
+    const actual = actualFn();
+    const okNum = Number.isFinite(mine);
+    const close = okNum && Math.abs(mine - actual) <= tol;
+    el.classList.toggle('correct', close);
+    el.classList.toggle('invalid', !close);
+    return { id, ok: close, label, answerText: `${actual}${unit}` };
+  });
+  const wrong = results.filter(r => !r.ok);
+
+  if (wrong.length === 0) {
+    practicePassed = true;
+    const note = $('practice-note');
+    note.textContent = '모두 정답이에요!';
+    note.className = 'note ok';
+    return;
+  }
+  $('practice-note').className = 'note';
+  practiceAttempts++;
+  if (practiceAttempts >= 2) {
+    practicePassed = true;
+    showAnswerModal(
+      '정답 안내',
+      '틀린 칸의 정답이에요. 팝업을 닫으면 틀린 칸이 비워지니, 직접 다시 입력해 보세요.',
+      wrong, true,
+      () => { wrong.forEach(r => { $(r.id).classList.remove('invalid', 'correct'); $(r.id).value = ''; }); $(wrong[0].id).focus(); save(); }
+    );
+  } else {
+    showAnswerModal('다시 확인해 보세요', `빨갛게 표시된 칸 중 ${wrong.length}개가 틀렸어요. 다시 한번 확인해 보세요. (${practiceAttempts}/2회)`, wrong, false);
+  }
 };
 const renderLink = () => {
   const u = submitUrl();
@@ -987,6 +1099,7 @@ const isFilled = i => i.type === 'checkbox' ? i.checked : i.value.trim() !== '';
 const stepValid = n => {
   const el = secOf(n);
   const filled = [...el.querySelectorAll('[required]')].every(isFilled);
+  if (n === 3) return theoryPassed && practicePassed;
   return n === 4 ? (filled && !!photos.ph1 && !!photos.ph2) : filled;
 };
 const markInvalid = n => {
@@ -1117,29 +1230,7 @@ $('prev').addEventListener('click', () => goTo(step - 1));
 $('reset').addEventListener('click', clearAll);
 $('pdf-btn').addEventListener('click', exportPDF);
 $('check-theory').addEventListener('click', checkTheory);
-$('check-practice').addEventListener('click', () => {
-  const rows = [
-    ['a 수온', 'pr_a_t', PRACTICE.A.t, '°C'],
-    ['a 염분', 'pr_a_s', PRACTICE.A.s, 'psu'],
-    ['a 밀도', 'pr_a_rho', +(density(PRACTICE.A.s, PRACTICE.A.t)/1000).toFixed(4), 'g/cm³'],
-    ['b 수온', 'pr_b_t', PRACTICE.B.t, '°C'],
-    ['b 염분', 'pr_b_s', PRACTICE.B.s, 'psu'],
-  ];
-  const tol = { '°C':1, 'psu':1, 'g/cm³':0.002 };
-  const lines = rows.map(([label, id, actual, unit]) => {
-    const el = $(id);
-    const mine = parseFloat(el.value);
-    const okNum = Number.isFinite(mine);
-    const close = okNum && Math.abs(mine - actual) <= tol[unit];
-    el.classList.toggle('correct', close);
-    el.classList.toggle('invalid', !close);
-    const mineTxt = okNum ? `${mine}${unit}` : '미입력';
-    return `${label} — 내 답 ${mineTxt} · 실제 값 ${actual}${unit}${close ? ' ✓' : ''}`;
-  });
-  const box = $('practice-result');
-  box.innerHTML = lines.join('<br>');
-  box.className = 'note ok';
-});
+$('check-practice').addEventListener('click', checkPractice);
 $('up1').addEventListener('click', () => $('ph1').click());
 $('up2').addEventListener('click', () => $('ph2').click());
 $('ph1').addEventListener('change', e => e.target.files[0] && pickPhoto('ph1', e.target.files[0]));
@@ -1148,6 +1239,14 @@ $('ph2').addEventListener('change', e => e.target.files[0] && pickPhoto('ph2', e
 document.addEventListener('input', e => {
   e.target.classList.remove('invalid');
   e.target.classList.remove('correct');
+  if (THEORY_ANSWERS[e.target.id] !== undefined) {
+    const val = e.target.value.trim();
+    if (val) {
+      const ok = norm(val) === norm(THEORY_ANSWERS[e.target.id]);
+      e.target.classList.toggle('correct', ok);
+      e.target.classList.toggle('invalid', !ok);
+    }
+  }
   if (e.target.id === 'f_class') {
     const pos = e.target.selectionStart;
     const before = e.target.value.length;
