@@ -33,16 +33,50 @@
     line-height: 1.55; letter-spacing: -.01em; -webkit-font-smoothing: antialiased;
     min-height: 100dvh;
   }
-  .wrap { max-width: 1060px; margin: 0 auto; padding: clamp(28px,4vw,52px) 20px 80px; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: clamp(28px,4vw,52px) 20px 80px; position: relative; }
+
+  /* ---------- 배경 별빛 ---------- */
+  .starfield { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .star {
+    position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%;
+    animation: twinkle 3.4s ease-in-out infinite;
+  }
+  @keyframes twinkle { 0%, 100% { opacity: .12; } 50% { opacity: .85; } }
+  .shooting-star {
+    position: absolute; width: 3px; height: 3px; background: #fff; border-radius: 50%;
+    opacity: 0; animation: shoot 7s linear infinite;
+  }
+  .shooting-star::before {
+    content: ""; position: absolute; top: 50%; right: 0; width: 90px; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.85));
+    transform: translateY(-50%);
+  }
+  @keyframes shoot {
+    0% { opacity: 0; transform: translate(0, 0); }
+    4% { opacity: 1; }
+    22% { opacity: 0; transform: translate(-260px, 170px); }
+    100% { opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .star, .shooting-star { animation: none; opacity: .4; }
+  }
 
   /* ---------- 헤더 ---------- */
-  .hero { padding-bottom: 26px; margin-bottom: 26px; }
+  .hero { position: relative; padding-bottom: 26px; margin-bottom: 26px; }
+  .globe-deco {
+    position: absolute; top: -30px; right: -10px; width: 190px; height: 190px;
+    opacity: .55; animation: spin 40s linear infinite; pointer-events: none;
+  }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @media (max-width: 720px) { .globe-deco { width: 120px; height: 120px; top: -10px; opacity: .4; } }
+  @media (prefers-reduced-motion: reduce) { .globe-deco { animation: none; } }
   h1 {
+    position: relative; z-index: 1;
     font-size: clamp(32px,5vw,44px); font-weight: 900; letter-spacing: -.04em; margin: 0 0 12px;
     background: linear-gradient(110deg, #ffffff 0%, var(--accent) 55%, #8d9bff 100%);
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
-  .lead { color: var(--sub); margin: 0; font-size: 14.5px; white-space: nowrap; }
+  .lead { position: relative; z-index: 1; color: var(--sub); margin: 0; font-size: 14.5px; white-space: nowrap; }
   @media (max-width: 760px) { .lead { white-space: normal; } }
 
   /* ---------- 탭 ---------- */
@@ -99,14 +133,8 @@
   .card .txt { flex: 1; min-width: 0; }
   .card h3 { font-size: 15.5px; font-weight: 800; letter-spacing: -.02em; margin: 0; }
   .card p { font-size: 12.5px; color: var(--sub); margin: 2px 0 0; line-height: 1.5; }
-  .card .go {
-    flex: none; font: 700 12px/1 "Pretendard"; color: var(--cc);
-    opacity: 0; transform: translateX(-4px); transition: .15s;
-  }
-  .card:hover .go { opacity: 1; transform: none; }
 
   .card.soon { opacity: .55; pointer-events: none; }
-  .card.soon .go { display: none; }
   .card.soon h3::after {
     content: "준비 중"; font-size: 10.5px; font-weight: 700; vertical-align: 2px;
     margin-left: 7px; padding: 2px 8px; border-radius: 999px;
@@ -159,13 +187,25 @@
   .yt-badge .badge-icon { font-size: 15px; line-height: 1; }
 
   @media (prefers-reduced-motion: reduce) {
-    .card, #search, .card .go { transition: none; }
+    .card, #search { transition: none; }
   }
 </style>
 </head>
 <body>
+<div class="starfield" id="starfield"></div>
+
 <div class="wrap">
   <header class="hero">
+    <svg class="globe-deco" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="78" stroke="#7dd3c8" stroke-width="1" opacity=".55"/>
+      <ellipse cx="100" cy="100" rx="78" ry="26" stroke="#7dd3c8" stroke-width="1" opacity=".4"/>
+      <ellipse cx="100" cy="100" rx="78" ry="52" stroke="#7dd3c8" stroke-width="1" opacity=".4"/>
+      <ellipse cx="100" cy="100" rx="26" ry="78" stroke="#8d9bff" stroke-width="1" opacity=".4"/>
+      <ellipse cx="100" cy="100" rx="52" ry="78" stroke="#8d9bff" stroke-width="1" opacity=".4"/>
+      <line x1="100" y1="22" x2="100" y2="178" stroke="#8d9bff" stroke-width="1" opacity=".4"/>
+      <line x1="22" y1="100" x2="178" y2="100" stroke="#7dd3c8" stroke-width="1" opacity=".4"/>
+      <circle cx="100" cy="100" r="2.5" fill="#7dd3c8"/>
+    </svg>
     <h1>SJ SCIENCE LAB</h1>
     <p class="lead">직접 조작하며 탐구할 수 있는 디지털 실험실입니다. 각 수업에 맞는 활동을 선택해 탐구를 시작해 보세요.</p>
   </header>
@@ -272,6 +312,30 @@ const REPORTS = [
   }
 ].map(r => Object.assign(r, deriveMeta(r.url)));
 
+/* 배경 별빛 — 은은한 반짝임 + 가끔 지나가는 별똥별 */
+(() => {
+  const field = document.getElementById('starfield');
+  if (!field) return;
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < 70; i++) {
+    const s = document.createElement('span');
+    s.className = 'star';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.animationDelay = (Math.random() * 3.4).toFixed(2) + 's';
+    frag.appendChild(s);
+  }
+  for (let i = 0; i < 4; i++) {
+    const sh = document.createElement('span');
+    sh.className = 'shooting-star';
+    sh.style.left = (20 + Math.random() * 60) + '%';
+    sh.style.top = (Math.random() * 45) + '%';
+    sh.style.animationDelay = (i * 4.5 + Math.random() * 3).toFixed(2) + 's';
+    frag.appendChild(sh);
+  }
+  field.appendChild(frag);
+})();
+
 const tabbarEl = document.getElementById('tabbar');
 const contentEl = document.getElementById('content');
 const searchEl = document.getElementById('search');
@@ -299,7 +363,6 @@ function cardHTML(r, cc) {
         <h3>${r.name}</h3>
         <p>${r.desc}</p>
       </span>
-      <span class="go">탐구 시작 →</span>
     </a>`;
 }
 
