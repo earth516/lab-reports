@@ -93,6 +93,8 @@ textarea{resize:vertical;line-height:1.95}
 .blank::placeholder{color:#6f747f;font-weight:400;font-size:.85em;letter-spacing:0}
 .blank:focus{outline:none;box-shadow:none;background:var(--surface);border-bottom-color:var(--sea)}
 .blank.invalid{border-bottom-color:var(--coral)!important;background:rgba(224,106,91,.1)}
+.blank.correct{border-bottom-color:#4ade80!important;background:rgba(74,222,128,.1)}
+.correct{border-color:#4ade80!important;background:rgba(74,222,128,.1)}
 .suffix-field{display:flex;align-items:stretch;border:1.5px solid var(--line);border-radius:12px;
   background:var(--paper);overflow:hidden;transition:.14s}
 .suffix-field:focus-within{border-color:var(--sea);box-shadow:0 0 0 3px var(--sea-soft)}
@@ -115,10 +117,6 @@ textarea{resize:vertical;line-height:1.95}
   padding:.85rem 1rem;font-family:var(--sans);font-size:1.02rem;color:var(--ink);letter-spacing:-.01em}
 .info-form input:focus{outline:none;box-shadow:none;background:var(--sea-soft)}
 .info-form input.invalid{background:rgba(224,106,91,.1)}
-.suffix-field-compact{display:flex;align-items:stretch}
-.suffix-field-compact input{flex:1;min-width:0}
-.suffix-field-compact .suffix{display:flex;align-items:center;padding:0 .9rem;
-  font-size:1.02rem;color:var(--body);border-left:1px solid var(--line);white-space:nowrap}
 @media(max-width:700px){
   .info-form, .info-form tbody, .info-form tr, .info-form td{display:block;width:100%}
   .info-form td{border-right:0}
@@ -130,18 +128,20 @@ textarea{resize:vertical;line-height:1.95}
 .fixed-note:last-of-type{margin-bottom:1.6rem}
 .fixed-note b{flex:none;font-size:.82rem;font-weight:700;color:var(--sea);letter-spacing:.04em}
 .fixed-note span{color:var(--body)}
-.fossil-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
-.fossil-fields{display:flex;flex-direction:column;height:100%}
-.fossil-fields .grow{flex:1;display:flex;flex-direction:column;margin-top:1rem}
-.fossil-fields .grow textarea{flex:1;resize:none;min-height:80px}
-.fossil-grid .drop{min-height:180px}
-@media(max-width:700px){.fossil-grid{grid-template-columns:1fr}.fossil-grid .drop{min-height:160px;margin-top:1rem}}
+.group-label{color:var(--faint);font-size:.85rem;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;margin-bottom:1rem}
+.rock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-top:1rem}
+@media(max-width:820px){.rock-grid{grid-template-columns:1fr}}
+.rock-col{display:flex;flex-direction:column;gap:.6rem}
+.rock-name{font-size:1.1rem;font-weight:800;color:var(--sea)}
+.rock-col .drop{min-height:150px}
+.rock-col textarea{flex:1;resize:none;min-height:100px}
 
 .drop{border:1px dashed var(--line);border-radius:10px;min-height:140px;display:flex;
   align-items:center;justify-content:center;cursor:pointer;color:var(--faint);font-size:.95rem;
   position:relative;overflow:hidden;background:var(--sunk);transition:.16s}
 .drop:hover{border-color:var(--sea);background:var(--sea-soft);color:var(--sea)}
-.drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--sunk)}
 .drop .ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   background:rgba(10,61,71,.62);color:#fff;font-size:.9rem;font-weight:500}
 
@@ -152,6 +152,27 @@ textarea{resize:vertical;line-height:1.95}
 .bar{display:flex;gap:.7rem;align-items:center;padding:1.6rem 2.6rem 3.2rem;
   border-top:1px solid var(--line);margin-top:1.6rem;background:var(--sunk)}
 @media(max-width:700px){.bar{padding:1.2rem 1.4rem 2.4rem}}
+.site-footer{padding:1.4rem 2.6rem 1.8rem;background:var(--paper);border-top:1px solid var(--line)}
+.site-footer-top{position:relative;display:flex;align-items:center;justify-content:flex-end;
+  min-height:2.4rem}
+.site-footer-copy{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  margin:0;font-size:12px;color:var(--faint);line-height:1.5;text-align:center;white-space:nowrap}
+.site-footer-links{display:flex;align-items:center;gap:.6rem}
+@media(max-width:640px){
+  .site-footer-top{position:static;flex-direction:column-reverse;align-items:center;gap:.8rem}
+  .site-footer-copy{position:static;transform:none;white-space:normal}
+}
+.yt-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem .5rem .7rem;
+  background:var(--surface);border:1.5px solid var(--line);border-radius:999px;
+  color:var(--ink);text-decoration:none;font-weight:700;font-size:.8rem;
+  transition:border-color .15s,transform .1s}
+.yt-badge:hover{border-color:var(--sea);transform:translateY(-1px)}
+.yt-badge .play{display:inline-flex;align-items:center;justify-content:center;
+  width:18px;height:18px;border-radius:5px;background:var(--sea);flex:none}
+.yt-badge .play::before{content:"";width:0;height:0;margin-left:2px;
+  border-style:solid;border-width:4px 0 4px 7px;border-color:transparent transparent transparent #0c0e12}
+.yt-badge .badge-icon{font-size:.85rem;line-height:1}
+@media(max-width:700px){.site-footer{padding:1.2rem 1.4rem 1.6rem}}
 .btn{font-family:var(--sans);font-size:1rem;font-weight:700;padding:.72rem 1.7rem;border-radius:999px;
   border:1.5px solid #39404b;background:var(--surface);color:var(--ink);cursor:pointer;
   transition:.16s;letter-spacing:-.01em}
@@ -173,7 +194,7 @@ a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radi
   letter-spacing:-.01em;transition:.14s}
 a.submit:hover{background:#62beb3}
 
-#report{background:#fff;padding:20mm 16mm;color:#141414;font-size:15px;line-height:1.85;
+#report{background:#fff;padding:20mm 16mm;color:#141414;font-size:15px;line-height:1.85;overflow-wrap:break-word;word-break:break-word;
   font-family:var(--sans);
   --ink:#141414;--body:#4a4a4a;--faint:#9a9a9a;--line:#e0e0e0;--line-soft:#ececec;
   --sea:#141414;--sea-deep:#000000;--sea-soft:#ececec}
@@ -190,16 +211,25 @@ a.submit:hover{background:#62beb3}
   margin:1.1rem 0 .5rem;page-break-after:avoid}
 #report .r-sub:first-of-type{margin-top:0}
 #report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3}
-#report .r-fossil{display:grid;grid-template-columns:1.4fr 1fr;gap:1rem;align-items:start;
-  page-break-inside:avoid;margin-bottom:1.2rem}
-#report .r-fossil:last-child{margin-bottom:0}
-#report .r-fossil img{width:100%;height:120px;object-fit:cover;border:1px solid var(--line);display:block}
+#report .r-rock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;
+  page-break-inside:avoid;margin-bottom:1.4rem}
+#report .r-rock-grid:last-child{margin-bottom:0}
+#report .r-rock-name{font-weight:700;color:var(--sea);margin-bottom:.4rem}
+#report .r-rock-photo{width:100%;height:100px;object-fit:contain;background:#fff;
+  border:1px solid var(--line);display:block;margin-bottom:.4rem}
 #report table.r-info{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:.92rem;
-  table-layout:fixed;page-break-inside:avoid}
+  table-layout:fixed}
 #report table.r-info td{border:1px solid var(--line);text-align:left;padding:.6rem .85rem;
   color:#38484f;vertical-align:top}
 #report table.r-info td.k{background:#f5f5f5;font-weight:700;color:#141414;
   width:19%;white-space:nowrap}
+.modal-overlay{position:fixed;inset:0;background:rgba(6,8,11,.72);display:flex;
+  align-items:center;justify-content:center;z-index:100;padding:1.5rem}
+.modal-box{background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  padding:1.8rem;max-width:440px;width:100%;max-height:82vh;overflow-y:auto;
+  box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.modal-box h3{font-size:1.15rem;font-weight:800;color:var(--sea);margin-bottom:.3rem}
+.modal-box .r-txt{white-space:pre-wrap;color:var(--body);line-height:1.9}
 @media print{nav,header.top,.bar{display:none!important}}
 </style>
 </head>
@@ -207,7 +237,7 @@ a.submit:hover{background:#62beb3}
 <div class="sheet">
 
 <header class="top">
-  <div class="kicker">지구과학 탐구활동지</div>
+  <div class="kicker">지구과학 탐구 활동 (지질)</div>
   <h1>화성암 관찰하기 🔎</h1>
 </header>
 
@@ -230,23 +260,20 @@ a.submit:hover{background:#62beb3}
   <table class="info-form">
     <tbody>
       <tr>
-        <td class="lbl">반</td>
-        <td>
-          <div class="suffix-field-compact">
-            <input id="f_class" class="save" placeholder="A 또는 1-9" maxlength="6" required>
-            <span class="suffix">반</span>
-          </div>
-        </td>
-        <td class="lbl">학번</td>
-        <td><input id="f_id" class="save mono" inputmode="numeric" placeholder="20100" required></td>
-        <td class="lbl">이름</td>
-        <td><input id="f_name" class="save" placeholder="홍길동" required></td>
-      </tr>
-      <tr>
         <td class="lbl">일시</td>
         <td><input type="date" id="f_date" class="save mono" required></td>
         <td class="lbl">장소</td>
-        <td colspan="3"><input id="f_place" class="save" placeholder="지구과학 실험실" required></td>
+        <td colspan="3"><input id="f_place" class="save" maxlength="30" required></td>
+      </tr>
+      <tr>
+        <td class="lbl">반</td>
+        <td>
+          <input id="f_class" class="save" placeholder="선택A" maxlength="6" required>
+        </td>
+        <td class="lbl">학번</td>
+        <td><input id="f_id" class="save mono" inputmode="numeric" maxlength="10" required></td>
+        <td class="lbl">이름</td>
+        <td><input id="f_name" class="save" maxlength="20" required></td>
       </tr>
     </tbody>
   </table>
@@ -294,95 +321,79 @@ a.submit:hover{background:#62beb3}
     <h3>냉각 속도에 따른 화성암</h3>
     <p>화성암은 마그마가 냉각되는 속도에 따라 화산암과 심성암으로 분류하기도 한다. 화산암은 용암이 빠르게 냉각되면서 굳어져 구성 광물의 입자 크기가 작은 <input class="blank save" id="b5" placeholder="ㅅㄹㅈ" required> 조직이 나타난다. 심성암은 지하 깊은 곳에서 마그마가 서서히 냉각되면서 굳어져 구성 광물의 입자 크기가 큰 <input class="blank save" id="b6" placeholder="ㅈㄹㅈ" required> 조직이 나타난다.</p>
   </div>
+
+  <button class="btn" type="button" id="check-theory" style="margin-top:.6rem">채점하기</button>
+  <div id="theory-note" class="note"></div>
+
+  <div class="modal-overlay" id="answerModal" style="display:none">
+    <div class="modal-box">
+      <h3 id="answerModalTitle">정답 안내</h3>
+      <p class="hint" style="margin-top:-.3rem" id="answerModalHint"></p>
+      <div id="answerModalBody" class="r-txt"></div>
+      <button class="btn solid" type="button" id="closeAnswerModal" style="margin-top:1.2rem">확인했어요</button>
+    </div>
+  </div>
 </section>
 
 <!-- 04 화성암 관찰 -->
 <section class="step" data-step="4">
   <h2 class="head"><span class="n">04</span>화성암 관찰</h2>
-  <p class="lead">주어진 화성암 표본 6개를 관찰하고 특징을 기록하세요. 사진은 선택 사항입니다.</p>
+  <p class="lead">주어진 화성암 표본 6개를 관찰하고 특징을 기록하세요.</p>
 
   <div class="block">
-    <h3 style="color:var(--faint);font-size:.85rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem">화산암 (세립질)</h3>
-  </div>
-
-  <div class="block">
-    <h3>현무암</h3>
-    <div class="fossil-grid">
-      <div class="fossil-fields">
-        <div class="grow"><label for="rock_basalt_feature">관찰한 특징</label><textarea id="rock_basalt_feature" class="save" rows="4" required></textarea></div>
+    <h3 class="group-label">화산암</h3>
+    <div class="rock-grid">
+      <div class="rock-col">
+        <div class="rock-name">현무암</div>
+        <div class="drop" id="up_basalt"><span>클릭하여 사진 선택 (선택)</span></div>
+        <input type="file" accept="image/*" id="ph_basalt" hidden>
+        <label for="rock_basalt_feature">관찰한 특징</label>
+        <textarea id="rock_basalt_feature" class="save" rows="4" required></textarea>
       </div>
-      <div class="drop" id="up_basalt"><span>클릭하여 사진 선택 (선택)</span></div>
+      <div class="rock-col">
+        <div class="rock-name">안산암</div>
+        <div class="drop" id="up_andesite"><span>클릭하여 사진 선택 (선택)</span></div>
+        <input type="file" accept="image/*" id="ph_andesite" hidden>
+        <label for="rock_andesite_feature">관찰한 특징</label>
+        <textarea id="rock_andesite_feature" class="save" rows="4" required></textarea>
+      </div>
+      <div class="rock-col">
+        <div class="rock-name">유문암</div>
+        <div class="drop" id="up_rhyolite"><span>클릭하여 사진 선택 (선택)</span></div>
+        <input type="file" accept="image/*" id="ph_rhyolite" hidden>
+        <label for="rock_rhyolite_feature">관찰한 특징</label>
+        <textarea id="rock_rhyolite_feature" class="save" rows="4" required></textarea>
+      </div>
     </div>
-    <input type="file" accept="image/*" id="ph_basalt" hidden>
   </div>
 
   <hr class="rule">
 
   <div class="block">
-    <h3>안산암</h3>
-    <div class="fossil-grid">
-      <div class="fossil-fields">
-        <div class="grow"><label for="rock_andesite_feature">관찰한 특징</label><textarea id="rock_andesite_feature" class="save" rows="4" required></textarea></div>
+    <h3 class="group-label">심성암</h3>
+    <div class="rock-grid">
+      <div class="rock-col">
+        <div class="rock-name">반려암</div>
+        <div class="drop" id="up_gabbro"><span>클릭하여 사진 선택 (선택)</span></div>
+        <input type="file" accept="image/*" id="ph_gabbro" hidden>
+        <label for="rock_gabbro_feature">관찰한 특징</label>
+        <textarea id="rock_gabbro_feature" class="save" rows="4" required></textarea>
       </div>
-      <div class="drop" id="up_andesite"><span>클릭하여 사진 선택 (선택)</span></div>
-    </div>
-    <input type="file" accept="image/*" id="ph_andesite" hidden>
-  </div>
-
-  <hr class="rule">
-
-  <div class="block">
-    <h3>유문암</h3>
-    <div class="fossil-grid">
-      <div class="fossil-fields">
-        <div class="grow"><label for="rock_rhyolite_feature">관찰한 특징</label><textarea id="rock_rhyolite_feature" class="save" rows="4" required></textarea></div>
+      <div class="rock-col">
+        <div class="rock-name">섬록암</div>
+        <div class="drop" id="up_diorite"><span>클릭하여 사진 선택 (선택)</span></div>
+        <input type="file" accept="image/*" id="ph_diorite" hidden>
+        <label for="rock_diorite_feature">관찰한 특징</label>
+        <textarea id="rock_diorite_feature" class="save" rows="4" required></textarea>
       </div>
-      <div class="drop" id="up_rhyolite"><span>클릭하여 사진 선택 (선택)</span></div>
-    </div>
-    <input type="file" accept="image/*" id="ph_rhyolite" hidden>
-  </div>
-
-  <hr class="rule">
-
-  <div class="block">
-    <h3 style="color:var(--faint);font-size:.85rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem">심성암 (조립질)</h3>
-  </div>
-
-  <div class="block">
-    <h3>반려암</h3>
-    <div class="fossil-grid">
-      <div class="fossil-fields">
-        <div class="grow"><label for="rock_gabbro_feature">관찰한 특징</label><textarea id="rock_gabbro_feature" class="save" rows="4" required></textarea></div>
+      <div class="rock-col">
+        <div class="rock-name">화강암</div>
+        <div class="drop" id="up_granite"><span>클릭하여 사진 선택 (선택)</span></div>
+        <input type="file" accept="image/*" id="ph_granite" hidden>
+        <label for="rock_granite_feature">관찰한 특징</label>
+        <textarea id="rock_granite_feature" class="save" rows="4" required></textarea>
       </div>
-      <div class="drop" id="up_gabbro"><span>클릭하여 사진 선택 (선택)</span></div>
     </div>
-    <input type="file" accept="image/*" id="ph_gabbro" hidden>
-  </div>
-
-  <hr class="rule">
-
-  <div class="block">
-    <h3>섬록암</h3>
-    <div class="fossil-grid">
-      <div class="fossil-fields">
-        <div class="grow"><label for="rock_diorite_feature">관찰한 특징</label><textarea id="rock_diorite_feature" class="save" rows="4" required></textarea></div>
-      </div>
-      <div class="drop" id="up_diorite"><span>클릭하여 사진 선택 (선택)</span></div>
-    </div>
-    <input type="file" accept="image/*" id="ph_diorite" hidden>
-  </div>
-
-  <hr class="rule">
-
-  <div class="block">
-    <h3>화강암</h3>
-    <div class="fossil-grid">
-      <div class="fossil-fields">
-        <div class="grow"><label for="rock_granite_feature">관찰한 특징</label><textarea id="rock_granite_feature" class="save" rows="4" required></textarea></div>
-      </div>
-      <div class="drop" id="up_granite"><span>클릭하여 사진 선택 (선택)</span></div>
-    </div>
-    <input type="file" accept="image/*" id="ph_granite" hidden>
   </div>
 </section>
 
@@ -434,30 +445,50 @@ a.submit:hover{background:#62beb3}
       </div>
 
       <div class="r-sec">
-        <div class="r-lab">1. 개념 확인</div>
+        <div class="r-lab">1. 이론적 배경</div>
         <div class="r-txt" id="p_concept"></div>
       </div>
 
       <div class="r-sec">
         <div class="r-lab">2. 화성암 관찰</div>
 
-        <div class="r-sub">가. 현무암</div>
-        <div class="r-fossil"><div class="r-txt" id="rep_basalt"></div><img id="rep_basalt_photo" style="display:none"></div>
+        <div class="r-sub">가. 화산암</div>
+        <div class="r-rock-grid">
+          <div class="r-rock-col">
+            <div class="r-rock-name">현무암</div>
+            <img id="rep_basalt_photo" class="r-rock-photo" style="display:none">
+            <div class="r-txt" id="rep_basalt"></div>
+          </div>
+          <div class="r-rock-col">
+            <div class="r-rock-name">안산암</div>
+            <img id="rep_andesite_photo" class="r-rock-photo" style="display:none">
+            <div class="r-txt" id="rep_andesite"></div>
+          </div>
+          <div class="r-rock-col">
+            <div class="r-rock-name">유문암</div>
+            <img id="rep_rhyolite_photo" class="r-rock-photo" style="display:none">
+            <div class="r-txt" id="rep_rhyolite"></div>
+          </div>
+        </div>
 
-        <div class="r-sub">나. 안산암</div>
-        <div class="r-fossil"><div class="r-txt" id="rep_andesite"></div><img id="rep_andesite_photo" style="display:none"></div>
-
-        <div class="r-sub">다. 유문암</div>
-        <div class="r-fossil"><div class="r-txt" id="rep_rhyolite"></div><img id="rep_rhyolite_photo" style="display:none"></div>
-
-        <div class="r-sub">라. 반려암</div>
-        <div class="r-fossil"><div class="r-txt" id="rep_gabbro"></div><img id="rep_gabbro_photo" style="display:none"></div>
-
-        <div class="r-sub">마. 섬록암</div>
-        <div class="r-fossil"><div class="r-txt" id="rep_diorite"></div><img id="rep_diorite_photo" style="display:none"></div>
-
-        <div class="r-sub">바. 화강암</div>
-        <div class="r-fossil"><div class="r-txt" id="rep_granite"></div><img id="rep_granite_photo" style="display:none"></div>
+        <div class="r-sub">나. 심성암</div>
+        <div class="r-rock-grid">
+          <div class="r-rock-col">
+            <div class="r-rock-name">반려암</div>
+            <img id="rep_gabbro_photo" class="r-rock-photo" style="display:none">
+            <div class="r-txt" id="rep_gabbro"></div>
+          </div>
+          <div class="r-rock-col">
+            <div class="r-rock-name">섬록암</div>
+            <img id="rep_diorite_photo" class="r-rock-photo" style="display:none">
+            <div class="r-txt" id="rep_diorite"></div>
+          </div>
+          <div class="r-rock-col">
+            <div class="r-rock-name">화강암</div>
+            <img id="rep_granite_photo" class="r-rock-photo" style="display:none">
+            <div class="r-txt" id="rep_granite"></div>
+          </div>
+        </div>
       </div>
 
       <div class="r-sec">
@@ -478,6 +509,20 @@ a.submit:hover{background:#62beb3}
   <button class="btn grow" id="next">다음</button>
   <button class="btn quiet" id="reset">초기화</button>
 </div>
+
+<footer class="site-footer">
+  <div class="site-footer-top">
+    <p class="site-footer-copy">© 교사 이상준. All rights reserved.<br>오류제보/문의: cepheid@kakao.com</p>
+    <div class="site-footer-links">
+      <a class="yt-badge" href="https://www.youtube.com/@science_earth" target="_blank" rel="noopener">
+        <span class="play"></span> 유튜브
+      </a>
+      <a class="yt-badge" href="https://linktr.ee/earth_sj" target="_blank" rel="noopener">
+        <span class="badge-icon">🌍</span> Linktree
+      </a>
+    </div>
+  </div>
+</footer>
 
 </div>
 
@@ -524,6 +569,75 @@ const renderLink = () => {
 const renderFixedInfo = () => {
   $('disp_materials').textContent = FIXED_MATERIALS;
   $('disp_goal').textContent = FIXED_GOAL;
+};
+
+/* 03 이론적 배경 빈칸 정답 확인 — 띄어쓰기 차이는 무시하고 채점, 맞으면 초록/틀리면 빨강으로 실시간 표시.
+   2회까지 다시 시도할 수 있고, 2회 시도 후에도 틀리면 정답을 팝업으로 공개한다.
+   팝업을 닫으면 틀린 칸이 비워지니 학생이 직접 다시 입력하게 된다. */
+const norm = s => (s || '').replace(/\s+/g, '');
+const THEORY_ANSWERS = {
+  b1:'화성암', b2:'반려암', b3:'섬록암', b4:'화강암',
+  b5:'세립질', b6:'조립질',
+};
+const BLANK_LABELS = {
+  b1:'마그마가 식어서 굳어진 암석의 이름',
+  b2:'현무암질 마그마로 만들어진 또 다른 화산암',
+  b3:'안산암질 마그마로 만들어진 또 다른 화산암',
+  b4:'유문암질 마그마로 만들어진 또 다른 화산암',
+  b5:'화산암에서 나타나는, 입자가 작은 조직',
+  b6:'심성암에서 나타나는, 입자가 큰 조직',
+};
+let theoryAttempts = 0;
+let theoryPassed = false;
+let answerModalCb = null;
+const showAnswerModal = (title, hint, wrong, revealAnswer, onClose) => {
+  $('answerModalTitle').textContent = title;
+  $('answerModalHint').textContent = hint;
+  $('answerModalBody').innerHTML = wrong
+    .map(r => {
+      const label = BLANK_LABELS[r.id] || `${r.id.toUpperCase()}번 칸`;
+      return revealAnswer ? `${label} — 정답: ${r.answer}` : label;
+    })
+    .join('<br>');
+  $('answerModal').style.display = 'flex';
+  answerModalCb = onClose || null;
+};
+const closeAnswerModal = () => {
+  $('answerModal').style.display = 'none';
+  if (answerModalCb) { const cb = answerModalCb; answerModalCb = null; cb(); }
+};
+$('closeAnswerModal').addEventListener('click', closeAnswerModal);
+const checkTheory = () => {
+  const results = Object.entries(THEORY_ANSWERS).map(([id, answer]) => {
+    const el = $(id);
+    const mine = el.value;
+    const ok = norm(mine) === norm(answer);
+    el.classList.toggle('correct', ok);
+    el.classList.toggle('invalid', !ok);
+    return { id, answer, mine, ok };
+  });
+  const wrong = results.filter(r => !r.ok);
+
+  if (wrong.length === 0) {
+    theoryPassed = true;
+    const note = $('theory-note');
+    note.textContent = '모두 정답이에요! 다음 단계로 진행할 수 있어요.';
+    note.className = 'note ok';
+    return;
+  }
+  $('theory-note').className = 'note';
+  theoryAttempts++;
+  if (theoryAttempts >= 2) {
+    theoryPassed = true;
+    showAnswerModal(
+      '정답 안내',
+      '틀린 칸의 정답이에요. 팝업을 닫으면 틀린 칸이 비워지니, 직접 다시 입력해 보세요.',
+      wrong, true,
+      () => { wrong.forEach(r => { $(r.id).classList.remove('invalid', 'correct'); $(r.id).value = ''; }); wrong[0] && $(wrong[0].id).focus(); save(); }
+    );
+  } else {
+    showAnswerModal('다시 확인해 보세요', `빨갛게 표시된 칸 중 ${wrong.length}개가 틀렸어요. 다시 한번 확인해 보세요. (${theoryAttempts}/2회)`, wrong, false);
+  }
 };
 
 /* 사진 */
@@ -589,7 +703,10 @@ const MSG = {
 };
 const secOf = n => document.querySelector(`.step[data-step="${n}"]`);
 const isFilled = i => i.type === 'checkbox' ? i.checked : i.value.trim() !== '';
-const stepValid = n => [...secOf(n).querySelectorAll('[required]')].every(isFilled);
+const stepValid = n => {
+  if (n === 3) return theoryPassed;
+  return [...secOf(n).querySelectorAll('[required]')].every(isFilled);
+};
 const markInvalid = n => {
   let first = null;
   secOf(n).querySelectorAll('[required]').forEach(i => {
@@ -646,7 +763,7 @@ const buildReport = () => {
 
   ROCKS.forEach(rock => {
     const feature = v('rock_' + rock + '_feature') || '(미입력)';
-    $('rep_' + rock).textContent = `${ROCK_LABEL[rock]} — ${feature}`;
+    $('rep_' + rock).textContent = feature;
     const img = $('rep_' + rock + '_photo');
     if (photos[rock]) { img.src = photos[rock]; img.style.display = ''; }
     else { img.style.display = 'none'; }
@@ -657,7 +774,15 @@ const buildReport = () => {
 };
 
 /* PDF */
-const exportPDF = () => {
+const waitForImages = async root => {
+  const imgs = [...root.querySelectorAll('img')].filter(img => img.src);
+  await Promise.all(imgs.map(img => {
+    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+    return img.decode ? img.decode().catch(() => {}) : new Promise(res => { img.onload = res; img.onerror = res; });
+  }));
+};
+
+const exportPDF = async () => {
   for (let n = 1; n < TOTAL; n++) {
     if (!stepValid(n)) { goTo(n); markInvalid(n); flash(n); return; }
   }
@@ -666,16 +791,31 @@ const exportPDF = () => {
   const tag = `${classTag}_${$('f_id').value}_${$('f_name').value}`;
   const btn = $('pdf-btn');
   btn.disabled = true; btn.textContent = '저장 중…';
+
+  /* PDF로 캡처하는 순간에만 #report 자체 패딩을 0으로 내리고,
+     대신 html2pdf의 margin 옵션으로 페이지마다 동일한 여백을 준다.
+     화면(보고서 탭)에 보이는 패딩은 저장이 끝나면 즉시 원래대로 복구되므로
+     사용자가 보는 화면은 전혀 바뀌지 않는다. */
+  const reportEl = $('report');
+  const restorePadding = () => { reportEl.style.paddingTop = ''; reportEl.style.paddingBottom = ''; };
+  reportEl.style.paddingTop = '0';
+  reportEl.style.paddingBottom = '0';
+
+  /* 사진이 여러 장일 때, 캡처 시작 시점에 이미지 디코딩이 덜 끝나 있으면
+     페이지 나누기 계산이 어긋나 위쪽에 빈 공간이 생길 수 있다.
+     캡처 전에 모든 사진이 완전히 로딩됐는지 명시적으로 기다린다. */
+  await waitForImages(reportEl);
+
   html2pdf().set({
-    margin: 0,
+    margin: [20, 0, 20, 0],
     filename: `화성암관찰하기_활동보고서_${tag}.pdf`,
     image: { type:'jpeg', quality:.95 },
     html2canvas: { scale:2, useCORS:true, backgroundColor:'#ffffff' },
     jsPDF: { unit:'mm', format:'a4', orientation:'portrait' },
-    pagebreak: { mode:['css','legacy'] },
-  }).from($('report')).save()
-    .then(() => { btn.disabled=false; btn.textContent='PDF로 저장'; showMsg('PDF를 저장했습니다. 제출 링크에 올려 주세요.', true); })
-    .catch(() => { btn.disabled=false; btn.textContent='PDF로 저장'; showMsg('PDF 저장에 실패했습니다. 다시 시도해 주세요.', false); });
+    pagebreak: { mode:['css'] },
+  }).from(reportEl).save()
+    .then(() => { restorePadding(); btn.disabled=false; btn.textContent='PDF로 저장'; showMsg('PDF를 저장했습니다. 제출 링크에 올려 주세요.', true); })
+    .catch(() => { restorePadding(); btn.disabled=false; btn.textContent='PDF로 저장'; showMsg('PDF 저장에 실패했습니다. 다시 시도해 주세요.', false); });
 };
 
 /* 이벤트 */
@@ -687,6 +827,7 @@ $('next').addEventListener('click', () => {
 $('prev').addEventListener('click', () => goTo(step - 1));
 $('reset').addEventListener('click', clearAll);
 $('pdf-btn').addEventListener('click', exportPDF);
+$('check-theory').addEventListener('click', checkTheory);
 
 ROCKS.forEach(rock => {
   $('up_' + rock).addEventListener('click', () => $('ph_' + rock).click());
@@ -695,10 +836,19 @@ ROCKS.forEach(rock => {
 
 document.addEventListener('input', e => {
   e.target.classList.remove('invalid');
+  e.target.classList.remove('correct');
+  if (THEORY_ANSWERS[e.target.id] !== undefined) {
+    const val = e.target.value.trim();
+    if (val) {
+      const ok = norm(val) === norm(THEORY_ANSWERS[e.target.id]);
+      e.target.classList.toggle('correct', ok);
+      e.target.classList.toggle('invalid', !ok);
+    }
+  }
   if (e.target.id === 'f_class') {
     const pos = e.target.selectionStart;
     const before = e.target.value.length;
-    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+    e.target.value = e.target.value.toUpperCase().replace(/[^가-힣A-Z0-9 -]/g, '');
     const diff = before - e.target.value.length;
     if (pos !== null) e.target.setSelectionRange(pos - diff, pos - diff);
   }
