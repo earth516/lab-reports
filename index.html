@@ -2,98 +2,161 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SJ 활동 · 실험 보고서</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>SJ SCIENCE LAB</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
   :root {
-    --bg: #101216;
-    --panel: #171a20;
-    --line: #2a2e37;
+    --bg: #0a0d14;
+    --panel: #12161f;
+    --panel-2: #171c27;
+    --line: rgba(148, 163, 194, .14);
+    --line-strong: rgba(148, 163, 194, .32);
     --text: #e8eaee;
     --sub: #8b909b;
+    --sub-2: #676d81;
     --accent: #7dd3c8;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --shadow: 0 18px 46px -20px rgba(0,0,0,.7);
   }
   * { box-sizing: border-box; }
+  html, body { margin: 0; }
   body {
-    margin: 0;
-    background: var(--bg);
+    background:
+      radial-gradient(1000px 600px at 10% -8%, #17243d 0%, rgba(23,36,61,0) 58%),
+      radial-gradient(880px 520px at 96% 2%, #1e2a3d 0%, rgba(30,42,61,0) 52%),
+      radial-gradient(820px 560px at 82% 110%, #10251f 0%, rgba(16,37,31,0) 55%),
+      var(--bg);
     color: var(--text);
-    font-family: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
-    line-height: 1.55;
+    font-family: "Pretendard", "Pretendard Variable", system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    line-height: 1.55; letter-spacing: -.01em; -webkit-font-smoothing: antialiased;
+    min-height: 100dvh;
   }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 52px 20px 80px; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: clamp(28px,4vw,52px) 20px 80px; }
 
+  /* ---------- 헤더 ---------- */
+  .hero { padding-bottom: 26px; margin-bottom: 26px; }
   h1 {
-    font-size: 27px; font-weight: 800; letter-spacing: -0.5px;
-    margin: 0 0 6px;
-    color: var(--text);
+    font-size: clamp(32px,5vw,44px); font-weight: 900; letter-spacing: -.04em; margin: 0 0 12px;
+    background: linear-gradient(110deg, #ffffff 0%, var(--accent) 55%, #8d9bff 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
   }
-  h1 .sj { color: var(--accent); }
-  .meta { color: var(--sub); font-size: 13px; font-weight: 600; margin: 0 0 26px; }
+  .lead { color: var(--sub); margin: 0; font-size: 14.5px; white-space: nowrap; }
+  @media (max-width: 760px) { .lead { white-space: normal; } }
+
+  /* ---------- 탭 ---------- */
+  .tabbar {
+    display: inline-flex; gap: 4px; padding: 5px; margin-bottom: 30px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 13px;
+  }
+  .tabbtn {
+    font: 700 14px/1 "Pretendard"; color: var(--sub); background: none; border: none;
+    border-radius: 9px; padding: 10px 18px; cursor: pointer;
+    transition: color .15s, background-color .15s;
+  }
+  .tabbtn:hover { color: var(--text); background: rgba(255,255,255,.04); }
+  .tabbtn.active { color: #0a0d14; background: var(--accent); }
+  .tabbtn.active:hover { background: var(--accent); }
 
   /* ---------- 검색 ---------- */
   #search {
     width: 100%; font: inherit; font-weight: 600;
-    padding: 11px 15px; color: var(--text);
-    background: var(--panel); border: 2px solid var(--line); border-radius: 12px;
-    margin-bottom: 34px; transition: border-color .15s;
+    padding: 12px 16px; color: var(--text);
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    margin-bottom: 36px; transition: border-color .15s, box-shadow .15s;
   }
-  #search::placeholder { color: var(--sub); }
-  #search:focus { outline: none; border-color: var(--accent); }
+  #search::placeholder { color: var(--sub-2); }
+  #search:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
 
-  /* ---------- 분류 ---------- */
-  .category { margin-bottom: 34px; }
-  .category:last-child { margin-bottom: 0; }
-  .category h2 {
-    font-size: 12.5px; font-weight: 700; letter-spacing: .04em;
-    color: var(--sub); margin: 0 0 14px; text-transform: uppercase;
-  }
+  /* ---------- 하위 분류 ---------- */
+  .subcategory { margin-bottom: 30px; padding-left: 18px; border-left: 2px solid color-mix(in srgb, var(--cc) 40%, transparent); }
+  .subcategory:last-child { margin-bottom: 0; }
+  .subhead { display: flex; align-items: baseline; gap: 9px; margin-bottom: 12px; }
+  .subhead .icon { font-size: 15px; }
+  .subhead h3 { font-size: 14px; font-weight: 800; color: var(--cc); margin: 0; }
+  .subhead .subcount { font: 600 11px/1 var(--mono); color: var(--sub-2); }
 
-  /* ---------- 보고서 목록 ---------- */
-  .list { display: flex; flex-direction: column; gap: 14px; }
+  /* ---------- 보고서 카드 ---------- */
+  .list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 900px) { .list { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .list { grid-template-columns: 1fr; } }
+
   .card {
-    display: flex; align-items: center; gap: 14px;
-    background: var(--panel); border: 2px solid var(--line); border-radius: 14px;
-    padding: 14px 18px; text-decoration: none; color: var(--text);
-    transition: border-color .15s, box-shadow .15s, transform .1s;
+    position: relative; display: flex; align-items: center; gap: 13px;
+    background: linear-gradient(180deg, var(--panel-2), var(--panel));
+    border: 1px solid var(--line); border-radius: 14px;
+    padding: 15px 17px; text-decoration: none; color: var(--text);
+    transition: transform .15s, border-color .15s, box-shadow .15s;
   }
-  .card:hover {
-    transform: translateY(-2px);
-    border-color: var(--accent);
-  }
-  .card:focus-visible { outline: 2px dashed var(--accent); outline-offset: 3px; }
+  .card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--cc) 55%, var(--line-strong)); box-shadow: var(--shadow); }
+  .card:focus-visible { outline: 2px solid var(--cc); outline-offset: 2px; }
   .card .emoji {
     flex: none; width: 42px; height: 42px; display: grid; place-items: center;
-    font-size: 22px; background: #12141a;
-    border: 2px solid var(--line); border-radius: 11px;
+    font-size: 21px; background: rgba(255,255,255,.03);
+    border: 1px solid var(--line); border-radius: 11px;
   }
   .card .txt { flex: 1; min-width: 0; }
-  .card h3 { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; margin: 0; }
-  .card p { font-size: 13px; color: var(--sub); margin: 1px 0 0; }
+  .card h3 { font-size: 15.5px; font-weight: 800; letter-spacing: -.02em; margin: 0; }
+  .card p { font-size: 12.5px; color: var(--sub); margin: 2px 0 0; line-height: 1.5; }
   .card .go {
-    flex: none; font-size: 16px; font-weight: 800; color: var(--accent);
-    transition: transform .1s;
+    flex: none; font: 700 12px/1 "Pretendard"; color: var(--cc);
+    opacity: 0; transform: translateX(-4px); transition: .15s;
   }
-  .card:hover .go { transform: translateX(4px); }
+  .card:hover .go { opacity: 1; transform: none; }
 
-  .card.soon { pointer-events: none; opacity: .5; }
+  .card.soon { opacity: .55; pointer-events: none; }
   .card.soon .go { display: none; }
   .card.soon h3::after {
-    content: "준비 중"; font-size: 11px; font-weight: 700; vertical-align: 2px;
-    margin-left: 8px; padding: 1px 8px; border-radius: 999px;
-    border: 1px solid var(--sub); color: var(--sub);
+    content: "준비 중"; font-size: 10.5px; font-weight: 700; vertical-align: 2px;
+    margin-left: 7px; padding: 2px 8px; border-radius: 999px;
+    border: 1px solid var(--sub-2); color: var(--sub-2);
   }
 
   .empty-slot {
-    border: 2px dashed var(--line); border-radius: 14px;
+    border: 1px dashed var(--line-strong); border-radius: 14px;
     padding: 18px; text-align: center;
-    color: var(--sub); font-size: 13px; font-weight: 600;
+    color: var(--sub-2); font-size: 12.5px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
   }
 
   #empty { display: none; font-weight: 700; font-size: 14px; color: var(--sub); padding: 6px 2px; }
 
-  footer { margin-top: 48px; font-size: 12.5px; color: var(--sub); }
-  footer a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  /* ---------- 푸터 ---------- */
+  footer { margin-top: 50px; }
+  .footer-top {
+    position: relative; display: flex; align-items: center; justify-content: flex-end;
+    min-height: 40px; padding-top: 22px; border-top: 1px solid var(--line);
+  }
+  .footer-copy {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    margin: 0; font-size: 12px; color: var(--sub-2); line-height: 20px;
+    text-align: center; white-space: nowrap;
+  }
+  .footer-links { display: flex; align-items: center; gap: 10px; }
+  @media (max-width: 640px) {
+    .footer-top { position: static; flex-direction: column-reverse; align-items: center; gap: 12px; }
+    .footer-copy { position: static; transform: none; white-space: normal; }
+  }
+
+  .yt-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 40px; padding: 0 18px 0 14px; box-sizing: border-box;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 999px;
+    color: var(--text); text-decoration: none; font-weight: 700; font-size: 13px;
+    transition: border-color .15s, transform .1s;
+  }
+  .yt-badge:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .yt-badge .play {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 20px; height: 20px; border-radius: 6px; background: var(--accent); flex: none;
+  }
+  .yt-badge .play::before {
+    content: ""; width: 0; height: 0; margin-left: 2px;
+    border-style: solid; border-width: 5px 0 5px 8px;
+    border-color: transparent transparent transparent #0a0d14;
+  }
+  .yt-badge .badge-icon { font-size: 15px; line-height: 1; }
 
   @media (prefers-reduced-motion: reduce) {
     .card, #search, .card .go { transition: none; }
@@ -102,15 +165,31 @@
 </head>
 <body>
 <div class="wrap">
-  <h1><span class="sj">SJ</span> 활동/실험 보고서</h1>
-  <p class="meta">2026학년도</p>
+  <header class="hero">
+    <h1>SJ SCIENCE LAB</h1>
+    <p class="lead">직접 조작하며 탐구할 수 있는 디지털 실험실입니다. 각 수업에 맞는 활동을 선택해 탐구를 시작해 보세요.</p>
+  </header>
+
+  <div class="tabbar" id="tabbar"></div>
 
   <input id="search" type="text" placeholder="보고서 검색…" aria-label="보고서 검색">
 
   <main id="content"></main>
   <p id="empty">조건에 맞는 보고서가 없어요.</p>
 
-  <footer>© 2026 SJ 문제은행 · All rights reserved.<br>문의: <a href="mailto:cepheid@kakao.com">cepheid@kakao.com</a></footer>
+  <footer>
+    <div class="footer-top">
+      <p class="footer-copy">© 교사 이상준. All rights reserved.<br>오류제보/문의: cepheid@kakao.com</p>
+      <div class="footer-links">
+        <a class="yt-badge" href="https://www.youtube.com/@science_earth" target="_blank" rel="noopener">
+          <span class="play"></span> 유튜브
+        </a>
+        <a class="yt-badge" href="https://linktr.ee/earth_sj" target="_blank" rel="noopener">
+          <span class="badge-icon">🌍</span> Linktree
+        </a>
+      </div>
+    </div>
+  </footer>
 </div>
 
 <script>
@@ -118,77 +197,116 @@
    보고서 목록 — 새 보고서를 추가하려면 여기에 한 항목만 붙이면 됩니다!
    1) reports/ 안에 폴더를 만들고 index.html을 넣고
    2) 아래 REPORTS 배열에 { } 항목을 추가하세요.
-   category는 CATEGORIES 목록의 값과 정확히 같아야 해당 분류에 들어갑니다.
+   tab은 TABS의 id와, subcategory는 그 탭의 subs 값과 정확히 같아야 합니다.
    soon: true 를 넣으면 '준비 중' 카드로 표시됩니다.
+   색상·아이콘은 SUB_META 에서만 관리하면 됩니다.
    ================================================================ */
-const CATEGORIES = ['통합과학 · 과탐실', '지구과학'];
+const SUB_META = {
+  '대기·해양': { color: '#6fb3e6', icon: '🌊' },
+  '지질':      { color: '#e0913e', icon: '🌋' },
+  '우주':      { color: '#7d8cff', icon: '🪐' },
+  '융합':      { color: '#2bb6a4', icon: '🔗' },
+  '물리학':    { color: '#7d8cff', icon: '⚛️' },
+  '화학':      { color: '#ff8a65', icon: '🧪' },
+  '생명과학':  { color: '#6fcf97', icon: '🧬' },
+  '지구과학':  { color: '#e0913e', icon: '🌍' },
+};
+
+const TABS = [
+  { id: 'earth',      label: '지구과학',            subs: ['대기·해양', '지질', '우주', '융합'] },
+  { id: 'integrated', label: '통합과학·과학탐구실험', subs: ['물리학', '화학', '생명과학', '지구과학'] },
+];
 
 const REPORTS = [
   {
-    category: '지구과학',
+    tab: 'earth', subcategory: '대기·해양',
     name: '심층 순환의 발생 원리 추론하기',
     desc: '수온·염분 차이로 밀도류와 심층 순환이 일어나는 원리를 추론해요',
     emoji: '🌊',
     url: 'reports/earth-science/deep-circulation/index.html'
   },
   {
-    category: '지구과학',
-    name: '화성암 관찰하기',
+    tab: 'earth', subcategory: '지질',
+    name: '화성암 관찰하기 🔎',
     desc: '화성암의 색과 결정 크기를 관찰하고 특징에 따라 분류해요',
     emoji: '🌋',
     url: 'reports/earth-science/igneous-rocks/index.html'
   },
   {
-    category: '지구과학',
-    name: '퇴적암 관찰하기',
+    tab: 'earth', subcategory: '지질',
+    name: '퇴적암 관찰하기 🔎',
     desc: '퇴적암을 기원·입자 크기·성분에 따라 관찰하고 분류해요',
     emoji: '🪨',
     url: 'reports/earth-science/sedimentary-rocks/index.html'
   },
   {
-    category: '통합과학 · 과탐실',
-    name: '지질시대 박람회',
+    tab: 'integrated', subcategory: '지구과학',
+    name: '지질시대 화석 박람회',
     desc: '지질시대의 대표 표준화석을 관찰하고 정보를 찾아 기록해요',
     emoji: '🦴',
     url: 'reports/integrated-science/geo-eras-expo/index.html'
   }
 ];
 
+const tabbarEl = document.getElementById('tabbar');
 const contentEl = document.getElementById('content');
 const searchEl = document.getElementById('search');
 const emptyEl = document.getElementById('empty');
 
-function cardHTML(r) {
+let activeTab = TABS[0].id;
+
+tabbarEl.innerHTML = TABS.map(t =>
+  `<button class="tabbtn${t.id === activeTab ? ' active' : ''}" data-tab="${t.id}">${t.label}</button>`
+).join('');
+
+tabbarEl.addEventListener('click', e => {
+  const btn = e.target.closest('.tabbtn');
+  if (!btn) return;
+  activeTab = btn.dataset.tab;
+  tabbarEl.querySelectorAll('.tabbtn').forEach(b => b.classList.toggle('active', b.dataset.tab === activeTab));
+  render();
+});
+
+function cardHTML(r, cc) {
   return `
-    <a class="card${r.soon ? ' soon' : ''}" href="${r.url}" ${r.soon ? 'aria-disabled="true" tabindex="-1"' : ''}>
+    <a class="card${r.soon ? ' soon' : ''}" href="${r.url}" style="--cc:${cc}" ${r.soon ? 'aria-disabled="true" tabindex="-1"' : ''}>
       <span class="emoji">${r.emoji}</span>
       <span class="txt">
         <h3>${r.name}</h3>
         <p>${r.desc}</p>
       </span>
-      <span class="go">→</span>
+      <span class="go">탐구 시작 →</span>
     </a>`;
+}
+
+function listHTML(items, q, cc) {
+  const shown = items.filter(r => !q || (r.name + r.desc).toLowerCase().includes(q));
+  if (q && shown.length === 0) return { html: '', count: 0 };
+  const body = shown.length
+    ? shown.map(r => cardHTML(r, cc)).join('')
+    : `<div class="empty-slot">곧 추가될 실험을 위한 자리예요</div>`;
+  return { html: `<div class="list">${body}</div>`, count: shown.length };
 }
 
 function render() {
   const q = searchEl.value.trim().toLowerCase();
+  const tab = TABS.find(t => t.id === activeTab);
   let shownTotal = 0;
-  const sections = CATEGORIES.map(cat => {
-    const all = REPORTS.filter(r => r.category === cat);
-    const shown = all.filter(r => !q || (r.name + r.desc).toLowerCase().includes(q));
-    if (q && shown.length === 0) return '';
-    shownTotal += shown.length;
-    const body = shown.length
-      ? shown.map(cardHTML).join('')
-      : `<div class="empty-slot">곧 추가될 실험을 위한 자리예요</div>`;
+
+  const parts = tab.subs.map(sub => {
+    const meta = SUB_META[sub] || { color: '#7dd3c8', icon: '🔬' };
+    const items = REPORTS.filter(r => r.tab === tab.id && r.subcategory === sub);
+    const { html, count } = listHTML(items, q, meta.color);
+    if (!html) return '';
+    shownTotal += count;
     return `
-      <section class="category">
-        <h2>${cat}</h2>
-        <div class="list">${body}</div>
-      </section>`;
+      <div class="subcategory" style="--cc:${meta.color}">
+        <div class="subhead"><span class="icon">${meta.icon}</span><h3>${sub}</h3><span class="subcount">${count}개</span></div>
+        ${html}
+      </div>`;
   }).join('');
 
-  contentEl.innerHTML = sections;
+  contentEl.innerHTML = parts;
   emptyEl.style.display = (q && shownTotal === 0) ? 'block' : 'none';
 }
 
