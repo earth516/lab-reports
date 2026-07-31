@@ -284,7 +284,8 @@ function deriveMeta(url) {
 }
 
 /* url만 정확한 폴더 경로로 넣으면 tab·subcategory는 자동으로 계산된다.
-   (폴더 구조는 README.md 참고) */
+   같은 실험을 다른 탭에도 중복으로 넣고 싶으면(예: 통합과학 수업과 지구과학 수업 둘 다에서 씀),
+   url은 실제 파일이 있는 경로 그대로 두고 tab·subcategory만 수동으로 적으면 그 값이 우선한다. */
 const REPORTS = [
   {
     name: '심층 순환의 발생 원리 추론하기',
@@ -308,9 +309,17 @@ const REPORTS = [
     name: '지질시대 화석 박람회',
     desc: '지질시대의 대표 표준화석을 관찰하고 정보를 찾아 기록해요',
     emoji: '🦴',
+    url: 'reports/earth-science/geology/geo-eras-expo/index.html'
+    /* tab·subcategory 미지정 → url에서 자동 계산 → 지구과학 · 지질 */
+  },
+  {
+    name: '지질시대 화석 박람회',
+    desc: '지질시대의 대표 표준화석을 관찰하고 정보를 찾아 기록해요',
+    emoji: '🦴',
     url: 'reports/integrated-science/earth-science/geo-eras-expo/index.html'
+    /* tab·subcategory 미지정 → url에서 자동 계산 → 통합과학 · 지구과학 */
   }
-].map(r => Object.assign(r, deriveMeta(r.url)));
+].map(r => Object.assign(deriveMeta(r.url), r));
 
 /* 배경 별빛 — 은은한 반짝임 + 가끔 지나가는 별똥별 */
 (() => {
