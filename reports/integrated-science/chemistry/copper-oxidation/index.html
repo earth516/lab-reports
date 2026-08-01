@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>산화와 환원 실험(1) · 활동 보고서</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root{
+  --paper:#0c0e12; --surface:#171a20; --sunk:#1e222b;
+  --ink:#e8eaee; --body:#b4b9c4; --faint:#8b909b;
+  --line:#2a2e37; --line-soft:#22262b;
+  --sea:#7dd3c8; --sea-deep:#7dd3c8; --sea-soft:rgba(125,211,200,.14);
+  --coral:#e06a5b;
+  --copper:#d98a4f; --copper-bright:#e8a468; --oxide:#26221f;
+
+  --sans:'Pretendard','Pretendard Variable',-apple-system,system-ui,sans-serif;
+  --mono:var(--sans);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);
+  font-size:17px;line-height:1.75;letter-spacing:-.01em;word-break:keep-all;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3{margin:0;letter-spacing:-.025em;line-height:1.4}
+.mono{font-family:var(--mono)}
+
+.sheet{max-width:1060px;margin:0 auto;background:var(--surface);
+  border-left:1px solid var(--line);border-right:1px solid var(--line);min-height:100vh}
+@media(max-width:820px){.sheet{border:0}}
+
+header.top{background:#101216;color:#e8eaee;padding:1.5rem 2.6rem;border-bottom:1px solid var(--line)}
+header.top .kicker{font-family:var(--sans);font-size:.9rem;font-weight:600;
+  color:var(--sea);letter-spacing:-.01em;margin-bottom:.15rem}
+header.top h1{font-family:var(--sans);font-size:1.4rem;font-weight:700;color:#fff;letter-spacing:-.03em}
+@media(max-width:700px){header.top{padding:1.2rem 1.4rem}header.top h1{font-size:1.2rem}}
+
+nav{display:flex;background:var(--sunk);border-bottom:1px solid var(--line);
+  overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:20}
+nav::-webkit-scrollbar{display:none}
+.tab{flex:1 0 auto;padding:1rem 1.1rem;background:none;border:0;border-bottom:2px solid transparent;
+  font-family:var(--sans);font-size:.92rem;font-weight:600;color:var(--body);cursor:pointer;
+  white-space:nowrap;display:flex;gap:.55rem;align-items:baseline;transition:.16s;letter-spacing:-.01em}
+.tab .n{font-family:var(--mono);font-size:.76rem;color:var(--ink);font-weight:500;letter-spacing:0}
+.tab:hover{background:rgba(255,255,255,.06);color:var(--ink)}
+.tab.active{background:var(--surface);color:var(--sea);border-bottom-color:var(--sea);font-weight:700}
+.tab.done .n::after{content:"✓";margin-left:.25rem;color:var(--sea)}
+
+.wrap{padding:3rem 2.6rem 1rem}
+@media(max-width:700px){.wrap{padding:1.8rem 1.4rem .5rem}}
+.step{display:none}
+.step.active{display:block;animation:in .3s cubic-bezier(.16,1,.3,1)}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+h2.head{font-size:1.55rem;font-weight:700;margin-bottom:.4rem;
+  display:flex;align-items:baseline;gap:.75rem;letter-spacing:-.03em}
+h2.head .n{font-family:var(--mono);font-size:.8rem;color:var(--sea);font-weight:500;
+  letter-spacing:.06em;background:none;padding:0}
+.lead{color:var(--body);font-size:1.02rem;margin:0 0 2.6rem;padding-bottom:1.3rem;
+  border-bottom:1px solid var(--line)}
+
+.block{margin-bottom:2.4rem}
+.block h3{font-size:1.15rem;font-weight:700;margin-bottom:.5rem;color:var(--sea)}
+.block p{margin:0 0 .5rem;color:var(--body)}
+.block p:last-child{margin-bottom:0}
+.block b{color:var(--ink);font-weight:600}
+.rule{border:0;border-top:1px solid var(--line-soft);margin:2.6rem 0}
+.rules{margin:0;padding-left:1.3rem;color:var(--body)}
+.rules li{margin-bottom:.4rem}
+.rules li:last-child{margin-bottom:0}
+.check-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  padding:.9rem 1.1rem;border:1.5px solid var(--line);border-radius:10px;background:var(--sunk);
+  margin-top:1.2rem;font-size:1rem;color:var(--ink);transition:.14s}
+.check-toggle{display:flex;align-items:center;gap:.55rem;cursor:pointer;white-space:nowrap;font-weight:600}
+.check-toggle input[type="checkbox"]{width:18px;height:18px;flex:0 0 auto;accent-color:var(--sea);cursor:pointer}
+.check-row:has(input.invalid){border-color:var(--coral);background:rgba(224,106,91,.08)}
+
+.panel{background:var(--sunk);border:1px solid var(--line);border-radius:14px;padding:1.8rem}
+label{display:block;font-size:.85rem;color:var(--faint);margin-bottom:.5rem;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase}
+input,select,textarea{width:100%;padding:.65rem .8rem;border:1.5px solid var(--line);border-radius:12px;
+  background:var(--paper);font-family:var(--sans);font-size:1.03rem;color:var(--ink);
+  letter-spacing:-.01em;transition:.14s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--sea);
+  box-shadow:0 0 0 3px var(--sea-soft)}
+input::placeholder,textarea::placeholder{color:#5b616c}
+textarea{resize:vertical;line-height:1.95}
+.invalid{border-color:var(--coral)!important;background:rgba(224,106,91,.1)}
+.blank{display:inline-block;width:6.2rem;padding:.05rem .4rem;border:0;
+  border-bottom:2px solid var(--ink);border-radius:4px 4px 0 0;text-align:center;font-weight:600;
+  color:var(--ink);font-size:1.02rem;background:var(--paper);letter-spacing:-.01em}
+.blank.wide{width:9rem}
+.blank::placeholder{color:#5b616c;font-weight:400;font-size:.85em;letter-spacing:0}
+.blank:focus{outline:none;box-shadow:none;background:var(--surface);border-bottom-color:var(--sea)}
+.blank.invalid{border-bottom-color:var(--coral)!important;background:rgba(224,106,91,.1)}
+.blank.correct{border-bottom-color:#4ade80!important;background:rgba(74,222,128,.1)}
+
+/* 이론적 배경 : 보기(단어은행)에서 골라 채우는 방식 */
+.word-bank{display:flex;flex-wrap:wrap;gap:.5rem;padding:.85rem 1.1rem;background:var(--sunk);
+  border:1px solid var(--line);border-radius:10px;margin:.5rem 0 1rem;
+  font-weight:700;color:var(--sea);letter-spacing:.02em}
+.blank-select{display:inline-block;width:auto;min-width:6.6rem;padding:.25rem .6rem;border:0;
+  border-bottom:2px solid var(--ink);border-radius:4px 4px 0 0;text-align:center;font-weight:600;
+  color:var(--ink);font-size:1.02rem;background:var(--paper);letter-spacing:-.01em;cursor:pointer;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath fill='%238b909b' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right .55rem center;padding-right:1.6rem}
+.blank-select:focus{outline:none;background-color:var(--surface);border-bottom-color:var(--sea)}
+.blank-select.invalid{border-bottom-color:var(--coral)!important;background-color:rgba(224,106,91,.1)}
+.blank-select option{color:#141414;background:#fff}
+.suffix-field{display:flex;align-items:stretch;border:1.5px solid var(--line);border-radius:12px;
+  background:var(--paper);overflow:hidden;transition:.14s}
+.suffix-field:focus-within{border-color:var(--sea);box-shadow:0 0 0 3px var(--sea-soft)}
+.suffix-field input{flex:1;min-width:0;border:0;border-radius:0;box-shadow:none!important}
+.suffix-field .suffix{display:flex;align-items:center;padding:0 .85rem;font-size:1.03rem;
+  color:var(--body);background:var(--sunk);border-left:1px solid var(--line);white-space:nowrap}
+.suffix-field:has(input.invalid){border-color:var(--coral)!important}
+.hint{font-size:.92rem;color:var(--faint);margin:-.1rem 0 .75rem;letter-spacing:-.005em}
+
+/* 정보 입력 : 표 형태 */
+.info-form{width:100%;border-collapse:collapse;background:var(--surface);
+  border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.info-form td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);
+  padding:0;vertical-align:middle}
+.info-form tr:last-child td{border-bottom:0}
+.info-form td:last-child{border-right:0}
+.info-form td.lbl{width:1%;padding:0 1rem;font-size:.85rem;font-weight:700;color:var(--sea);
+  letter-spacing:.03em;background:var(--sunk);white-space:nowrap}
+.info-form input{width:100%;border:0;border-radius:0;background:transparent;
+  padding:.85rem 1rem;font-family:var(--sans);font-size:1.02rem;color:var(--ink);letter-spacing:-.01em}
+.info-form input:focus{outline:none;box-shadow:none;background:var(--sea-soft)}
+.info-form input.invalid{background:rgba(224,106,91,.1)}
+.suffix-field-compact{display:flex;align-items:stretch}
+.suffix-field-compact input{flex:1;min-width:0}
+.suffix-field-compact .suffix{display:flex;align-items:center;padding:0 .9rem;
+  font-size:1.02rem;color:var(--body);border-left:1px solid var(--line);white-space:nowrap}
+@media(max-width:700px){
+  .info-form, .info-form tbody, .info-form tr, .info-form td{display:block;width:100%}
+  .info-form td{border-right:0}
+  .info-form td.lbl{border-bottom:0;padding:.6rem 1rem .2rem}
+  .info-form td:not(.lbl){padding-bottom:.2rem}
+}
+
+/* 고정 안내 박스 */
+.fixed-note{display:flex;gap:.8rem;align-items:baseline;padding:.75rem 1.05rem;
+  background:var(--sunk);border:1px solid var(--line);border-radius:10px;margin-bottom:.8rem}
+.fixed-note:last-of-type{margin-bottom:1.6rem}
+.fixed-note b{flex:none;font-size:.82rem;font-weight:700;color:var(--sea);letter-spacing:.04em}
+.fixed-note span{color:var(--body)}
+
+.bar{display:flex;gap:.7rem;align-items:center;padding:1.6rem 2.6rem 3.2rem;
+  border-top:1px solid var(--line);margin-top:1.6rem;background:var(--sunk)}
+@media(max-width:700px){.bar{padding:1.2rem 1.4rem 2.4rem}}
+.btn{font-family:var(--sans);font-size:1rem;font-weight:700;padding:.72rem 1.7rem;border-radius:999px;
+  border:1.5px solid #39404b;background:var(--surface);color:var(--ink);cursor:pointer;
+  transition:.16s;letter-spacing:-.01em}
+.btn:hover{background:var(--sea-soft)}
+.btn:disabled{opacity:.3;cursor:not-allowed;background:var(--surface)}
+.btn.solid{background:var(--sea);color:#0c0e12;border-color:var(--sea)}
+.btn.solid:hover{background:#62beb3;border-color:#62beb3}
+.btn.quiet{border-color:transparent;color:var(--faint);background:transparent;padding:.5rem 1rem}
+.btn.quiet:hover{color:var(--body);background:transparent}
+.btn.small{font-size:.85rem;padding:.45rem 1rem}
+.grow{flex:1}
+
+.note{padding:.9rem 1.15rem;font-size:.95rem;border-radius:8px;margin-top:1.2rem;display:none}
+.note.err{display:block;background:rgba(224,106,91,.12);color:#f0a99e;border-left:3px solid var(--coral)}
+.note.ok{display:block;background:var(--sea-soft);color:var(--ink);border-left:3px solid var(--sea)}
+
+a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radius:999px;
+  background:var(--sea);color:#0c0e12;text-decoration:none;font-size:1rem;font-weight:700;
+  letter-spacing:-.01em;transition:.14s}
+a.submit:hover{background:#62beb3}
+
+/* 이론적 배경 : 비교 표 */
+.rx-list{margin:0 0 1.4rem;padding-left:1.3rem;color:var(--body)}
+.rx-list li{margin-bottom:.9rem}
+.rx-list .eq-box{font-size:.92rem;padding:.8rem 1rem;margin:.6rem 0 0;line-height:1.7}
+table.cmp{width:100%;border-collapse:collapse;font-size:.95rem;margin-top:.4rem}
+table.cmp th,table.cmp td{border:1px solid var(--line);padding:.7rem .9rem;text-align:left;vertical-align:top}
+table.cmp th{background:var(--sunk);font-weight:700;color:var(--ink);width:22%}
+table.cmp td{color:var(--body)}
+table.cmp td b{color:var(--ink)}
+.eq-box{background:var(--sunk);border:1px solid var(--line);border-radius:10px;
+  padding:1rem 1.2rem;font-family:var(--mono);font-size:1rem;color:var(--ink);
+  text-align:center;margin:.8rem 0 1.2rem}
+
+/* ===== 보고서 : 항상 흰 종이 위에 검은 글씨로 인쇄되도록 지역 변수 재정의 ===== */
+#report{background:#fff;padding:20mm 16mm;color:#141414;font-size:15px;line-height:1.85;
+  overflow-wrap:break-word;word-break:break-word;font-family:var(--sans);
+  --ink:#141414;--body:#4a4a4a;--faint:#9a9a9a;--line:#e0e0e0;--line-soft:#ececec;
+  --sea:#141414;--sea-deep:#000000;--sea-soft:#ececec}
+#report .r-head{border-bottom:2px solid var(--sea);padding-bottom:.8rem;margin-bottom:.5rem;
+  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem;
+  page-break-inside:avoid}
+#report .r-head h2{font-size:1.3rem;font-weight:700;color:var(--sea-deep)}
+#report .r-head .who{display:block;font-family:var(--mono);font-size:.82rem;color:var(--body)}
+#report .r-sec{margin-top:1.8rem}
+#report .r-lab{font-family:var(--sans);font-size:1.05rem;font-weight:700;letter-spacing:.02em;
+  color:var(--sea);border-bottom:1px solid var(--line);padding-bottom:.3rem;margin-bottom:.7rem;
+  display:block;background:none;page-break-after:avoid}
+#report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3}
+#report .r-eq{font-family:var(--mono);color:var(--copper);font-weight:700;margin-top:.3rem}
+#report table.r-info{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:.92rem;
+  table-layout:fixed;page-break-inside:avoid}
+#report table.r-info td{border:1px solid var(--line);text-align:left;padding:.6rem .85rem;
+  color:#38484f;vertical-align:top}
+#report table.r-info td.k{background:#f5f5f5;font-weight:700;color:#141414;width:19%;white-space:nowrap}
+.site-footer{padding:1.4rem 2.6rem 1.8rem;background:var(--paper);border-top:1px solid var(--line)}
+.site-footer-top{position:relative;display:flex;align-items:center;justify-content:flex-end;
+  min-height:2.5rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.site-footer-copy{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  margin:0;font-size:.76rem;color:var(--faint);line-height:1.25rem;text-align:center;white-space:nowrap}
+.site-footer-links{display:flex;align-items:center;gap:.6rem}
+@media(max-width:640px){
+  .site-footer-top{position:static;flex-direction:column-reverse;align-items:center;gap:.8rem}
+  .site-footer-copy{position:static;transform:none;white-space:normal}
+}
+.yt-badge{display:inline-flex;align-items:center;gap:.5rem;height:2.5rem;padding:0 1.1rem 0 .85rem;
+  box-sizing:border-box;background:var(--surface);border:1px solid var(--line);border-radius:999px;
+  color:var(--ink);text-decoration:none;font-weight:700;font-size:.8rem;
+  transition:border-color .15s,transform .1s}
+.yt-badge:hover{border-color:var(--sea);transform:translateY(-1px)}
+.yt-badge .play{display:inline-flex;align-items:center;justify-content:center;
+  width:1.15rem;height:1.15rem;border-radius:.35rem;background:var(--sea);flex:none}
+.yt-badge .play::before{content:"";width:0;height:0;margin-left:2px;
+  border-style:solid;border-width:4px 0 4px 7px;border-color:transparent transparent transparent #0c0e12}
+.yt-badge .badge-icon{font-size:.85rem;line-height:1}
+@media print{nav,header.top,.bar{display:none!important}}
+
+/* ===== 04 실험 및 관찰 : 하위 단계 탭 ===== */
+.exp-tabbar{display:flex;flex-wrap:wrap;gap:.5rem;border-bottom:1.5px solid var(--line);margin-bottom:1.4rem}
+.exp-tab{flex:1 1 45%;padding:.7rem .8rem;background:none;border:0;border-bottom:2px solid transparent;
+  font-family:var(--sans);font-size:.86rem;font-weight:600;color:var(--body);cursor:pointer;
+  display:flex;gap:.5rem;align-items:baseline;transition:.16s}
+@media(min-width:640px){.exp-tab{flex:1 0 auto;font-size:.9rem}}
+.exp-tab .n{font-family:var(--mono);font-size:.72rem;width:18px;height:18px;line-height:18px;
+  text-align:center;border-radius:50%;background:var(--line);color:var(--body);flex:none}
+.exp-tab.active{color:var(--ink);border-bottom-color:var(--sea);font-weight:700}
+.exp-tab.active .n{background:var(--sea);color:#0c0e12}
+.exp-tab.locked{opacity:.4;cursor:not-allowed;pointer-events:none}
+.exp-tab.done .n{background:var(--copper);color:#fff}
+
+.exp-pane{display:none}
+.exp-pane.active{display:block;animation:in .25s ease}
+.exp-pane .hidden{display:none}
+.sub-next{margin-top:1.2rem}
+
+/* 준비물 체크리스트 */
+.prep-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem}
+@media(max-width:600px){.prep-grid{grid-template-columns:1fr}}
+.prep-item{display:flex;align-items:center;gap:.7rem;padding:.9rem 1rem;border:1.5px solid var(--line);
+  border-radius:12px;background:var(--sunk);cursor:pointer;transition:.14s}
+.prep-item:has(input:checked){border-color:var(--sea);background:var(--sea-soft)}
+.prep-item .ico{font-size:1.35rem;flex:none}
+.prep-item input{width:18px;height:18px;flex:none;accent-color:var(--sea);cursor:pointer}
+.prep-item .lbl-txt{flex:1;color:var(--ink);font-weight:600;font-size:.95rem}
+
+/* 가열 전 모습 */
+.before-card{position:relative;border-radius:14px;overflow:hidden;max-width:480px;margin:0 auto;
+  background:radial-gradient(circle at 30% 30%, #8b8580, #736e6a 80%);
+  aspect-ratio:16/9;display:flex;align-items:center;justify-content:center}
+.before-strip{width:44%;height:11%;border-radius:2px;transform:rotate(-6deg);
+  background:linear-gradient(100deg,var(--copper-bright) 0%,var(--copper) 55%,#6f3f22 100%);
+  box-shadow:0 4px 10px rgba(0,0,0,.35)}
+.example-answer{margin-top:.6rem}
+.example-answer .note{margin-top:.6rem}
+
+/* 씬 + 드래그 — 크기를 고정 상한으로 묶어 두 장면(겉불꽃/속불꽃)이 항상 같은 비율로 보이게 한다 */
+.frame-card{position:relative;border-radius:14px;overflow:hidden;max-width:600px;margin:0 auto;
+  background:radial-gradient(circle at 30% 20%, #8b8580, #736e6a 80%);
+  aspect-ratio:16/10;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+
+.safety-badge{position:absolute;top:12px;left:12px;background:var(--coral);color:#fff;font-weight:700;
+  font-size:11.5px;padding:6px 10px;border-radius:8px;z-index:5;line-height:1.4}
+
+.scene-rig{position:relative;width:100%;height:100%}
+.lamp{position:absolute;left:50%;bottom:16%;transform:translateX(-50%);width:30%;max-width:140px;z-index:1}
+/* 집게 + 구리판을 올려두는 유리 접시(페트리 접시) 받침 — 왼쪽 아래 */
+.bench{position:absolute;bottom:8%;left:6%;width:112px;height:32px;border-radius:50%;
+  background:radial-gradient(ellipse at 38% 30%, rgba(255,255,255,.55), rgba(205,215,220,.28) 55%, rgba(150,162,168,.35));
+  border:2px solid rgba(255,255,255,.6);
+  box-shadow:0 5px 10px rgba(0,0,0,.3), inset 0 2px 5px rgba(255,255,255,.5);
+  z-index:0}
+.lamp-body{width:100%;padding-top:78%;margin:0 auto;border-radius:16px 16px 40px 40px;background:rgba(255,182,193,.35);border:1.5px solid rgba(255,255,255,.4)}
+.lamp-neck{width:26%;height:16%;margin:0 auto;background:rgba(255,255,255,.25);border:1.5px solid rgba(255,255,255,.4);border-bottom:none}
+.cork{width:34%;height:11%;margin:0 auto;background:#e9c99a;border-radius:3px 3px 0 0;position:relative;z-index:2}
+.wick{width:7%;height:9%;margin:0 auto;background:#3a332c;position:relative;z-index:2}
+
+/* 불꽃 — center: left:50% + transform:translateX(-50%) 이 방식 '하나만' 사용한다.
+   (예전 버그: margin-left 트릭과 flicker 애니메이션의 translateX(-50%)가 동시에 적용되어
+    불꽃이 자기 너비의 절반만큼 왼쪽으로 이중으로 밀려나 있었다. 아래처럼 transform 한 곳에서만
+    중앙 정렬을 하면 항상 알코올램프 중앙에 정확히 위치한다.) */
+.flame-wrap{position:relative;width:54%;height:140px;margin:0 auto -3%;z-index:3}
+.flame{position:absolute;bottom:0;left:50%;transform-origin:bottom center;border-radius:50%/60% 60% 40% 40%;
+  animation:flicker 1.6s ease-in-out infinite}
+.flame.outer{width:74%;height:100%;background:radial-gradient(circle at 50% 72%, #ff9245, rgba(255,146,69,.18) 78%, transparent 92%);opacity:.92}
+.flame.inner{width:36%;height:60%;background:radial-gradient(circle at 50% 78%, #ffe08a, rgba(255,224,138,.25) 72%, transparent 92%)}
+@keyframes flicker{0%,100%{transform:translateX(-50%) scaleY(1) rotate(0deg)}30%{transform:translateX(-50%) scaleY(1.06) rotate(-1.5deg)}60%{transform:translateX(-50%) scaleY(.96) rotate(2deg)}}
+
+/* 집게 + 구리판을 하나의 뻣뻣한(rigid) 덩어리로 다뤄서, 움직일 때 부분별로 따로 돌아가지 않게 한다.
+   놓이는 위치(불꽃 위)는 JS에서 실제 좌표를 계산해 --dx/--dy로 정확히 스냅시킨다.
+   커진 불꽃에 맞춰 집게·구리판도 함께 키웠다. */
+.tongs-wrap{
+  position:absolute; bottom:13%; left:7%;
+  width:100px;
+  display:flex; flex-direction:column; align-items:center;
+  transform: translate(var(--dx,0px), var(--dy,0px)) rotate(var(--rot,-10deg));
+  transform-origin:bottom center;
+  transition: transform .5s cubic-bezier(.4,0,.2,1);
+  z-index:6; cursor:grab; touch-action:none;
+}
+.tongs-wrap.dragging{ transition:none; cursor:grabbing; filter:drop-shadow(0 8px 10px rgba(0,0,0,.4)); }
+.tongs-wrap.locked{ cursor:not-allowed; opacity:.45; pointer-events:none; }
+.tongs-wrap.settled{ cursor:default; }
+.tong-svg{display:block;margin:0 auto;pointer-events:none}
+.copper-strip{width:82px;height:20px;margin-top:-15px;border-radius:2px;
+  background:linear-gradient(100deg,var(--copper-bright) 0%,var(--copper) 55%,#6f3f22 100%);
+  box-shadow:inset 0 -3px 5px rgba(0,0,0,.25),0 3px 8px rgba(0,0,0,.35);transition:background 1.5s ease;pointer-events:none}
+.copper-strip.tip-oxidized{background:linear-gradient(100deg,var(--copper-bright) 0%,var(--copper) 34%,#3a322c 55%,var(--oxide) 100%)}
+.copper-strip.tip-reduced{background:linear-gradient(100deg,var(--copper-bright) 0%,var(--copper) 60%,#6f3f22 100%)}
+
+.heat-bar{position:absolute;left:12px;right:12px;bottom:10px;z-index:5;display:flex;align-items:center;gap:8px;
+  opacity:0;transition:opacity .2s ease}
+.heat-bar.show{opacity:1}
+.heat-bar .lbl{font-size:11px;font-weight:700;color:#fff;flex:none;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.heat-bar .track{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.3);position:relative;overflow:hidden}
+.heat-bar .track .fill{position:absolute;left:0;top:0;bottom:0;width:0%;background:var(--copper-bright)}
+
+.caption{font-size:.92rem;color:var(--body);margin-top:.8rem}
+.exp-instruction{font-size:.85rem;color:var(--faint);margin-top:.5rem;margin-bottom:1.2rem}
+
+/* 실험 장면 오른쪽 위에 얹는 분자 관찰 돋보기 (조금 더 크게) */
+.loupe-mini{position:absolute;top:10px;right:10px;width:128px;height:128px;border-radius:50%;
+  border:3px solid rgba(255,255,255,.6);
+  background:radial-gradient(circle at 35% 30%, var(--sunk), var(--paper) 55%), var(--surface);
+  box-shadow:0 4px 10px rgba(0,0,0,.35), inset 0 0 14px rgba(0,0,0,.4);
+  overflow:hidden;z-index:7}
+.loupe-mini .loupe-surface{position:absolute;bottom:0;left:0;right:0;height:34%;
+  background:linear-gradient(180deg,var(--copper),#6f3f22);transition:background 1.4s ease}
+.loupe-mini .loupe-surface.oxidized{background:linear-gradient(180deg,#3a322c,var(--oxide))}
+.loupe-mini .loupe-mol{position:absolute;display:flex;align-items:center;gap:1px;transition:all 2.1s ease}
+.loupe-mini .atom{width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:#fff;font-weight:900}
+.atom.O{background:#e0673a}
+.atom.C{background:#8b8f99}
+.status-line{text-align:center;font-size:.85rem;color:var(--body);min-height:18px;margin:.9rem 0 0}
+
+/* 실험이 끝난 뒤 접시로 가져와 확대해서 살펴보는 모달 */
+.zoom-modal{position:fixed;inset:0;background:rgba(6,8,10,.72);display:none;
+  align-items:center;justify-content:center;z-index:999;padding:1.6rem}
+.zoom-modal.show{display:flex}
+.zoom-card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;
+  padding:2.4rem 2rem 2rem;max-width:380px;width:100%;text-align:center;
+  box-shadow:0 24px 60px rgba(0,0,0,.55);animation:zoomIn .22s cubic-bezier(.16,1,.3,1)}
+@keyframes zoomIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.zoom-close{position:absolute;top:.7rem;right:.7rem;width:32px;height:32px;border-radius:50%;
+  border:1px solid var(--line);background:var(--sunk);color:var(--ink);font-size:1.15rem;line-height:1;
+  cursor:pointer}
+.zoom-close:hover{background:var(--sea-soft)}
+.zoom-strip{width:230px;height:60px;margin:0 auto 1.3rem;border-radius:7px;
+  background:linear-gradient(100deg,var(--copper-bright) 0%,var(--copper) 55%,#6f3f22 100%);
+  box-shadow:0 10px 22px rgba(0,0,0,.45), inset 0 -4px 8px rgba(0,0,0,.3)}
+.zoom-strip.tip-oxidized{background:linear-gradient(100deg,var(--copper-bright) 0%,var(--copper) 34%,#3a322c 55%,var(--oxide) 100%)}
+.zoom-strip.tip-reduced{background:linear-gradient(100deg,var(--copper-bright) 0%,var(--copper) 60%,#6f3f22 100%)}
+.zoom-title{font-weight:700;font-size:1.12rem;color:var(--ink);margin:0 0 .5rem}
+.zoom-desc{color:var(--body);font-size:.92rem;line-height:1.6;margin:0}
+.answer-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.5rem;text-align:left;max-height:55vh;overflow-y:auto}
+.answer-row{display:flex;flex-direction:column;gap:.2rem;padding:.65rem .85rem;
+  background:var(--sunk);border:1px solid var(--line);border-radius:8px;font-size:.92rem;text-align:left}
+.answer-row b{font-family:var(--sans);color:var(--faint);font-weight:600;font-size:.76rem;
+  text-transform:uppercase;letter-spacing:.02em}
+.answer-row span{color:var(--ink);font-weight:700;font-size:1rem}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<header class="top">
+  <div class="kicker">통합과학</div>
+  <h1>산화·환원 실험 (1) - 구리판의 변화</h1>
+</header>
+
+<nav>
+  <button class="tab active" data-step="1"><span class="n">01</span>정보 입력</button>
+  <button class="tab" data-step="2"><span class="n">02</span>안전 수칙</button>
+  <button class="tab" data-step="3"><span class="n">03</span>이론적 배경</button>
+  <button class="tab" data-step="4"><span class="n">04</span>실험하기</button>
+  <button class="tab" data-step="5"><span class="n">05</span>결론 및 고찰</button>
+  <button class="tab" data-step="6"><span class="n">06</span>보고서</button>
+</nav>
+
+<div class="wrap">
+
+<!-- 01 정보 입력 -->
+<section class="step active" data-step="1">
+  <h2 class="head"><span class="n">01</span>정보 입력</h2>
+  <p class="lead">보고서에 표시될 정보입니다.</p>
+
+  <table class="info-form">
+    <tbody>
+      <tr>
+        <td class="lbl">일자</td>
+        <td><input type="date" id="f_date" class="save mono" required></td>
+        <td class="lbl">학번</td>
+        <td><input id="f_id" class="save mono" inputmode="numeric" maxlength="10" placeholder="20100" required></td>
+        <td class="lbl">이름</td>
+        <td><input id="f_name" class="save" maxlength="20" placeholder="홍길동" required></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 02 실험 전 안전 수칙 -->
+<section class="step" data-step="2">
+  <h2 class="head"><span class="n">02</span>실험 전 안전 수칙</h2>
+  <p class="lead">알코올램프를 사용하기 전에 꼭 읽어 주세요.</p>
+
+  <div class="fixed-note"><b>목표</b><span id="disp_goal"></span></div>
+  <div class="fixed-note"><b>준비물</b><span id="disp_materials"></span></div>
+
+  <div class="block">
+    <h3>유의사항</h3>
+    <ul class="rules">
+      <li>겉불꽃과 속불꽃 모두 매우 뜨거우므로 화상에 주의한다.</li>
+      <li>구리판은 반드시 집게로 집어서 다루고, 맨손으로 만지지 않는다.</li>
+      <li>불꽃 위로 얼굴이나 옷소매를 가까이 가져가지 않는다.</li>
+      <li>실험이 끝나면 뚜껑을 덮어 불을 끄고, 가열한 구리판은 충분히 식힌 뒤 만진다.</li>
+      <li>화상을 입었다면 즉시 찬물로 식히고 선생님께 알린다.</li>
+    </ul>
+  </div>
+
+  <div class="check-row">
+    <span>위 유의사항을 모두 확인하였나요?</span>
+    <label class="check-toggle">
+      <input type="checkbox" id="chk_safety" class="save" required>
+      <span>확인하였습니다.</span>
+    </label>
+  </div>
+</section>
+
+<!-- 03 이론적 배경 -->
+<section class="step" data-step="3">
+  <h2 class="head"><span class="n">03</span>이론적 배경</h2>
+  <p class="lead">실험을 시작하기 전에 산화·환원의 기본 개념과 겉불꽃·속불꽃의 차이를 정리해 보세요. 빈칸의 정답을 맞혀야 다음 단계로 넘어갈 수 있어요.</p>
+
+  <div class="block">
+    <h3>산소가 관여하는 반응의 규칙</h3>
+    <p>광합성, 연소, 철의 제련과 같이 산소가 관여하는 반응이 일어날 때는 다음과 같은 규칙이 있다.</p>
+    <ul class="rx-list">
+      <li>광합성 — 이산화 탄소가 <input class="blank save" id="ph1" placeholder="ㅅㅅ" required>를 잃고 포도당으로 변한다.
+        <div class="eq-box">6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂ &nbsp;(빛에너지 이용)</div>
+      </li>
+      <li>연소 — 물질이 산소를 얻어 타면서 <input class="blank save" id="ph2" placeholder="ㅇ" required>과 빛을 낸다.
+        <div class="eq-box">CH₄ + 2O₂ → CO₂ + 2H₂O &nbsp;(+ 열과 빛)</div>
+      </li>
+      <li>철의 제련 — 철광석(산화철)이 <input class="blank save" id="ph3" placeholder="ㅅㅅ" required>를 잃고 순수한 철로 변한다.
+        <div class="eq-box">2C + O₂ → 2CO &nbsp;(코크스 + 산소 → 일산화 탄소)<br>Fe₂O₃ + 3CO → 2Fe + 3CO₂ &nbsp;(산화철 + 일산화 탄소 → 철 + 이산화 탄소)</div>
+      </li>
+    </ul>
+    <p>물질이 산소를 얻는 반응을 <input class="blank save" id="r2" placeholder="ㅅㅎ" required>라 하고, 물질이 산소를 잃는 반응을 <input class="blank save" id="r4" placeholder="ㅎㅇ" required>이라고 한다.</p>
+    <div class="example-answer">
+      <button class="btn small quiet" type="button" id="check-theory-a">채점하기</button>
+      <div id="theory-a-example" class="note"></div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <div class="block">
+    <h3>겉불꽃과 속불꽃의 차이</h3>
+    <p class="hint">알코올램프의 불꽃은 위치에 따라 산소 공급량이 달라 서로 다른 반응이 일어난다. 빈칸을 채워 표를 완성해 보세요.</p>
+    <table class="cmp">
+      <tr><th>구분</th><th>겉불꽃</th><th>속불꽃</th></tr>
+      <tr><td>위치</td><td>불꽃의 가장 바깥쪽, 공기와 맞닿는 부분</td><td>불꽃의 안쪽, 심지에 가까운 부분</td></tr>
+      <tr><td>산소 공급</td>
+        <td><input class="blank save" id="sg1" placeholder="ㅍㅂㅎㄷ" required> (공기와 직접 맞닿음)</td>
+        <td><input class="blank save" id="sg2" placeholder="ㅂㅈㅎㄷ" required></td>
+      </tr>
+      <tr><td>주요 기체</td><td>산소(O₂)</td><td>일산화 탄소(CO)</td></tr>
+      <tr><td>구리판에 미치는 영향</td>
+        <td>구리가 산소를 얻어 <input class="blank save" id="sg3" placeholder="ㅅㅎ" required> → 검게 변함 (CuO 생성)</td>
+        <td>산화구리가 산소를 잃어 <input class="blank save" id="sg4" placeholder="ㅎㅇ" required> → 다시 붉게 변함 (Cu 생성)</td>
+      </tr>
+    </table>
+    <div class="example-answer">
+      <button class="btn small quiet" type="button" id="check-theory-b">채점하기</button>
+      <div id="theory-b-example" class="note"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 실험하기 (4단계로 진행) -->
+<section class="step" data-step="4">
+  <h2 class="head"><span class="n">04</span>실험하기</h2>
+  <p class="lead">아래 순서대로 하나씩 진행하며 구리판의 변화를 직접 관찰해 보세요.</p>
+
+  <div class="exp-tabbar">
+    <button class="exp-tab active" data-sub="1"><span class="n">1</span>준비물 확인</button>
+    <button class="exp-tab locked" data-sub="2"><span class="n">2</span>가열 전 모습</button>
+    <button class="exp-tab locked" data-sub="3"><span class="n">3</span>겉불꽃 변화</button>
+    <button class="exp-tab locked" data-sub="4"><span class="n">4</span>속불꽃 변화</button>
+    <button class="exp-tab locked" data-sub="5"><span class="n">5</span>실험 해석하기</button>
+  </div>
+
+  <!-- 1. 준비물 확인 -->
+  <div class="exp-pane active" data-sub-pane="1">
+    <p class="hint">실험에 필요한 준비물을 하나씩 확인해 보세요.</p>
+    <div class="prep-grid">
+      <label class="prep-item"><span class="ico">🟠</span><span class="lbl-txt">구리판</span><input type="checkbox" class="save prep-chk" id="chk_prep_cu"></label>
+      <label class="prep-item"><span class="ico">🏮</span><span class="lbl-txt">알코올램프</span><input type="checkbox" class="save prep-chk" id="chk_prep_lamp"></label>
+      <label class="prep-item"><span class="ico">🥢</span><span class="lbl-txt">도가니 집게</span><input type="checkbox" class="save prep-chk" id="chk_prep_tongs"></label>
+      <label class="prep-item"><span class="ico">🥽</span><span class="lbl-txt">보안경</span><input type="checkbox" class="save prep-chk" id="chk_prep_goggles"></label>
+    </div>
+    <button class="btn sub-next" type="button" id="subNext1" disabled>다음 단계 →</button>
+  </div>
+
+  <!-- 2. 가열 전 구리판 모습 확인 -->
+  <div class="exp-pane" data-sub-pane="2">
+    <p class="hint">가열하기 전 구리판의 원래 색을 눈으로 확인하고, 나중에 변화와 비교해 보세요.</p>
+    <div class="before-card"><div class="before-strip"></div></div>
+    <p class="block" style="margin:1rem 0 0;">가열하기 전 구리판은 <input class="blank save" id="b0" placeholder="ㅂㅇ" required> 색이다.</p>
+    <div class="example-answer">
+      <button class="btn small quiet" type="button" id="check-b0">채점하기</button>
+      <div id="b0-example" class="note"></div>
+    </div>
+    <button class="btn sub-next" type="button" id="subNext2" disabled>다음 단계 →</button>
+  </div>
+
+  <!-- 3. 겉불꽃에 넣었을 때 -->
+  <div class="exp-pane" data-sub-pane="3">
+    <p class="exp-instruction" id="instrGa">🖐️ 구리판을 손가락(또는 마우스)으로 눌러 그대로 끌어서, 겉불꽃 위에 놓아 보세요. 반응이 끝난 뒤 접시로 다시 가져오면 확대해서 살펴볼 수 있어요.</p>
+
+    <div class="frame-card" id="sceneGa">
+      <div class="safety-badge">⚠️ 안전<br>화상에 주의하세요.</div>
+      <div class="loupe-mini" id="loupeGa"><div class="loupe-surface" id="loupeSurfaceGa"></div></div>
+      <div class="scene-rig">
+        <div class="bench"></div>
+        <div class="lamp">
+          <div class="flame-wrap"><div class="flame outer"></div><div class="flame inner"></div></div>
+          <div class="wick"></div><div class="cork"></div><div class="lamp-neck"></div><div class="lamp-body"></div>
+        </div>
+        <div class="tongs-wrap" id="tongsWrapGa">
+          <svg class="tong-svg" viewBox="20 85 40 125" width="46" height="146">
+            <rect x="37" y="93" width="5" height="95" rx="2" fill="#d8d4c8"/>
+            <line x1="35" y1="186" x2="33" y2="197" stroke="#c0bab0" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="43" y1="186" x2="45" y2="197" stroke="#c0bab0" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <div class="copper-strip" id="copperStripGa"></div>
+        </div>
+      </div>
+      <div class="heat-bar" id="heatBarGa"><span class="lbl">🔥 가열 중</span><div class="track"><div class="fill" id="fillGa"></div></div></div>
+    </div>
+
+    <div class="block" style="margin-top:1.4rem;">
+      <h3>(가) 겉불꽃에 넣었을 때</h3>
+      <p>구리판 표면이 <input class="blank save" id="b1" placeholder="ㄱㅇ" required> 색으로 변했다. 이는 구리가 산소와 결합하여 산화구리(CuO)가 되는 <input class="blank save" id="b2" placeholder="ㅅㅎ" required> 반응이다.</p>
+      <div class="eq-box">2Cu + O₂ → 2CuO &nbsp;&nbsp;(구리 + 산소 → 산화 구리(Ⅱ))</div>
+      <div class="example-answer">
+        <button class="btn small quiet" type="button" id="check-ga-obs">채점하기</button>
+        <div id="ga-obs-example" class="note"></div>
+      </div>
+    </div>
+
+    <button class="btn small quiet" type="button" id="retryGa" style="margin-top:.4rem">↺ 다시 해보기</button>
+    <button class="btn sub-next" type="button" id="subNext3" disabled>다음 단계 →</button>
+  </div>
+
+  <!-- 4. 속불꽃에 넣었을 때 -->
+  <div class="exp-pane" data-sub-pane="4">
+    <p class="exp-instruction" id="instrNa">🖐️ 이번엔 검게 변한 구리판을 끌어서 속불꽃 위에 놓아 보세요. 반응이 끝난 뒤 접시로 다시 가져오면 확대해서 살펴볼 수 있어요.</p>
+
+    <div class="frame-card" id="sceneNa">
+      <div class="loupe-mini" id="loupeNa"><div class="loupe-surface oxidized" id="loupeSurfaceNa"></div></div>
+      <div class="scene-rig">
+        <div class="bench"></div>
+        <div class="lamp">
+          <div class="flame-wrap"><div class="flame outer" style="opacity:.35"></div><div class="flame inner"></div></div>
+          <div class="wick"></div><div class="cork"></div><div class="lamp-neck"></div><div class="lamp-body"></div>
+        </div>
+        <div class="tongs-wrap locked" id="tongsWrapNa">
+          <svg class="tong-svg" viewBox="20 85 40 125" width="46" height="146">
+            <rect x="37" y="93" width="5" height="95" rx="2" fill="#d8d4c8"/>
+            <line x1="35" y1="186" x2="33" y2="197" stroke="#c0bab0" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="43" y1="186" x2="45" y2="197" stroke="#c0bab0" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <div class="copper-strip tip-oxidized" id="copperStripNa"></div>
+        </div>
+      </div>
+      <div class="heat-bar" id="heatBarNa"><span class="lbl">🔥 가열 중</span><div class="track"><div class="fill" id="fillNa"></div></div></div>
+    </div>
+
+    <div class="block" style="margin-top:1.4rem;">
+      <h3>(나) 속불꽃에 다시 넣었을 때</h3>
+      <p>검게 변했던 부분이 다시 <input class="blank save" id="b3" placeholder="ㅂㅇ" required> 색으로 돌아왔다. 이는 산화구리가 산소를 잃는 <input class="blank save" id="b4" placeholder="ㅎㅇ" required> 반응이다.</p>
+      <div class="eq-box">CuO + CO → Cu + CO₂ &nbsp;&nbsp;(산화 구리(Ⅱ) + 일산화 탄소 → 구리 + 이산화 탄소)</div>
+      <div class="example-answer">
+        <button class="btn small quiet" type="button" id="check-na-obs">채점하기</button>
+        <div id="na-obs-example" class="note"></div>
+      </div>
+    </div>
+
+    <button class="btn small quiet" type="button" id="retryNa" style="margin-top:.4rem">↺ 다시 해보기</button>
+    <button class="btn sub-next" type="button" id="subNext4" disabled>다음 단계 →</button>
+  </div>
+
+  <!-- 5. 실험 해석하기 -->
+  <div class="exp-pane" data-sub-pane="5">
+    <p class="hint">겉불꽃과 속불꽃의 특징과 관련지어, 과정에서 관찰한 변화가 나타나는 까닭을 아래 순서대로 하나씩 채워가며 정리해 보세요.</p>
+
+    <div class="block">
+      <h3>① 겉불꽃의 특징</h3>
+      <p>겉불꽃은 <input class="blank save" id="i1" placeholder="ㅅㅅ" required>가 풍부하다는 특징이 있다.</p>
+    </div>
+    <div class="block">
+      <h3>② 겉불꽃에서 구리판에 일어난 일</h3>
+      <p>그래서 구리판은 <input class="blank save" id="i2" placeholder="ㅅㅅ" required>를 얻어 <input class="blank save" id="i3" placeholder="ㅅㅎ" required>되어 검게 변했다.</p>
+    </div>
+    <div class="block">
+      <h3>③ 속불꽃의 특징</h3>
+      <p>속불꽃은 산소가 부족하고 일산화 탄소가 많다는 특징이 있다.</p>
+    </div>
+    <div class="block">
+      <h3>④ 속불꽃에서 구리판에 일어난 일</h3>
+      <p>그래서 구리판은 <input class="blank save" id="i5" placeholder="ㅅㅅ" required>를 잃어 <input class="blank save" id="i6" placeholder="ㅎㅇ" required>되어 다시 붉게 변했다.</p>
+      <div class="example-answer">
+        <button class="btn small quiet" type="button" id="check-interpret">채점하기</button>
+        <div id="interpret-example" class="note"></div>
+      </div>
+    </div>
+    <div class="block">
+      <h3>⑤ 전체 정리</h3>
+      <p class="hint">위 ①~④에서 답한 내용을 이어 붙여, 하나의 완결된 문단으로 정리해 보세요.</p>
+      <textarea class="save" id="reason" rows="5" required placeholder="예: 겉불꽃은 공기와 맞닿아 있어 산소가 풍부하게 공급되므로 구리가 산소를 얻어 산화되어 검게 변한다. 반대로 속불꽃은…"></textarea>
+      <div class="example-answer">
+        <button class="btn small quiet" type="button" id="show-reason">예시 답안 보기</button>
+        <div id="reason-example" class="note"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 결론 및 성찰 -->
+<section class="step" data-step="5">
+  <h2 class="head"><span class="n">05</span>결론 및 고찰</h2>
+  <p class="lead">실험 결과를 바탕으로 산화·환원 반응을 정리하고, 우리 생활 속 예를 찾아 성찰해 보세요.</p>
+
+  <div class="block">
+    <h3>실험 결과 정리하기</h3>
+    <p>붉은색의 구리판을 알코올램프의 겉불꽃에 넣어 가열하면 불꽃에 닿은 부분이 <input class="blank save" id="c1" placeholder="ㄱㅇㅅ" required>으로 변한다. 이것은 구리(Cu)가 산소를 <input class="blank save" id="c2" placeholder="ㅇㅇ" required> <input class="blank save" id="c3" placeholder="ㅅㅎ" required>되어 산화 구리(Ⅱ)(CuO)로 변하기 때문이다.</p>
+    <div class="eq-box">산화&nbsp;&nbsp; 2Cu + O₂ → 2CuO &nbsp;&nbsp;(구리 + 산소 → 산화 구리(Ⅱ))</div>
+    <p>검은색의 산화 구리(Ⅱ)를 알코올램프의 속불꽃에 넣어 가열하면 불꽃에 닿은 부분이 겉불꽃에 넣어 가열하기 전처럼 <input class="blank save" id="c4" placeholder="ㅂㅇㅅ" required>으로 변한다. 이것은 산화 구리(Ⅱ)가 산소를 <input class="blank save" id="c5" placeholder="ㅇㅇ" required> <input class="blank save" id="c6" placeholder="ㅎㅇ" required>되어 구리로 변하기 때문이다.</p>
+    <p>산화 구리(Ⅱ)가 산소를 잃어 환원되어 구리로 변할 때, 속불꽃 속의 일산화 탄소(CO)는 산소를 얻어 <input class="blank save" id="c7" placeholder="ㅅㅎ" required>되어 이산화 탄소(CO₂)로 변한다. 이처럼 어떤 물질이 산소를 얻을 때 다른 물질은 산소를 잃으므로, 산화와 환원은 <input class="blank save wide" id="c8" placeholder="ㄷㅅㅇ" required> 일어난다.</p>
+    <div class="example-answer">
+      <button class="btn small quiet" type="button" id="check-conclusion-a">채점하기</button>
+      <div id="conclusion-a-result" class="note"></div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <div class="block">
+    <h3>㉠, ㉡에 들어갈 알맞은 말을 써 보자</h3>
+    <div class="eq-box">CuO + CO → Cu + CO₂<br><span style="font-size:.85rem;color:var(--faint);">산화 구리(Ⅱ) + 일산화 탄소 → 구리 + 이산화 탄소</span></div>
+    <p>CuO가 Cu로 변하는 반응은 ㉠( <input class="blank save" id="g1" placeholder="ㅎㅇ" required> )이고, CO가 CO₂로 변하는 반응은 ㉡( <input class="blank save" id="g2" placeholder="ㅅㅎ" required> )이다.</p>
+    <div class="example-answer">
+      <button class="btn small quiet" type="button" id="check-conclusion-b">채점하기</button>
+      <div id="conclusion-b-result" class="note"></div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <div class="block">
+    <h3>우리 생활 속 산화·환원</h3>
+    <p>우리 주변에서는 산소의 이동에 의한 산화·환원 반응이 활발하게 일어난다. 구리, 철 등 대부분의 금속은 산소를 얻어 산화되어 녹슬고, 음식물의 부패나 우리 몸의 노화도 산화와 관련이 있다.</p>
+    <p class="hint">위 내용 외에, 우리 생활 속에서 찾을 수 있는 산화·환원 반응의 예를 한 가지 더 써 보고 그렇게 생각한 까닭을 적어 보세요.</p>
+    <textarea class="save" id="reflect" rows="4" required placeholder="예: 사과의 깎인 단면이 갈색으로 변하는 것도 산소와 결합하는 산화 반응이다…"></textarea>
+  </div>
+</section>
+
+<!-- 06 보고서 -->
+<section class="step" data-step="6">
+  <h2 class="head"><span class="n">06</span>보고서</h2>
+  <p class="lead">확인한 뒤 PDF로 저장하고, 제출 링크에 올려 주세요.</p>
+
+  <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+    <button class="btn solid" id="pdf-btn">PDF로 저장</button>
+  </div>
+  <div id="msg" class="note"></div>
+  <div id="link-area"></div>
+
+  <div style="margin-top:2rem;border:1px solid var(--line)">
+    <div id="report">
+      <div class="r-head">
+        <h2>산화와 환원 실험(1) 활동 보고서</h2>
+        <div class="who mono"><span id="p_id"></span> <span id="p_name"></span></div>
+      </div>
+
+      <div class="r-sec" style="margin-top:1.4rem">
+        <table class="r-info">
+          <tbody>
+            <tr><td class="k">일자</td><td id="p_date"></td><td class="k">학번</td><td id="p_id2"></td></tr>
+            <tr><td class="k">이름</td><td colspan="3" id="p_name2"></td></tr>
+            <tr><td class="k">목표</td><td colspan="3" id="p_goal"></td></tr>
+            <tr><td class="k">준비물</td><td colspan="3" id="p_materials"></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="r-sec">
+        <span class="r-lab">이론적 배경</span>
+        <div class="r-txt" id="rep_theory"></div>
+      </div>
+
+      <div class="r-sec">
+        <span class="r-lab">겉불꽃 실험 (산화)</span>
+        <div class="r-txt" id="rep_ga"></div>
+        <div class="r-eq">2Cu + O₂ → 2CuO</div>
+      </div>
+
+      <div class="r-sec">
+        <span class="r-lab">속불꽃 실험 (환원)</span>
+        <div class="r-txt" id="rep_na"></div>
+        <div class="r-eq">CuO + CO → Cu + CO₂</div>
+      </div>
+
+      <div class="r-sec">
+        <span class="r-lab">까닭 설명</span>
+        <div class="r-txt" id="rep_reason"></div>
+      </div>
+
+      <div class="r-sec">
+        <span class="r-lab">결론 및 고찰</span>
+        <div class="r-txt" id="rep_conclusion"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- wrap -->
+
+<div class="bar">
+  <button class="btn" id="prev">이전</button>
+  <button class="btn grow" id="next">다음</button>
+  <button class="btn quiet" id="reset">초기화</button>
+</div>
+
+<footer class="site-footer">
+  <div class="site-footer-top">
+    <p class="site-footer-copy">© 교사 이상준. All rights reserved.<br>오류제보/문의: cepheid@kakao.com</p>
+    <div class="site-footer-links">
+      <a class="yt-badge" href="https://www.youtube.com/@science_earth" target="_blank" rel="noopener">
+        <span class="play"></span> 유튜브
+      </a>
+      <a class="yt-badge" href="https://linktr.ee/earth_sj" target="_blank" rel="noopener">
+        <span class="badge-icon">🌍</span> Linktree
+      </a>
+    </div>
+  </div>
+</footer>
+
+</div><!-- sheet -->
+
+<div class="zoom-modal" id="zoomModal">
+  <div class="zoom-card">
+    <button class="zoom-close" type="button" id="zoomClose" aria-label="닫기">×</button>
+    <div class="zoom-strip" id="zoomStrip"></div>
+    <p class="zoom-title" id="zoomTitle"></p>
+    <p class="zoom-desc" id="zoomDesc"></p>
+  </div>
+</div>
+
+<div class="zoom-modal" id="answerModal">
+  <div class="zoom-card" style="max-width:560px;text-align:left">
+    <button class="zoom-close" type="button" id="answerModalClose" aria-label="닫기">×</button>
+    <p class="zoom-title">정답을 확인해 보세요</p>
+    <p class="zoom-desc" style="margin-bottom:1rem">2번 이상 다른 답을 써서, 정답을 알려드려요. 아래 내용을 참고해서 다시 적어 보세요.</p>
+    <div class="answer-list" id="answerModalBody"></div>
+  </div>
+</div>
+
+<div class="zoom-modal" id="thinkModal">
+  <div class="zoom-card">
+    <button class="zoom-close" type="button" id="thinkModalClose" aria-label="닫기">×</button>
+    <p class="zoom-title">🤔 다시 한번 생각해 보자!</p>
+    <p class="zoom-desc" id="thinkModalDesc"></p>
+  </div>
+</div>
+
+<div class="zoom-modal" id="blockedModal">
+  <div class="zoom-card">
+    <button class="zoom-close" type="button" id="blockedModalClose" aria-label="닫기">×</button>
+    <p class="zoom-title">⚠️ 겉불꽃 변화를 먼저 완료해 주세요</p>
+    <p class="zoom-desc" style="margin-bottom:1.2rem">구리판을 실제로 겉불꽃 위에 끌어다 놓아 반응을 완료해야, 속불꽃 실험을 진행할 수 있어요.</p>
+    <button class="btn small" type="button" id="goToGaBtn">겉불꽃 변화로 돌아가기</button>
+  </div>
+</div>
+
+<script>
+const DEFAULT_SUBMIT_URL = "";
+const FIXED_GOAL = "구리판을 겉불꽃·속불꽃에 넣어 가열하며 산화와 환원 반응을 이해한다.";
+const FIXED_MATERIALS = "구리판, 알코올램프, 도가니 집게, 보안경";
+
+document.addEventListener('DOMContentLoaded', () => {
+const $ = id => document.getElementById(id);
+const KEY = 'redox_copper_1_v5_';
+const TOTAL = 6;
+let step = 1;
+const norm = s => (s || '').replace(/\s+/g, '');
+
+/* 제출 링크 */
+const submitUrl = () => {
+  const raw = new URLSearchParams(location.search).get('link') || DEFAULT_SUBMIT_URL;
+  if (!raw) return null;
+  try { const u = new URL(raw); return /^https?:$/.test(u.protocol) ? u.href : null; }
+  catch { return null; }
+};
+const renderLink = () => {
+  const u = submitUrl();
+  $('link-area').innerHTML = u
+    ? `<a class="submit" href="${u}" target="_blank" rel="noopener">저장한 PDF 제출하러 가기 →</a>`
+    : `<p class="hint" style="margin-top:1rem">제출 링크가 설정되지 않았습니다. 선생님이 안내한 곳에 PDF를 올려 주세요.</p>`;
+};
+const renderFixedInfo = () => {
+  $('disp_goal').textContent = FIXED_GOAL;
+  $('disp_materials').textContent = FIXED_MATERIALS;
+};
+
+/* 정답 확인 — 03 이론적 배경, 05 결론 및 고찰은 정답이 맞아야 다음으로 넘어간다.
+   버튼으로 따로 확인하지 않고, '다음'을 눌렀을 때 자동으로 채점한다.
+   같은 단계에서 3번 이상 틀리면 정답을 보여주는 팝업을 띄운다. */
+const THEORY_GROUP_A = { ph1:'산소', ph2:'열', ph3:'산소', r2:'산화', r4:'환원' };
+const THEORY_GROUP_B = { sg1:'풍부하다', sg2:'부족하다', sg3:'산화', sg4:'환원' };
+const THEORY_ANSWERS = { ...THEORY_GROUP_A, ...THEORY_GROUP_B };
+const CONCLUSION_GROUP_A = { c1:'검은색', c2:'얻어', c3:'산화', c4:'붉은색', c5:'잃어', c6:'환원', c7:'산화', c8:'동시에' };
+const CONCLUSION_GROUP_B = { g1:'환원', g2:'산화' };
+const CONCLUSION_ANSWERS = { ...CONCLUSION_GROUP_A, ...CONCLUSION_GROUP_B };
+function gradedAnswersFor(n) {
+  if (n === 3) return THEORY_ANSWERS;
+  if (n === 4) return { ...GA_OBS_ANSWERS, ...NA_OBS_ANSWERS, ...INTERPRET_ANSWERS };
+  if (n === 5) return CONCLUSION_ANSWERS;
+  return null;
+}
+const isCorrect = (id, answer) => norm($(id).value) === norm(answer);
+
+/* 정답 공개 팝업 */
+const answerModal = $('answerModal'), answerModalBody = $('answerModalBody');
+const ANSWER_LABELS = {
+  b0: '가열 전 구리판의 색',
+  ph1: '광합성 예시', ph2: '연소 예시', ph3: '철의 제련 예시',
+  r2: '핵심 문장 · 산소를 얻는 반응', r4: '핵심 문장 · 산소를 잃는 반응',
+  sg1: '겉불꽃 · 산소 공급', sg2: '속불꽃 · 산소 공급',
+  sg3: '겉불꽃 · 구리판 변화', sg4: '속불꽃 · 구리판 변화',
+  c1: '겉불꽃에 넣었을 때 색', c2: '겉불꽃 · 얻다/잃다', c3: '겉불꽃 · 반응 종류',
+  c4: '속불꽃에 넣었을 때 색', c5: '속불꽃 · 얻다/잃다', c6: '속불꽃 · 반응 종류',
+  c7: '일산화 탄소의 반응', c8: '산화·환원의 관계',
+  g1: '㉠ CuO → Cu', g2: '㉡ CO → CO₂',
+  b1: '겉불꽃 · 변한 색', b2: '겉불꽃 · 반응 종류',
+  b3: '속불꽃 · 변한 색', b4: '속불꽃 · 반응 종류',
+  i1: '① 겉불꽃의 특징', i2: '② 구리가 얻은 것', i3: '② 반응 종류',
+  i5: '④ 구리가 잃은 것', i6: '④ 반응 종류',
+};
+function showAnswerModal(answers) {
+  answerModalBody.innerHTML = Object.entries(answers)
+    .map(([id, a]) => `<div class="answer-row"><b>${ANSWER_LABELS[id] || id.toUpperCase()}</b><span>${a}</span></div>`).join('');
+  answerModal.classList.add('show');
+}
+function closeAnswerModal() { answerModal.classList.remove('show'); }
+$('answerModalClose').addEventListener('click', closeAnswerModal);
+answerModal.addEventListener('click', e => { if (e.target === answerModal) closeAnswerModal(); });
+
+const wrongAttempts = {};
+
+/* 빈칸 하나하나마다, 입력할 때 바로 맞았는지/틀렸는지 표시한다 */
+function wireLiveCheck(id, answer) {
+  const el = $(id);
+  const check = () => {
+    el.classList.remove('correct', 'invalid');
+    const val = el.value.trim();
+    if (!val) return;
+    el.classList.add(norm(val) === norm(answer) ? 'correct' : 'invalid');
+  };
+  el.addEventListener('input', check);
+  el.addEventListener('change', check);
+}
+Object.entries(THEORY_ANSWERS).forEach(([id, a]) => wireLiveCheck(id, a));
+Object.entries(CONCLUSION_ANSWERS).forEach(([id, a]) => wireLiveCheck(id, a));
+
+/* ===== 저장/복원 ===== */
+const savers = () => [...document.querySelectorAll('.save')];
+const save = () => {
+  savers().forEach(el => {
+    localStorage.setItem(KEY + el.id, el.type === 'checkbox' ? (el.checked ? '1' : '0') : el.value);
+  });
+};
+const restore = () => {
+  savers().forEach(el => {
+    const v = localStorage.getItem(KEY + el.id);
+    if (v === null) return;
+    if (el.type === 'checkbox') el.checked = v === '1';
+    else if (v) el.value = v;
+  });
+};
+const clearAll = () => {
+  if (!confirm('작성한 내용을 모두 지웁니다. 계속할까요?')) return;
+  savers().forEach(el => localStorage.removeItem(KEY + el.id));
+  location.reload();
+};
+
+/* ===== 단계 이동 ===== */
+const MSG = {
+  1: '일자, 학번, 이름을 모두 입력해 주세요.',
+  2: '유의사항을 확인했다면 체크해 주세요.',
+  3: '빈칸을 모두 채우고, 정답이 아닌 항목이 있다면 다시 확인해 주세요.',
+  4: '실험을 진행하고, 빈칸을 모두 정확히 채워 주세요. 정답이 아닌 항목이 있다면 다시 확인해 주세요.',
+  5: '빈칸을 모두 채우고, 정답이 아닌 항목이 있다면 다시 확인해 주세요.',
+};
+const secOf = n => document.querySelector(`.step[data-step="${n}"]`);
+const isFilled = i => i.type === 'checkbox' ? i.checked : i.value.trim() !== '';
+const stepValid = n => {
+  const baseOk = [...secOf(n).querySelectorAll('[required]')].every(isFilled);
+  const answers = gradedAnswersFor(n);
+  if (answers) return baseOk && Object.entries(answers).every(([id, a]) => isCorrect(id, a));
+  return baseOk;
+};
+const markInvalid = n => {
+  let first = null;
+  const answers = gradedAnswersFor(n);
+  secOf(n).querySelectorAll('[required]').forEach(i => {
+    let bad = !isFilled(i);
+    if (!bad && answers && answers[i.id] !== undefined) bad = !isCorrect(i.id, answers[i.id]);
+    i.classList.toggle('invalid', bad);
+    if (bad && !first) first = i;
+  });
+  if (first) first.focus();
+};
+const showMsg = (t, ok) => { const m = $('msg'); m.textContent = t; m.className = 'note ' + (ok ? 'ok' : 'err'); };
+const hideMsg = () => { $('msg').className = 'note'; };
+const flash = n => {
+  const el = secOf(n);
+  el.querySelectorAll('.flash').forEach(x => x.remove());
+  if (!MSG[n]) return;
+  const d = document.createElement('div');
+  d.className = 'note err flash'; d.textContent = MSG[n];
+  el.appendChild(d);
+  setTimeout(() => d.remove(), 4000);
+};
+
+const render = () => {
+  document.querySelectorAll('.step').forEach(el => el.classList.toggle('active', +el.dataset.step === step));
+  document.querySelectorAll('.tab').forEach(t => {
+    const n = +t.dataset.step;
+    t.classList.toggle('active', n === step);
+    t.classList.toggle('done', n !== step && n < TOTAL && stepValid(n));
+  });
+  $('prev').disabled = step === 1;
+  $('next').disabled = step === TOTAL;
+  $('next').textContent = step === TOTAL ? '완료' : '다음';
+  if (step === TOTAL) buildReport();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+const goTo = n => { step = Math.min(TOTAL, Math.max(1, n)); render(); };
+
+/* ===== 보고서 ===== */
+const buildReport = () => {
+  const v = id => ($(id).value || '').trim();
+  const dateRaw = v('f_date');
+  const dateTxt = dateRaw ? new Date(dateRaw + 'T00:00:00').toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' }) : '(미입력)';
+  const idv = v('f_id') || '(미입력)';
+  const nm = v('f_name') || '(미입력)';
+  $('p_id').textContent = idv; $('p_name').textContent = nm;
+  $('p_date').textContent = dateTxt; $('p_id2').textContent = idv; $('p_name2').textContent = nm;
+  $('p_goal').textContent = FIXED_GOAL;
+  $('p_materials').textContent = FIXED_MATERIALS;
+
+  $('rep_theory').textContent = `물질이 산소를 얻는 반응을 ${v('r2') || '(미입력)'} 반응이라 하고, 물질이 산소를 잃는 반응을 ${v('r4') || '(미입력)'} 반응이라고 한다. 겉불꽃은 산소 공급이 풍부해 산화가 일어나고, 속불꽃은 산소가 부족해 환원이 일어난다.`;
+  $('rep_ga').textContent = `가열 전 구리판은 ${v('b0') || '(미입력)'} 색이었다. 겉불꽃에 넣자 표면이 ${v('b1') || '(미입력)'} 색으로 변했다. 구리가 산소와 결합하는 ${v('b2') || '(미입력)'} 반응이다.`;
+  $('rep_na').textContent = `검게 변했던 부분이 다시 ${v('b3') || '(미입력)'} 색으로 돌아왔다. 산화구리가 산소를 잃는 ${v('b4') || '(미입력)'} 반응이다.`;
+  $('rep_reason').textContent = v('reason') || '(작성되지 않음)';
+  $('rep_conclusion').textContent =
+`CuO → Cu 반응: ${v('g1') || '(미입력)'} / CO → CO₂ 반응: ${v('g2') || '(미입력)'}
+어떤 물질이 산소를 얻을 때 다른 물질은 산소를 잃으므로, 산화와 환원은 ${v('c8') || '(미입력)'} 일어난다.
+
+[우리 생활 속 예] ${v('reflect') || '(작성되지 않음)'}`;
+};
+
+/* ===== PDF ===== */
+const exportPDF = () => {
+  for (let n = 1; n < TOTAL; n++) {
+    if (!stepValid(n)) { goTo(n); markInvalid(n); flash(n); return; }
+  }
+  buildReport(); hideMsg();
+  const tag = `${$('f_date').value || ''}_${$('f_id').value}_${$('f_name').value}`;
+  const btn = $('pdf-btn');
+  btn.disabled = true; btn.textContent = '저장 중…';
+
+  const reportEl = $('report');
+  const restorePadding = () => { reportEl.style.paddingTop = ''; reportEl.style.paddingBottom = ''; };
+  reportEl.style.paddingTop = '0';
+  reportEl.style.paddingBottom = '0';
+
+  html2pdf().set({
+    margin: [20, 0, 20, 0],
+    filename: `산화와환원실험1_구리판의변화_${tag}.pdf`,
+    image: { type: 'jpeg', quality: .95 },
+    html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['css'] },
+  }).from(reportEl).save()
+    .then(() => { restorePadding(); btn.disabled = false; btn.textContent = 'PDF로 저장'; showMsg('PDF를 저장했습니다. 제출 링크에 올려 주세요.', true); })
+    .catch(() => { restorePadding(); btn.disabled = false; btn.textContent = 'PDF로 저장'; showMsg('PDF 저장에 실패했습니다. 다시 시도해 주세요.', false); });
+};
+
+/* ===== 이벤트: 단계 이동 ===== */
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => goTo(+t.dataset.step)));
+$('next').addEventListener('click', () => {
+  if (step < TOTAL && !stepValid(step)) {
+    markInvalid(step);
+    flash(step);
+    if (gradedAnswersFor(step)) {
+      wrongAttempts[step] = (wrongAttempts[step] || 0) + 1;
+      if (wrongAttempts[step] >= 2) {
+        showAnswerModal(gradedAnswersFor(step));
+        wrongAttempts[step] = 0;
+      }
+    }
+    return;
+  }
+  goTo(step + 1);
+});
+$('prev').addEventListener('click', () => goTo(step - 1));
+$('reset').addEventListener('click', clearAll);
+$('pdf-btn').addEventListener('click', exportPDF);
+
+function isGradedField(id) {
+  return (id in THEORY_ANSWERS) || (id in CONCLUSION_ANSWERS) ||
+    (id in GA_OBS_ANSWERS) || (id in NA_OBS_ANSWERS) || (id in INTERPRET_ANSWERS);
+}
+document.addEventListener('input', e => {
+  if (!isGradedField(e.target.id)) e.target.classList.remove('invalid');
+  if (e.target.classList.contains('save')) save();
+});
+document.addEventListener('change', e => {
+  if (e.target.classList.contains('save')) save();
+});
+
+/* =====================================================================
+   04 실험하기 : 4단계 하위 진행 + 드래그로 구리판을 불꽃에 넣기
+   ===================================================================== */
+const expTabs = [...document.querySelectorAll('.exp-tab')];
+const expPanes = [...document.querySelectorAll('.exp-pane')];
+
+let subStage = 1;
+let maxUnlocked = 1;
+let gaDone = false, naDone = false;
+
+function switchSub(n) {
+  if (n > maxUnlocked) return;
+  subStage = n;
+  expTabs.forEach(t => {
+    const tn = +t.dataset.sub;
+    t.classList.toggle('active', tn === n);
+    t.classList.toggle('locked', tn > maxUnlocked);
+  });
+  expPanes.forEach(p => p.classList.toggle('active', +p.dataset.subPane === n));
+  if (n === 4 && gaDone) tongsWrapNa.classList.remove('locked');
+  if (n === 4 && !gaDone) showBlockedModal();
+  if (n === 3 && !gaDone) requestAnimationFrame(() => gaDrag.goToBench(false));
+  if (n === 4 && !naDone) requestAnimationFrame(() => naDrag.goToBench(false));
+}
+expTabs.forEach(t => t.addEventListener('click', () => switchSub(+t.dataset.sub)));
+
+function unlock(n) {
+  maxUnlocked = Math.max(maxUnlocked, n);
+  expTabs.forEach(t => { if (+t.dataset.sub <= maxUnlocked) t.classList.remove('locked'); });
+}
+function markSubDone(n) {
+  const t = expTabs.find(t => +t.dataset.sub === n);
+  if (t) t.classList.add('done');
+}
+
+/* 1. 준비물 확인 */
+const prepChecks = [...document.querySelectorAll('.prep-chk')];
+const subNext1 = $('subNext1');
+function refreshPrep() {
+  subNext1.disabled = !prepChecks.every(c => c.checked);
+}
+prepChecks.forEach(c => c.addEventListener('change', refreshPrep));
+subNext1.addEventListener('click', () => { markSubDone(1); unlock(2); switchSub(2); });
+
+/* 2. 가열 전 모습 */
+const b0 = $('b0');
+const subNext2 = $('subNext2');
+const B0_ANSWER = '붉은';
+let b0Attempts = 0;
+const isB0Correct = () => norm(b0.value.trim()) === norm(B0_ANSWER);
+function refreshBefore() { subNext2.disabled = !isB0Correct(); }
+b0.addEventListener('input', () => { b0.classList.remove('invalid', 'correct'); refreshBefore(); });
+subNext2.addEventListener('click', () => { markSubDone(2); unlock(3); switchSub(3); });
+$('check-b0').addEventListener('click', () => {
+  const box = $('b0-example');
+  if (!b0.value.trim()) {
+    box.textContent = '빈칸을 먼저 채워 주세요.';
+    box.className = 'note err';
+    return;
+  }
+  if (isB0Correct()) {
+    b0.classList.remove('invalid'); b0.classList.add('correct');
+    box.textContent = '정답이에요! 다음 단계로 넘어가 보세요.';
+    box.className = 'note ok';
+    b0Attempts = 0;
+  } else {
+    b0.classList.remove('correct'); b0.classList.add('invalid');
+    b0Attempts++;
+    if (b0Attempts >= 2) {
+      box.textContent = '2회 시도해서 정답을 팝업으로 보여드려요. 확인하고 다시 입력해 보세요.';
+      box.className = 'note err';
+      b0Attempts = 0;
+      showAnswerModal({ b0: B0_ANSWER });
+    } else {
+      box.textContent = '아직 정답이 아니에요. 다시 한번 생각해서 적어 보세요.';
+      box.className = 'note err';
+    }
+  }
+  refreshBefore();
+});
+/* '예시 답안 보기'는 3번 눌러야 보여준다 — 바로 보이면 그대로 베껴 쓰기 쉬워서 */
+const thinkModal = $('thinkModal'), thinkModalDesc = $('thinkModalDesc');
+function showThinkModal(remaining) {
+  thinkModalDesc.textContent = `정답을 보기 전에, 먼저 스스로 답을 적어봐요! (${remaining}번 더 누르면 예시 답안을 보여드려요)`;
+  thinkModal.classList.add('show');
+}
+function closeThinkModal() { thinkModal.classList.remove('show'); }
+$('thinkModalClose').addEventListener('click', closeThinkModal);
+thinkModal.addEventListener('click', e => { if (e.target === thinkModal) closeThinkModal(); });
+
+const blockedModal = $('blockedModal');
+function showBlockedModal() { blockedModal.classList.add('show'); }
+function closeBlockedModal() { blockedModal.classList.remove('show'); }
+$('blockedModalClose').addEventListener('click', closeBlockedModal);
+blockedModal.addEventListener('click', e => { if (e.target === blockedModal) closeBlockedModal(); });
+$('goToGaBtn').addEventListener('click', () => { closeBlockedModal(); switchSub(3); });
+
+/* '예시 답안 보기'는 3번 눌러야 보여준다 — 바로 보이면 그대로 베껴 쓰기 쉬워서 */
+function wireExampleReveal(btnId, boxId, answerText) {
+  let clicks = 0;
+  const btn = $(btnId), box = $(boxId);
+  btn.addEventListener('click', () => {
+    clicks++;
+    if (clicks < 3) {
+      showThinkModal(3 - clicks);
+    } else {
+      box.textContent = '예시 답안: ' + answerText;
+      box.className = 'note ok';
+      clicks = 0;
+    }
+  });
+}
+
+/**
+ * 이미 실시간 채점(wireLiveCheck)이 붙어 있는 구간(이론적 배경, 결론 및 고찰)에 쓰는
+ * '채점하기' 버튼 — 입력마다 지우는 리스너는 따로 달지 않고(중복 방지), 버튼 클릭 시
+ * 전체를 다시 채점해서 몇 번째 시도인지 세고, 2번째 실패면 정답을 전부 보여준다.
+ */
+function wireAnswerCheckButton(btnId, boxId, answers, onAllCorrect) {
+  let attempts = 0;
+  const ids = Object.keys(answers);
+  $(btnId).addEventListener('click', () => {
+    const box = $(boxId);
+    let allOk = true;
+    ids.forEach(id => {
+      const el = $(id);
+      const val = el.value.trim();
+      if (!val) { allOk = false; el.classList.remove('correct', 'invalid'); return; }
+      const ok = norm(val) === norm(answers[id]);
+      el.classList.toggle('correct', ok);
+      el.classList.toggle('invalid', !ok);
+      if (!ok) allOk = false;
+    });
+    if (allOk) {
+      attempts = 0;
+      box.textContent = '모두 정답이에요!';
+      box.className = 'note ok';
+      if (onAllCorrect) onAllCorrect();
+    } else {
+      attempts++;
+      if (attempts >= 2) {
+        const wrong = {};
+        ids.forEach(id => { if (norm($(id).value) !== norm(answers[id])) wrong[id] = answers[id]; });
+        box.textContent = '2회 시도해서 정답을 팝업으로 보여드려요. 확인하고 다시 입력해 보세요.';
+        box.className = 'note err';
+        attempts = 0;
+        showAnswerModal(wrong);
+      } else {
+        box.textContent = '아직 틀린 칸이 있어요(빨간 칸). 다시 한번 확인해서 적어 보세요.';
+        box.className = 'note err';
+      }
+    }
+  });
+}
+wireAnswerCheckButton('check-theory-a', 'theory-a-example', THEORY_GROUP_A);
+wireAnswerCheckButton('check-theory-b', 'theory-b-example', THEORY_GROUP_B);
+wireAnswerCheckButton('check-conclusion-a', 'conclusion-a-result', CONCLUSION_GROUP_A);
+wireAnswerCheckButton('check-conclusion-b', 'conclusion-b-result', CONCLUSION_GROUP_B);
+function wireAnswerCheck(btnId, boxId, answers, onAllCorrect) {
+  let attempts = 0;
+  const ids = Object.keys(answers);
+  ids.forEach(id => {
+    $(id).addEventListener('input', () => $(id).classList.remove('invalid', 'correct'));
+  });
+  $(btnId).addEventListener('click', () => {
+    const box = $(boxId);
+    let allOk = true;
+    ids.forEach(id => {
+      const el = $(id);
+      const val = el.value.trim();
+      if (!val) { allOk = false; el.classList.remove('correct', 'invalid'); return; }
+      const ok = norm(val) === norm(answers[id]);
+      el.classList.toggle('correct', ok);
+      el.classList.toggle('invalid', !ok);
+      if (!ok) allOk = false;
+    });
+    if (allOk) {
+      attempts = 0;
+      box.textContent = '모두 정답이에요! 다음으로 넘어가 보세요.';
+      box.className = 'note ok';
+      if (onAllCorrect) onAllCorrect();
+    } else {
+      attempts++;
+      if (attempts >= 2) {
+        const wrong = {};
+        ids.forEach(id => { if (norm($(id).value) !== norm(answers[id])) wrong[id] = answers[id]; });
+        box.textContent = '2회 시도해서 정답을 팝업으로 보여드려요. 확인하고 다시 입력해 보세요.';
+        box.className = 'note err';
+        attempts = 0;
+        showAnswerModal(wrong);
+      } else {
+        box.textContent = '아직 틀린 칸이 있어요(빨간 칸). 다시 한번 확인해서 적어 보세요.';
+        box.className = 'note err';
+      }
+    }
+  });
+}
+
+/* 3. 겉불꽃 → 4. 속불꽃 : 관찰 빈칸 표시 (이제 처음부터 항상 보임) */
+const b1 = $('b1'), b2 = $('b2'), b3 = $('b3'), b4 = $('b4'), reasonEl = $('reason');
+const subNext3 = $('subNext3');
+const GA_OBS_ANSWERS = { b1: '검은', b2: '산화' };
+const NA_OBS_ANSWERS = { b3: '붉은', b4: '환원' };
+const isGaObsCorrect = () => norm(b1.value) === norm(GA_OBS_ANSWERS.b1) && norm(b2.value) === norm(GA_OBS_ANSWERS.b2);
+const isNaObsCorrect = () => norm(b3.value) === norm(NA_OBS_ANSWERS.b3) && norm(b4.value) === norm(NA_OBS_ANSWERS.b4);
+function refreshGaObs() { subNext3.disabled = !(gaDone && isGaObsCorrect()); }
+b1.addEventListener('input', refreshGaObs);
+b2.addEventListener('input', refreshGaObs);
+subNext3.addEventListener('click', () => { markSubDone(3); unlock(4); switchSub(4); });
+wireAnswerCheck('check-ga-obs', 'ga-obs-example', GA_OBS_ANSWERS, refreshGaObs);
+
+const subNext4 = $('subNext4');
+function refreshNaObs() { subNext4.disabled = !isNaObsCorrect(); }
+b3.addEventListener('input', refreshNaObs);
+b4.addEventListener('input', refreshNaObs);
+subNext4.addEventListener('click', () => { markSubDone(4); unlock(5); switchSub(5); });
+wireAnswerCheck('check-na-obs', 'na-obs-example', NA_OBS_ANSWERS, refreshNaObs);
+
+const INTERPRET_ANSWERS = { i1: '산소', i2: '산소', i3: '산화', i5: '산소', i6: '환원' };
+wireAnswerCheck('check-interpret', 'interpret-example', INTERPRET_ANSWERS);
+wireExampleReveal('show-reason', 'reason-example',
+  '겉불꽃은 공기와 맞닿아 있어 산소가 풍부하게 공급되므로, 구리가 산소를 얻어 산화되어 검게 변한다. 반대로 속불꽃은 산소가 부족하고 일산화 탄소가 많아, 산화구리가 산소를 잃고 환원되어 다시 붉은 구리로 돌아온다.');
+
+/* ===== 드래그로 구리판을 불꽃에 넣기 ===== */
+function spawnLoupeMolecule(loupeEl, kind, x, y) {
+  const wrap = document.createElement('div');
+  wrap.className = 'loupe-mol';
+  wrap.style.left = x + 'px'; wrap.style.top = y + 'px';
+  if (kind === 'O2') wrap.innerHTML = '<div class="atom O">O</div><div class="atom O">O</div>';
+  else if (kind === 'CO') wrap.innerHTML = '<div class="atom C">C</div><div class="atom O">O</div>';
+  else wrap.innerHTML = '<div class="atom C">C</div><div class="atom O">O</div><div class="atom O">O</div>';
+  loupeEl.appendChild(wrap);
+  requestAnimationFrame(() => { wrap.style.top = (parseFloat(wrap.style.top) + 46) + 'px'; wrap.style.opacity = '0'; });
+  setTimeout(() => wrap.remove(), 2100);
+}
+
+
+function heatSequence(loupeEl, fillEl, molKind, durationMs, onComplete) {
+  let start = null;
+  const spawnTimer = setInterval(() => {
+    spawnLoupeMolecule(loupeEl, molKind, 14 + Math.random() * 74, 8 + Math.random() * 42);
+  }, 520);
+  function frame(ts) {
+    if (start === null) start = ts;
+    const pct = Math.min(100, ((ts - start) / durationMs) * 100);
+    fillEl.style.width = pct + '%';
+    if (pct >= 100) { clearInterval(spawnTimer); onComplete(); return; }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+/**
+ * 구리판을 손가락/마우스로 눌러 끌어서 불꽃 위에 놓는 드래그 앤 드롭.
+ * 집게와 구리판은 하나의 고정된 묶음(rigid group)으로 함께 움직인다.
+ *
+ * 쉬고 있을 때의 위치는 CSS 퍼센트로 어림짐작하지 않는다 — 대신 접시(.bench)의
+ * 실제 렌더링 좌표를 재서, 구리판이 항상 접시 위에 정확히 놓이도록 매번 계산한다.
+ * (불꽃에 스냅시킬 때와 완전히 같은 방식이라, 화면 크기가 달라져도 항상 정확하다.)
+ */
+function attachDragToFlame(tongsWrap, flameEl, benchEl, opts) {
+  const { getEnabled, heatBar, fillEl, loupeEl, molKind, durationMs, onDropSuccess, dropDepth } = opts;
+  const depth = dropDepth ?? 0.55;
+  let dragging = false, startX = 0, startY = 0;
+  let baseDX = 0, baseDY = 0;
+  let dragStartDX = 0, dragStartDY = 0;
+
+  const curDX = () => parseFloat(tongsWrap.style.getPropertyValue('--dx')) || 0;
+  const curDY = () => parseFloat(tongsWrap.style.getPropertyValue('--dy')) || 0;
+
+  /* 구리판을 접시 위 정확한 위치로 옮긴다. animate=false면 순간 이동(전환 애니메이션 없이), true면 부드럽게 되돌아간다. */
+  function goToBench(animate) {
+    if (!animate) { tongsWrap.classList.add('dragging'); }
+    tongsWrap.style.removeProperty('--rot');
+    const stripRect = tongsWrap.querySelector('.copper-strip').getBoundingClientRect();
+    const benchRect = benchEl.getBoundingClientRect();
+    if (benchRect.width === 0) return; // 아직 화면에 그려지기 전(숨김 상태)이면 건너뛴다
+    const targetX = benchRect.left + benchRect.width * 0.5;
+    const targetY = benchRect.top + benchRect.height * 0.32;
+    const stripCenterX = stripRect.left + stripRect.width * 0.5;
+    baseDX = curDX() + (targetX - stripCenterX);
+    baseDY = curDY() + (targetY - stripRect.bottom);
+    tongsWrap.style.setProperty('--dx', baseDX + 'px');
+    tongsWrap.style.setProperty('--dy', baseDY + 'px');
+    if (!animate) {
+      void tongsWrap.offsetWidth; // 강제 리플로우 후 트랜지션 다시 활성화
+      tongsWrap.classList.remove('dragging');
+    }
+  }
+
+  function down(e) {
+    if (!getEnabled()) { if (opts.onBlocked) opts.onBlocked(); return; }
+    e.preventDefault();
+    dragging = true;
+    tongsWrap.classList.add('dragging');
+    try { tongsWrap.setPointerCapture(e.pointerId); } catch (_) {}
+    startX = e.clientX; startY = e.clientY;
+    dragStartDX = curDX();
+    dragStartDY = curDY();
+  }
+  function move(e) {
+    if (!dragging) return;
+    tongsWrap.style.setProperty('--dx', (dragStartDX + (e.clientX - startX)) + 'px');
+    tongsWrap.style.setProperty('--dy', (dragStartDY + (e.clientY - startY)) + 'px');
+  }
+  function intersects(a, b, pad) {
+    return a.left < b.right + pad && a.right > b.left - pad &&
+           a.top < b.bottom + pad && a.bottom > b.top - pad;
+  }
+
+  function up(e) {
+    if (!dragging) return;
+    dragging = false;
+    tongsWrap.classList.remove('dragging');
+
+    const stripRect = tongsWrap.querySelector('.copper-strip').getBoundingClientRect();
+    const flameRect = flameEl.getBoundingClientRect();
+    const benchRect = benchEl.getBoundingClientRect();
+    const hitFlame = intersects(stripRect, flameRect, 30);
+    const hitBench = !hitFlame && intersects(stripRect, benchRect, 22);
+
+    if (hitFlame) {
+      /* 구리판 끝을, 겉불꽃은 불꽃 위쪽(끝부분)에, 속불꽃은 불꽃 아래쪽(심지 가까이)에 정확히 스냅시킨다. */
+      const stripCenterX = stripRect.left + stripRect.width / 2;
+      const stripCenterY = stripRect.top + stripRect.height / 2;
+      const flameCenterX = flameRect.left + flameRect.width / 2;
+      const flameTargetY = flameRect.top + flameRect.height * depth;
+      const finalDX = curDX() + (flameCenterX - stripCenterX);
+      const finalDY = curDY() + (flameTargetY - stripCenterY);
+      tongsWrap.style.setProperty('--dx', finalDX + 'px');
+      tongsWrap.style.setProperty('--dy', finalDY + 'px');
+      tongsWrap.style.setProperty('--rot', '-15deg');
+      heatBar.classList.add('show');
+      heatSequence(loupeEl, fillEl, molKind, durationMs, () => {
+        heatBar.classList.remove('show');
+        fillEl.style.width = '0%';
+        onDropSuccess();
+      });
+    } else if (hitBench) {
+      if (opts.isDone && opts.isDone()) {
+        if (opts.onInspect) opts.onInspect();
+      } else if (opts.onReturn) {
+        opts.onReturn();
+      }
+      goToBench(true);
+    } else {
+      goToBench(true);
+    }
+  }
+
+  tongsWrap.addEventListener('pointerdown', down);
+  tongsWrap.addEventListener('pointermove', move);
+  tongsWrap.addEventListener('pointerup', up);
+  tongsWrap.addEventListener('pointercancel', up);
+
+  return { goToBench };
+}
+
+const tongsWrapGa = $('tongsWrapGa'), tongsWrapNa = $('tongsWrapNa');
+const copperStripGa = $('copperStripGa'), copperStripNa = $('copperStripNa');
+const flameGa = document.querySelector('#sceneGa .flame-wrap');
+const flameNa = document.querySelector('#sceneNa .flame-wrap');
+const benchGa = document.querySelector('#sceneGa .bench');
+const benchNa = document.querySelector('#sceneNa .bench');
+const loupeGa = $('loupeGa'), loupeSurfaceGa = $('loupeSurfaceGa');
+const loupeNa = $('loupeNa'), loupeSurfaceNa = $('loupeSurfaceNa');
+
+/* 실험을 마친 뒤에도 집게를 다시 실험대로 끌어다 놓으면(또는 '다시 해보기' 버튼으로) 이 상태로 되돌아간다 */
+function revertGa() {
+  copperStripGa.classList.remove('tip-oxidized');
+  loupeSurfaceGa.classList.remove('oxidized');
+  tongsWrapGa.classList.remove('settled');
+  $('heatBarGa').classList.remove('show');
+  $('fillGa').style.width = '0%';
+  gaDone = false;
+}
+function revertNa() {
+  copperStripNa.classList.remove('tip-reduced');
+  copperStripNa.classList.add('tip-oxidized');
+  loupeSurfaceNa.classList.add('oxidized');
+  tongsWrapNa.classList.remove('settled');
+  $('heatBarNa').classList.remove('show');
+  $('fillNa').style.width = '0%';
+  naDone = false;
+}
+
+/* 실험이 끝난 뒤 접시로 가져와 확대해서 살펴보는 모달 */
+const zoomModal = $('zoomModal'), zoomStrip = $('zoomStrip'), zoomTitle = $('zoomTitle'), zoomDesc = $('zoomDesc');
+function showZoom(stateClass, title, desc) {
+  zoomStrip.className = 'zoom-strip' + (stateClass ? ' ' + stateClass : '');
+  zoomTitle.textContent = title;
+  zoomDesc.textContent = desc;
+  zoomModal.classList.add('show');
+}
+function closeZoom() { zoomModal.classList.remove('show'); }
+$('zoomClose').addEventListener('click', closeZoom);
+zoomModal.addEventListener('click', e => { if (e.target === zoomModal) closeZoom(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeZoom(); closeAnswerModal(); closeThinkModal(); closeBlockedModal(); } });
+
+const gaDrag = attachDragToFlame(tongsWrapGa, flameGa, benchGa, {
+  getEnabled: () => subStage === 3,
+  heatBar: $('heatBarGa'), fillEl: $('fillGa'), loupeEl: loupeGa, molKind: 'O2', durationMs: 2400,
+  dropDepth: 0.22,
+  isDone: () => gaDone,
+  onDropSuccess: () => {
+    copperStripGa.classList.add('tip-oxidized');
+    loupeSurfaceGa.classList.add('oxidized');
+    tongsWrapGa.classList.add('settled');
+    gaDone = true;
+    refreshGaObs();
+  },
+  onReturn: () => {
+    revertGa();
+  },
+  onInspect: () => {
+    showZoom('tip-oxidized', '구리판이 검게 변했어요',
+      '구리(Cu)가 산소를 얻어 산화되면서 표면이 산화 구리(Ⅱ)(CuO)로 덮였습니다.');
+  },
+});
+
+const naDrag = attachDragToFlame(tongsWrapNa, flameNa, benchNa, {
+  getEnabled: () => subStage === 4 && gaDone,
+  heatBar: $('heatBarNa'), fillEl: $('fillNa'), loupeEl: loupeNa, molKind: 'CO', durationMs: 2400,
+  dropDepth: 0.82,
+  isDone: () => naDone,
+  onBlocked: () => { if (!gaDone) showBlockedModal(); },
+  onDropSuccess: () => {
+    copperStripNa.classList.remove('tip-oxidized');
+    copperStripNa.classList.add('tip-reduced');
+    loupeSurfaceNa.classList.remove('oxidized');
+    tongsWrapNa.classList.add('settled');
+    spawnLoupeMolecule(loupeNa, 'CO2', 42, 26);
+    naDone = true;
+    markSubDone(4);
+  },
+  onReturn: () => {
+    revertNa();
+  },
+  onInspect: () => {
+    showZoom('tip-reduced', '구리판이 다시 붉게 돌아왔어요',
+      '산화 구리(Ⅱ)가 산소를 잃고 환원되면서 다시 구리(Cu)의 붉은 색으로 돌아왔습니다.');
+  },
+});
+
+/* 하위 단계에 처음 들어설 때(또는 창 크기가 바뀔 때) 아직 실험을 마치지 않았다면
+   구리판을 접시 위 정확한 위치로 다시 맞춘다. */
+window.addEventListener('resize', () => {
+  if (subStage === 3 && !gaDone) gaDrag.goToBench(false);
+  if (subStage === 4 && !naDone) naDrag.goToBench(false);
+});
+
+/* ===== 다시 해보기 : 해당 장면을 처음 상태로 되돌려 다시 드래그해볼 수 있게 한다 ===== */
+function resetGaScene() {
+  revertGa();
+  tongsWrapGa.classList.remove('dragging');
+  gaDrag.goToBench(true);
+}
+function resetNaScene() {
+  revertNa();
+  tongsWrapNa.classList.remove('dragging');
+  naDrag.goToBench(true);
+}
+$('retryGa').addEventListener('click', resetGaScene);
+$('retryNa').addEventListener('click', resetNaScene);
+
+b3.addEventListener('input', save);
+b4.addEventListener('input', save);
+reasonEl.addEventListener('input', save);
+
+/* ===== 시작 ===== */
+restore();
+renderLink();
+renderFixedInfo();
+refreshPrep();
+refreshBefore();
+refreshGaObs();
+refreshNaObs();
+render();
+});
+</script>
+</body>
+</html>
