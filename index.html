@@ -151,40 +151,40 @@
   #empty { display: none; font-weight: 700; font-size: 14px; color: var(--sub); padding: 6px 2px; }
 
   /* ---------- 푸터 ---------- */
-  footer { margin-top: 50px; }
+  footer { margin-top: 50px; padding-top: 1.4rem; border-top: 1px solid var(--line); }
   .footer-top {
     position: relative; display: flex; align-items: center; justify-content: flex-end;
-    min-height: 40px; padding-top: 22px; border-top: 1px solid var(--line);
+    min-height: 40px;
   }
   .footer-copy {
     position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
     margin: 0; font-size: 12px; color: var(--sub-2); line-height: 20px;
     text-align: center; white-space: nowrap;
   }
-  .footer-links { display: flex; align-items: center; gap: 10px; }
+  .footer-links { display: flex; align-items: center; gap: .6rem; }
   @media (max-width: 640px) {
-    .footer-top { position: static; flex-direction: column-reverse; align-items: center; gap: 12px; }
+    .footer-top { position: static; flex-direction: column-reverse; align-items: center; gap: .8rem; }
     .footer-copy { position: static; transform: none; white-space: normal; }
   }
 
   .yt-badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    height: 40px; padding: 0 18px 0 14px; box-sizing: border-box;
-    background: var(--panel); border: 1px solid var(--line); border-radius: 999px;
-    color: var(--text); text-decoration: none; font-weight: 700; font-size: 13px;
+    display: inline-flex; align-items: center; gap: .5rem;
+    height: 40px; padding: 0 1rem 0 .7rem; box-sizing: border-box;
+    background: var(--panel); border: 1.5px solid var(--line); border-radius: 999px;
+    color: var(--text); text-decoration: none; font-weight: 700; font-size: .8rem;
     transition: border-color .15s, transform .1s;
   }
   .yt-badge:hover { border-color: var(--accent); transform: translateY(-1px); }
   .yt-badge .play {
     display: inline-flex; align-items: center; justify-content: center;
-    width: 20px; height: 20px; border-radius: 6px; background: var(--accent); flex: none;
+    width: 18px; height: 18px; border-radius: 5px; background: var(--accent); flex: none;
   }
   .yt-badge .play::before {
     content: ""; width: 0; height: 0; margin-left: 2px;
-    border-style: solid; border-width: 5px 0 5px 8px;
+    border-style: solid; border-width: 4px 0 4px 7px;
     border-color: transparent transparent transparent #0a0d14;
   }
-  .yt-badge .badge-icon { font-size: 15px; line-height: 1; }
+  .yt-badge .badge-icon { font-size: .85rem; line-height: 1; }
 
   @media (prefers-reduced-motion: reduce) {
     .card, #search { transition: none; }
@@ -212,7 +212,7 @@
 
   <div class="tabbar" id="tabbar"></div>
 
-  <input id="search" type="text" placeholder="보고서 검색…" aria-label="보고서 검색">
+  <input id="search" type="text" placeholder="검색하기…" aria-label="보고서 검색">
 
   <main id="content"></main>
   <p id="empty">조건에 맞는 보고서가 없어요.</p>
@@ -234,7 +234,7 @@
 
 <script>
 /* ================================================================
-   보고서 목록 — 새 보고서를 추가하려면 여기에 한 항목만 붙이면 됩니다!
+   보고서 목록 - 새 보고서를 추가하려면 여기에 한 항목만 붙이면 됩니다!
    1) reports/ 안에 폴더를 만들고 index.html을 넣고
    2) 아래 REPORTS 배열에 { } 항목을 추가하세요.
    tab은 TABS의 id와, subcategory는 그 탭의 subs 값과 정확히 같아야 합니다.
@@ -259,7 +259,7 @@ const TABS = [
 
 /* url 경로의 2번째 폴더(reports/ 바로 다음)로 tab을,
    3번째 폴더(그 다음)로 subcategory를 자동으로 정한다.
-   즉 파일을 어느 폴더에 두느냐가 곧 분류가 된다 — 아래 두 표에 폴더명만 등록해 두면 된다. */
+   즉 파일을 어느 폴더에 두느냐가 곧 분류가 된다 - 아래 두 표에 폴더명만 등록해 두면 된다. */
 const TAB_FOLDERS = {
   'earth-science': 'earth',
   'integrated-science': 'integrated',
@@ -320,7 +320,7 @@ const REPORTS = [
     /* tab·subcategory 미지정 → url에서 자동 계산 → 통합과학 · 지구과학 */
   },
   {
-    name: '중화 반응 — 이온 모형 실험',
+    name: '중화 반응 - 이온 모형 실험',
     desc: '염산과 수산화 나트륨을 섞으며 이온 수·온도·BTB 색 변화로 중화 반응을 관찰해요',
     emoji: '🧪',
     url: 'reports/integrated-science/chemistry/neutralization-reaction/index.html'
@@ -333,20 +333,20 @@ const REPORTS = [
     url: 'reports/integrated-science/chemistry/ion-movement/index.html'
   },
   {
-    name: '산화 환원 — 구리판 가열 실험',
+    name: '산화 환원 - 구리판 가열 실험',
     desc: '구리판을 겉불꽃·속불꽃에 넣어가며 산화와 환원이 반복되는 과정을 관찰해요',
     emoji: '🔥',
     url: 'reports/integrated-science/chemistry/copper-oxidation/index.html'
   },
   {
-    name: '산화 환원 — 아연판과 황산 구리(Ⅱ) 수용액의 반응',
+    name: '산화 환원 - 아연판과 황산 구리(Ⅱ) 수용액의 반응',
     desc: '아연판을 황산 구리 수용액에 넣어 금속의 반응성 차이에 따른 산화·환원을 관찰해요',
     emoji: '⚙️',
     url: 'reports/integrated-science/chemistry/zinc-copper-reaction/index.html'
   }
 ].map(r => Object.assign(deriveMeta(r.url), r));
 
-/* 배경 별빛 — 은은한 반짝임 + 가끔 지나가는 별똥별 */
+/* 배경 별빛 - 은은한 반짝임 + 가끔 지나가는 별똥별 */
 (() => {
   const field = document.getElementById('starfield');
   if (!field) return;
