@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-:root{
+:root{color-scheme:dark;
   /* 심층순환 연구노트 팔레트 적용: paper/surface/sunk 3단 다크 + 청록 accent */
   --paper:#0c0e12; --surface:#171a20; --sunk:#1e222b; --line:#2a2e37; --line-soft:#22262b;
   --ink:#e8eaee; --body:#b4b9c4; --faint:#8b909b;
@@ -71,6 +71,8 @@ section.step.on{display:block;animation:fadein .3s cubic-bezier(.16,1,.3,1)}
 .card h2{font-size:1.05rem;font-weight:700;margin-bottom:.7rem;display:flex;align-items:baseline;gap:.55rem;flex-wrap:wrap;letter-spacing:-.02em}
 .card h2 .step-no{font-size:.74rem;background:none;color:var(--sea);border-radius:0;padding:0;font-weight:600;letter-spacing:.02em}
 .card h2 .sub{font-weight:400;color:var(--faint);font-size:.8rem}
+section.step > h2{font-size:1.05rem;font-weight:700;margin-bottom:.4rem;display:flex;align-items:baseline;gap:.55rem;flex-wrap:wrap;letter-spacing:-.02em}
+section.step > h2 .step-no{font-size:.74rem;background:none;color:var(--sea);border-radius:0;padding:0;font-weight:600;letter-spacing:.02em}
 .step-foot{display:flex;justify-content:space-between;gap:.6rem;margin-top:.3rem}
 
 /* ---------- 실험 소개: 안내 문단 / 확인 체크박스 ---------- */
@@ -203,10 +205,17 @@ section.step.on{display:block;animation:fadein .3s cubic-bezier(.16,1,.3,1)}
 .chip.on{background:var(--sea);border-color:var(--sea);color:#0c0e12;font-weight:700}
 .chip:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
 
+.bench-col{display:flex;flex-direction:column;gap:.9rem;min-height:0}
+.solution-status{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;
+  background:var(--sunk);border:1px solid var(--line);border-radius:10px;
+  padding:.7rem 1.1rem;font-size:.92rem}
+.solution-status .lbl{color:var(--faint);font-weight:600;font-size:.8rem;letter-spacing:.03em}
+.solution-status .vals{display:flex;gap:.6rem;align-items:center;color:var(--ink);font-weight:700}
+.solution-status .sep{color:var(--faint);font-weight:400}
 .bench{position:relative;background:linear-gradient(180deg,#14181f 0%,#0f1319 100%);
   border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .exp-grid{align-items:stretch}
-.exp-grid .bench{height:100%;min-height:440px}
+.exp-grid .bench{height:100%;min-height:440px;flex:1}
 .bench canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:manipulation;cursor:pointer}
 @media (max-width:820px){
   .exp-grid .bench{height:auto;min-height:0;aspect-ratio:760/880}
@@ -261,7 +270,7 @@ td.empty{color:var(--faint);font-weight:400}
 .graph-box svg{width:100%;height:auto;display:block}
 
 /* 실험 해석: 왼쪽 결과 사진 | 오른쪽 해석 */
-.interp-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:1rem;margin-bottom:1rem}
+.interp-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:1rem;margin-bottom:1rem}
 .interp-grid .card{margin-bottom:0}
 @media (max-width:820px){.interp-grid{grid-template-columns:1fr}}
 .interp-photo{margin-top:.9rem;background:#fff;border-radius:8px;padding:.6rem .6rem .45rem;box-shadow:0 4px 18px rgba(0,0,0,.4)}
@@ -270,6 +279,10 @@ td.empty{color:var(--faint);font-weight:400}
 
 /* reveal Q */
 .q{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.9rem 1rem;margin-bottom:.65rem}
+.think-answer{width:100%;background:var(--sunk);border:1.5px solid var(--line);border-radius:8px;
+  padding:.6rem .75rem;color:var(--ink);font-family:inherit;font-size:.92rem;line-height:1.6;
+  resize:vertical;margin:.5rem 0 .7rem;transition:.14s}
+.think-answer:focus{outline:none;border-color:var(--sea)}
 .q p{font-size:.93rem;color:var(--body)}
 .q .qno{color:var(--sea);font-weight:700;margin-right:.35rem}
 .reveal-body{display:none;margin-top:.55rem;padding-top:.55rem;border-top:1px solid var(--line-soft);font-size:.89rem;color:var(--body)}
@@ -290,7 +303,7 @@ td.empty{color:var(--faint);font-weight:400}
   border-bottom:1px solid #178a7a;letter-spacing:0}
 #report table{width:100%;border-collapse:collapse;font-size:12px}
 #report th,#report td{border:1px solid #d8dce0;padding:6px 8px;text-align:center}
-#report th{background:#f2f4f5;color:#565c66;font-weight:600}
+#report th{background:#f2f4f5;color:#565c66;font-weight:600;white-space:nowrap}
 #report .r-left{text-align:left}
 #report .avoid{page-break-inside:avoid}
 #report .r-graph{text-align:center;margin:8px 0}
@@ -313,23 +326,23 @@ td.empty{color:var(--faint);font-weight:400}
 .modal .btn{margin-top:.5rem;width:100%}
 
 /* ---------- footer ---------- */
-.site-footer{margin-top:1.6rem}
+.site-footer{padding:1.4rem 2.6rem 1.8rem;background:var(--paper);border-top:1px solid var(--line)}
 .site-footer-top{position:relative;display:flex;align-items:center;justify-content:flex-end;
-  min-height:2.5rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+  min-height:2.4rem}
 .site-footer-copy{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  margin:0;font-size:.76rem;color:var(--faint);line-height:1.25rem;text-align:center;white-space:nowrap}
+  margin:0;font-size:12px;color:var(--faint);line-height:1.5;text-align:center;white-space:nowrap}
 .site-footer-links{display:flex;align-items:center;gap:.6rem}
-@media (max-width:640px){
+@media(max-width:640px){
   .site-footer-top{position:static;flex-direction:column-reverse;align-items:center;gap:.8rem}
   .site-footer-copy{position:static;transform:none;white-space:normal}
 }
-.yt-badge{display:inline-flex;align-items:center;gap:.5rem;height:2.5rem;padding:0 1.1rem 0 .85rem;
-  box-sizing:border-box;background:var(--surface);border:1px solid var(--line);border-radius:999px;
+.yt-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem .5rem .7rem;
+  background:var(--surface);border:1.5px solid var(--line);border-radius:999px;
   color:var(--ink);text-decoration:none;font-weight:700;font-size:.8rem;
   transition:border-color .15s,transform .1s}
 .yt-badge:hover{border-color:var(--sea);transform:translateY(-1px)}
 .yt-badge .play{display:inline-flex;align-items:center;justify-content:center;
-  width:1.15rem;height:1.15rem;border-radius:.35rem;background:var(--sea);flex:none}
+  width:18px;height:18px;border-radius:5px;background:var(--sea);flex:none}
 .yt-badge .play::before{content:"";width:0;height:0;margin-left:2px;
   border-style:solid;border-width:4px 0 4px 7px;border-color:transparent transparent transparent #0c0e12}
 .yt-badge .badge-icon{font-size:.85rem;line-height:1}
@@ -359,30 +372,26 @@ td.empty{color:var(--faint);font-weight:400}
 
 <!-- ================= 01 정보 입력 ================= -->
 <section class="step" data-step="1">
-  <div class="card">
-    <h2><span class="step-no">01</span>인적 사항</h2>
-    <table class="info-form">
-      <tbody>
-        <tr>
-          <td class="lbl">이름</td>
-          <td><input id="f_name" data-save placeholder="이름을 입력하세요"></td>
-          <td class="lbl">학번</td>
-          <td><input id="f_id" data-save placeholder="예) 10321"></td>
-        </tr>
-        <tr>
-          <td class="lbl">실험 날짜</td>
-          <td colspan="3"><input id="f_date" type="date" data-save></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <h2><span class="step-no">01</span>정보 입력</h2>
+  <p style="margin:-.3rem 0 1rem;font-size:.88rem;color:var(--faint)">보고서에 표시될 정보입니다.</p>
+  <table class="info-form">
+    <tbody>
+      <tr>
+        <td class="lbl">일자</td>
+        <td><input id="f_date" type="date" data-save></td>
+        <td class="lbl">학번</td>
+        <td><input id="f_id" data-save placeholder="예) 10321"></td>
+        <td class="lbl">이름</td>
+        <td><input id="f_name" data-save placeholder="이름을 입력하세요"></td>
+      </tr>
+    </tbody>
+  </table>
   <div class="step-foot"><span></span><button class="btn primary" data-go="2">다음 단계 →</button></div>
 </section>
 
 <!-- ================= 02 실험 소개 ================= -->
 <section class="step" data-step="2">
-  <div class="card">
-    <h2><span class="step-no">02</span>실험 소개</h2>
+  <h2><span class="step-no">02</span>실험 소개</h2>
     <div class="fixed-box"><b>목표</b><span>묽은 염산과 수산화 나트륨 수용액을 혼합할 때 이온 수, 생성되는 물 분자 수, 온도, BTB 용액의 색 변화를 관찰하여 중화 반응의 원리를 이해한다.</span></div>
     <div class="fixed-box"><b>준비물</b><span>묽은 염산(HCl) 수용액, 수산화 나트륨(NaOH) 수용액, 스포이드, 비커, 온도계, BTB 용액</span></div>
 
@@ -402,14 +411,12 @@ td.empty{color:var(--faint);font-weight:400}
         <span>확인하였습니다.</span>
       </label>
     </div>
-  </div>
   <div class="step-foot"><button class="btn ghost" data-go="1">← 이전</button><button class="btn primary" data-go="3">다음 단계 →</button></div>
 </section>
 
 <!-- ================= 03 이론적 배경 ================= -->
 <section class="step" data-step="3">
-  <div class="card">
-    <h2><span class="step-no">03</span>이론적 배경 <span class="sub">빈칸을 채우고 채점을 통과해야 다음 단계로 갈 수 있어요</span></h2>
+  <h2><span class="step-no">03</span>이론적 배경</h2>
     <div class="prose">
       <p>염산과 수산화 나트륨 수용액을 혼합하면 산의
         <input class="blank" id="t1" data-save size="5" placeholder="ㅅㅅ"> 이온(H⁺)과 염기의
@@ -430,7 +437,6 @@ td.empty{color:var(--faint);font-weight:400}
       <button class="btn grade" id="gradeTheory">✏️ 채점하기</button>
       <span class="grade-msg" id="msgTheory"></span>
     </div>
-  </div>
   <div class="step-foot"><button class="btn ghost" data-go="2">← 이전</button><button class="btn primary" data-go="4">다음 단계 →</button></div>
 </section>
 
@@ -452,16 +458,22 @@ td.empty{color:var(--faint);font-weight:400}
       <h2><span class="step-no">2</span>실험 조작 <span class="sub">스포이드로 NaOH를 1 mL씩</span></h2>
       <div class="controls" style="margin-bottom:0">
         <button class="btn primary" id="squeezeBtn" disabled>💧 스포이드 누르기 (+1 mL)</button>
-        <button class="btn rec" id="recBtn" disabled>📋 이 조합 기록하기</button>
+        <button class="btn rec" id="recBtn" disabled>📋 기록하기</button>
         <button class="btn ghost" id="resetBtn">↺ 새 실험</button>
       </div>
     </div>
   </div>
 
   <div class="grid exp-grid">
-    <div class="bench">
-      <canvas id="cv" width="760" height="880" aria-label="비커와 스포이드 실험 화면"></canvas>
-      <div class="hint" id="benchHint">먼저 염산 부피를 골라 주세요</div>
+    <div class="bench-col">
+      <div class="solution-status">
+        <span class="lbl">현재 수용액 상태</span>
+        <span class="vals"><b id="statusHcl">묽은 염산 0 mL</b><span class="sep">·</span><b id="statusNaoh">NaOH 0 mL</b></span>
+      </div>
+      <div class="bench">
+        <canvas id="cv" width="760" height="880" aria-label="비커와 스포이드 실험 화면"></canvas>
+        <div class="hint" id="benchHint">먼저 염산 부피를 선택해 주세요</div>
+      </div>
     </div>
 
     <aside class="panel-stack">
@@ -487,7 +499,7 @@ td.empty{color:var(--faint);font-weight:400}
           <div class="temp-note">중화 반응이 일어나면 <b style="color:#ff9a7a">중화열</b>이 발생해 온도가 올라가요.</div>
         </section>
         <section class="card">
-          <h2>🧪 BTB 용액</h2>
+          <h2>🧪 지시약</h2>
           <div class="btb-row">
             <label class="switch" aria-label="BTB 용액 넣기">
               <input type="checkbox" id="btbToggle">
@@ -496,6 +508,16 @@ td.empty{color:var(--faint);font-weight:400}
             <div class="btb-state">
               <span class="btb-swatch" id="btbSwatch"></span>
               <span id="btbLabel" style="color:var(--body);font-weight:600;font-size:.86rem">BTB를 넣어 액성 확인</span>
+            </div>
+          </div>
+          <div class="btb-row" style="margin-top:.6rem">
+            <label class="switch" aria-label="페놀프탈레인 용액 넣기">
+              <input type="checkbox" id="phToggle">
+              <span class="track"></span><span class="knob"></span>
+            </label>
+            <div class="btb-state">
+              <span class="btb-swatch" id="phSwatch"></span>
+              <span id="phLabel" style="color:var(--body);font-weight:600;font-size:.86rem">페놀프탈레인을 넣어 액성 확인</span>
             </div>
           </div>
         </section>
@@ -568,9 +590,9 @@ td.empty{color:var(--faint);font-weight:400}
       <h2><span class="step-no">05</span>실험 해석 <span class="sub">왼쪽 결과를 보면서 빈칸을 채워 보세요</span></h2>
       <div class="prose">
         <p>① 혼합 용액의 최고 온도가 가장 높은 것은
-          <input class="blank" id="i1" data-save size="3" placeholder="가~마">이다.
+          <input class="blank" id="i1" data-save size="3">이다.
           혼합 용액의 부피가 모두 같을 때, 중화 반응한 H⁺와 OH⁻의 수가 가장
-          <input class="blank" id="i2" data-save size="3" placeholder="ㅁ~">기 때문이다.</p>
+          <input class="blank" id="i2" data-save size="4" placeholder="ㅁㄱ"> 때문이다.</p>
         <p>② 가(2:10)는 반응 후 OH⁻가 남으므로
           <input class="blank" id="i3" data-save size="5" placeholder="ㅇㄱㅅ">이고, BTB 용액은
           <input class="blank" id="i4" data-save size="5" placeholder="ㅍㄹㅅ">을 띤다.</p>
@@ -580,9 +602,6 @@ td.empty{color:var(--faint);font-weight:400}
         <p>④ 다(6:6)는 H⁺와 OH⁻가 남김없이 모두 반응하므로
           <input class="blank" id="i7" data-save size="4" placeholder="ㅈㅅ">이고, BTB 용액은
           <input class="blank" id="i8" data-save size="5" placeholder="ㅊㄹㅅ">을 띤다.</p>
-        <p>⑤ NaOH 수용액을 계속 넣어도
-          <input class="blank" id="i9" data-save size="4" placeholder="ㅇㅎ"> 이온(Cl⁻)의 수는 변하지 않고,
-          <input class="blank" id="i10" data-save size="5" placeholder="ㄴㅌㄹ"> 이온(Na⁺)의 수는 계속 늘어난다.</p>
       </div>
       <div class="grade-line">
         <button class="btn grade" id="gradeInterp">✏️ 채점하기</button>
@@ -595,19 +614,12 @@ td.empty{color:var(--faint);font-weight:400}
     <h2>💭 더 생각해 보기 <span class="sub">서술형 — 스스로 써 본 뒤 예시 답안과 비교해 보세요 (버튼 3번 누르면 공개)</span></h2>
     <div class="q">
       <p><span class="qno">Q1.</span>가~마에서 중화 반응으로 생성된 <b>물 분자의 수</b>가 가장 많은 것부터 순서대로 써 보자.</p>
+      <textarea class="think-answer" id="think1" data-save placeholder="여기에 직접 써 보세요..." rows="3"></textarea>
       <button class="btn" data-reveal="r1">예시 답안 보기 (3)</button>
       <div class="reveal-body" id="r1">
         <b>다 &gt; 나 = 라 &gt; 가 = 마</b><br>
         농도가 같으므로 부피가 곧 이온의 수! H⁺와 OH⁻는 1:1로 반응하니, 둘 중 <b>적은 쪽 이온 수만큼</b>만 물이 생겨요.
         다(6:6)는 12쌍 전부 반응하지만, 가(2:10)와 마(10:2)는 4쌍만 반응해요.
-      </div>
-    </div>
-    <div class="q">
-      <p><span class="qno">Q2.</span>당량점(6:6)을 지나 NaOH 수용액을 계속 넣으면 온도가 다시 <b>내려가는</b> 까닭을 설명해 보자.</p>
-      <button class="btn" data-reveal="r2">예시 답안 보기 (3)</button>
-      <div class="reveal-body" id="r2">
-        더 이상 반응할 H⁺가 없어 <b>중화열이 추가로 발생하지 않는데</b>, 상대적으로 온도가 낮은 NaOH 수용액이 계속 들어와
-        전체 용액이 <b>희석</b>되기 때문이에요.
       </div>
     </div>
   </div>
@@ -616,24 +628,18 @@ td.empty{color:var(--faint);font-weight:400}
 
 <!-- ================= 06 결론 ================= -->
 <section class="step" data-step="6">
-  <div class="card">
-    <h2><span class="step-no">06</span>결론</h2>
+  <h2><span class="step-no">06</span>결론</h2>
     <div class="prose">
       <p>산의
         <input class="blank" id="c1" data-save size="4" placeholder="ㅅㅅ"> 이온(H⁺)과 염기의
         <input class="blank" id="c2" data-save size="5" placeholder="ㅅㅅㅎ"> 이온(OH⁻)이 1:1의 개수비로 반응하여 물을 생성하는 반응을
         <input class="blank" id="c3" data-save size="7" placeholder="ㅈㅎ ㅂㅇ">이라고 하며, 이때
         <input class="blank" id="c4" data-save size="5" placeholder="ㅈㅎㅇ">이 발생한다.</p>
-      <p>알짜 이온 반응식 : &nbsp; H⁺ &nbsp;+&nbsp; OH⁻ &nbsp;⟶&nbsp;
-        <input class="blank" id="c5" data-save size="5" placeholder="화학식"></p>
-      <p>반응에 직접 참여하지 않는 Na⁺, Cl⁻와 같은 이온을
-        <input class="blank" id="c6" data-save size="4" placeholder="ㄱㄱㄲ"> 이온이라고 한다.</p>
     </div>
     <div class="grade-line">
       <button class="btn grade" id="gradeConc">✏️ 채점하기</button>
       <span class="grade-msg" id="msgConc"></span>
     </div>
-  </div>
   <div class="step-foot"><button class="btn ghost" data-go="5">← 이전</button><button class="btn primary" data-go="7">다음 단계 →</button></div>
 </section>
 
@@ -691,7 +697,7 @@ const STORE_KEY = "neutralWorksheetV2";
 
 const COLOR = {
   H:"#e3e6ec", Cl:"#57a84c", Na:"#e8c53f", OH:"#e0762f", H2O:"#57a0e0",
-  btbY:"#e8d24a", btbG:"#48b264", btbB:"#4a7bd4",
+  btbY:"#e8d24a", btbG:"#48b264", btbB:"#4a7bd4", phPink:"#e0629a",
   waterPlain:"rgba(120,150,200,.16)"
 };
 
@@ -705,19 +711,17 @@ const ANS = {
   t4:{a:["1:1","1대1","일대일"]},
   t5:{a:["중화반응","중화"]}, t6:{a:["중화열"]},
   t7:{a:["염"]}, t8:{a:["염화나트륨","nacl"]},
-  i1:{a:["다"]}, i2:{a:["많"],starts:["많"]},
+  i1:{a:["다"]}, i2:{a:["많기"],starts:["많기"]},
   i3:{a:["염기성"]}, i4:{a:["파란색","파랑","푸른색"]},
   i5:{a:["산성"]}, i6:{a:["노란색","노랑"]},
   i7:{a:["중성"]}, i8:{a:["초록색","초록","녹색"]},
-  i9:{a:["염화"]}, i10:{a:["나트륨"]},
   c1:{a:["수소"]}, c2:{a:["수산화"]},
-  c3:{a:["중화반응","중화"]}, c4:{a:["중화열"]},
-  c5:{a:["h2o","물","h₂o"]}, c6:{a:["구경꾼"]}
+  c3:{a:["중화반응","중화"]}, c4:{a:["중화열"]}
 };
 const SECTIONS = {
   theory:{ ids:["t1","t2","t3","t4","t5","t6","t7","t8"], btn:"gradeTheory", msg:"msgTheory", fails:0, passed:false },
-  interp:{ ids:["i1","i2","i3","i4","i5","i6","i7","i8","i9","i10"], btn:"gradeInterp", msg:"msgInterp", fails:0, passed:false },
-  conc:{   ids:["c1","c2","c3","c4","c5","c6"], btn:"gradeConc", msg:"msgConc", fails:0, passed:false }
+  interp:{ ids:["i1","i2","i3","i4","i5","i6","i7","i8"], btn:"gradeInterp", msg:"msgInterp", fails:0, passed:false },
+  conc:{   ids:["c1","c2","c3","c4"], btn:"gradeConc", msg:"msgConc", fails:0, passed:false }
 };
 
 function norm(s){
@@ -803,8 +807,8 @@ function blockReason(n){
   return "";
 }
 let step4SkipCount = 0; /* 04 실험하기를 3번째 막히면 몰래 통과시킨다 (학생에겐 비밀) */
-function goTo(n){
-  if(n > curStep){
+function goTo(n, force){
+  if(!force && n > curStep){
     for(let k=curStep; k<n; k++){
       if(!stepValid(k)){
         if(k===4){
@@ -833,9 +837,15 @@ function renderTabs(){
     t.classList.toggle("done", stepValid(n) && n!==7);
   });
 }
+let tabClickTarget = null, tabClickCount = 0;
 document.getElementById("tabs").addEventListener("click", e=>{
   const t = e.target.closest(".tab");
-  if(t) goTo(Number(t.dataset.step));
+  if(!t) return;
+  const n = Number(t.dataset.step);
+  tabClickCount = (n === tabClickTarget) ? tabClickCount + 1 : 1;
+  tabClickTarget = n;
+  if(tabClickCount >= 5){ goTo(n, true); return; }
+  goTo(n);
 });
 document.querySelectorAll("[data-go]").forEach(b=>{
   b.addEventListener("click", ()=>goTo(Number(b.dataset.go)));
@@ -845,7 +855,7 @@ document.querySelectorAll("[data-go]").forEach(b=>{
    4) 시뮬레이션 (이온·글자 크게: r=19, 라벨 15px)
    ========================================================= */
 let hclML = 0, naohML = 0, neutralized = 0;
-let btbOn = false, dropAnim = null, squeezing = false;
+let btbOn = false, phOn = false, dropAnim = null, squeezing = false;
 let records = {};
 
 const cv = $("cv");
@@ -964,6 +974,14 @@ function btbName(){
   const s = liquidState();
   return s==="acid"?"노란색":s==="base"?"파란색":s==="neutral"?"초록색":"—";
 }
+function phColorHex(){
+  const s = liquidState();
+  return s==="base" ? COLOR.phPink : null; /* 산성·중성에서는 무색 */
+}
+function phName(){
+  const s = liquidState();
+  return s==="base" ? "분홍색" : "무색";
+}
 
 /* ---- 그리기 ---- */
 function draw(){
@@ -1040,13 +1058,11 @@ function drawBeakerGlass(){
   ctx.restore();
 }
 function drawVolumeLabels(){
-  ctx.save();
-  ctx.font = "700 25px Pretendard, sans-serif";
-  ctx.textAlign = "left"; ctx.fillStyle = "rgba(180,195,220,.95)";
-  ctx.fillText(`묽은 염산 ${hclML} mL`, BK.x1, H-22);
-  ctx.textAlign = "right";
-  ctx.fillText(`NaOH ${naohML} mL 넣음`, BK.x2, H-22);
-  ctx.restore();
+  /* 넣은 양 표시는 캔버스가 아니라 상단 별도 HTML 바(#statusHcl/#statusNaoh)에서 보여준다 */
+}
+function updateSolutionStatus(){
+  $("statusHcl").textContent = `묽은 염산 ${hclML} mL`;
+  $("statusNaoh").textContent = `NaOH ${naohML} mL`;
 }
 function drawDropper(){
   const {cx, topY, tipY} = DROPPER;
@@ -1067,10 +1083,10 @@ function drawDropper(){
   ctx.fillRect(cx-8, tipY-90, 16, 62);
   ctx.font = "700 23px Pretendard, sans-serif";
   ctx.textAlign = "left"; ctx.fillStyle = "rgba(232,236,245,.9)";
-  ctx.fillText("NaOH 수용액", cx+44, topY+44);
+  ctx.fillText("NaOH 수용액", cx+44, topY+66);
   ctx.font = "500 18px Pretendard, sans-serif";
   ctx.fillStyle = "rgba(160,172,196,.85)";
-  ctx.fillText("(스포이드를 눌러 1 mL씩)", cx+44, topY+72);
+  ctx.fillText("(스포이드를 눌러 1 mL씩)", cx+44, topY+94);
   ctx.restore();
 }
 function drawParticle(p){
@@ -1163,6 +1179,7 @@ function loop(){ step(); draw(); requestAnimationFrame(loop); }
 
 /* ---- 실험 UI 동기화 ---- */
 function sync(){
+  updateSolutionStatus();
   const c = counts();
   $("eqH").textContent = c.H;
   $("eqOH").textContent = c.OH;
@@ -1180,6 +1197,7 @@ function sync(){
   tv.style.color =
     heat > .8 ? "#ff8a5c" : heat > .45 ? "#f0b878" : heat > .1 ? "#e8d8b0" : "var(--ink)";
   updateBTB();
+  updatePH();
   updateRecBtn();
   $("squeezeBtn").disabled = hclML===0 || naohML>=MAX_NAOH || !!dropAnim;
 }
@@ -1199,6 +1217,22 @@ function updateBTB(){
   lb.textContent = `${btbName()} — ${word}`;
   lb.style.color = "var(--ink)";
 }
+function updatePH(){
+  const sw = $("phSwatch"), lb = $("phLabel");
+  if(!phOn){
+    sw.style.background = "var(--sunk)";
+    lb.textContent = "페놀프탈레인을 넣어 액성 확인";
+    lb.style.color = "var(--body)";
+    return;
+  }
+  const s = liquidState();
+  if(s==="none"){ sw.style.background="var(--sunk)"; lb.textContent="용액이 없어요"; lb.style.color="var(--body)"; return; }
+  const col = phColorHex();
+  sw.style.background = col || "#ffffff";
+  const word = s==="acid"?"산성":s==="base"?"염기성":"중성";
+  lb.textContent = `${phName()} — ${word}`;
+  lb.style.color = "var(--ink)";
+}
 function currentComboIdx(){
   for(let i=0;i<COMBOS.length;i++){
     if(COMBOS[i][0]===hclML && COMBOS[i][1]===naohML) return i;
@@ -1214,13 +1248,13 @@ function updateRecBtn(){
   const btn = $("recBtn");
   if(idx>=0 && reactionSettled() && !(idx in records)){
     btn.disabled = false;
-    btn.textContent = `📋 ‘${COMBO_NAMES[idx]}’ 기록하기 (${hclML}:${naohML})`;
+    btn.textContent = "📋 기록하기";
   }else if(idx>=0 && (idx in records)){
     btn.disabled = true;
     btn.textContent = `✅ ‘${COMBO_NAMES[idx]}’ 기록 완료`;
   }else{
     btn.disabled = true;
-    btn.textContent = "📋 이 조합 기록하기";
+    btn.textContent = "📋 기록하기";
   }
 }
 
@@ -1300,7 +1334,7 @@ $("hclChips").addEventListener("click", e=>{
   if(chip) selectHCl(Number(chip.dataset.ml));
 });
 function squeeze(){
-  if(hclML===0){ openModal("먼저 염산을 준비해요","<p>염산 부피를 먼저 골라 주세요.</p>"); return; }
+  if(hclML===0){ openModal("먼저 염산을 준비해요","<p>염산 부피를 먼저 선택해 주세요.</p>"); return; }
   if(naohML>=MAX_NAOH){ openModal("비커가 가득 찼어요",`<p>NaOH 수용액은 최대 <b>${MAX_NAOH} mL</b>까지 넣을 수 있어요. ‘새 실험’으로 다시 시작해 보세요.</p>`); return; }
   if(dropAnim) return;
   squeezing = true;
@@ -1335,11 +1369,12 @@ $("resetBtn").addEventListener("click", ()=>{
   hclML = 0; naohML = 0; neutralized = 0;
   parts = []; effects = []; dropAnim = null; squeezing = false;
   document.querySelectorAll("#hclChips .chip").forEach(c=>c.classList.remove("on"));
-  $("benchHint").textContent = "먼저 염산 부피를 골라 주세요";
+  $("benchHint").textContent = "먼저 염산 부피를 선택해 주세요";
   $("benchHint").classList.remove("hide");
   sync();
 });
 $("btbToggle").addEventListener("change", e=>{ btbOn = e.target.checked; sync(); });
+$("phToggle").addEventListener("change", e=>{ phOn = e.target.checked; sync(); });
 $("clearRec").addEventListener("click", ()=>{
   records = {};
   saveState(); renderRecords(); updateRecBtn();
@@ -1416,7 +1451,7 @@ function reportGraphDataURL(){
   c.width = 920; c.height = 560;
   const g = c.getContext("2d");
   g.fillStyle = "#ffffff"; g.fillRect(0,0,920,560);
-  const L=100, R=60, T=50, B=120;
+  const L=100, R=150, T=50, B=120;
   const x = i => L + (920-L-R)*(i/4);
   const yOf = t => T + (560-T-B)*(1-(t-23)/(27-23));
   g.strokeStyle = "#c9d2e0"; g.fillStyle="#3a4a66";
@@ -1440,8 +1475,8 @@ function reportGraphDataURL(){
     g.fillText(COMBO_NAMES[i], x(i), 560-B+98);
   }
   g.textAlign="start"; g.font="18px Pretendard, sans-serif"; g.fillStyle="#6a7690";
-  g.fillText("HCl(mL)", 920-R+6, 560-B+34);
-  g.fillText("NaOH(mL)", 920-R+6, 560-B+64);
+  g.fillText("HCl(mL)", x(4)+45, 560-B+34);
+  g.fillText("NaOH(mL)", x(4)+45, 560-B+64);
   const idxs = Object.keys(records).map(Number).sort((a,b)=>a-b);
   if(idxs.length>=2){
     g.strokeStyle="#e05a54"; g.lineWidth=4; g.beginPath();
@@ -1481,7 +1516,7 @@ function buildReport(){
   }
   $("report").innerHTML = `
     <h1>중화 반응 — 이온 모형 실험 보고서</h1>
-    <div class="r-sub">통합과학 · 산과 염기 · 디지털 실험 활동지</div>
+    <div class="r-sub">통합과학 산과염기</div>
 
     <table class="avoid">
       <tr>
@@ -1501,9 +1536,9 @@ function buildReport(){
     <p class="r-note">혼합 전 온도: 염산 23.0 ℃, NaOH 수용액 23.0 ℃ · 이온 모형: 1 mL = H⁺(또는 OH⁻) 1개 기준</p>
     <table class="avoid">
       <tr>
-        <th style="width:8%">구분</th><th style="width:16%">HCl : NaOH<br>(mL)</th>
-        <th style="width:14%">최고 온도<br>(℃)</th><th style="width:16%">BTB 색</th>
-        <th style="width:15%">남은 H⁺<br>(개)</th><th style="width:15%">남은 OH⁻<br>(개)</th><th style="width:16%">생성된 H₂O<br>(개)</th>
+        <th style="width:8%">구분</th><th style="width:16%">HCl : NaOH (mL)</th>
+        <th style="width:14%">최고 온도 (℃)</th><th style="width:16%">BTB 색</th>
+        <th style="width:15%">남은 H⁺ (개)</th><th style="width:15%">남은 OH⁻ (개)</th><th style="width:16%">생성된 H₂O (개)</th>
       </tr>
       ${resultRows}
     </table>
@@ -1513,12 +1548,15 @@ function buildReport(){
     </div>
 
     <h2>4. 실험 해석</h2>
-    <p class="r-sent">① 최고 온도가 가장 높은 것은 <span class="r-ans">${ansOf("i1")}</span>이다. 부피가 같을 때 중화 반응한 H⁺와 OH⁻의 수가 가장 <span class="r-ans">${ansOf("i2")}</span>기 때문이다.</p>
+    <p class="r-sent">① 최고 온도가 가장 높은 것은 <span class="r-ans">${ansOf("i1")}</span>이다. 부피가 같을 때 중화 반응한 H⁺와 OH⁻의 수가 가장 <span class="r-ans">${ansOf("i2")}</span> 때문이다.</p>
     <p class="r-sent">② 가(2:10)는 OH⁻가 남아 <span class="r-ans">${ansOf("i3")}</span>이고 BTB는 <span class="r-ans">${ansOf("i4")}</span>, 마(10:2)는 H⁺가 남아 <span class="r-ans">${ansOf("i5")}</span>이고 BTB는 <span class="r-ans">${ansOf("i6")}</span>, 다(6:6)는 모두 반응하여 <span class="r-ans">${ansOf("i7")}</span>이고 BTB는 <span class="r-ans">${ansOf("i8")}</span>을 띤다.</p>
-    <p class="r-sent">③ NaOH 수용액을 계속 넣어도 <span class="r-ans">${ansOf("i9")}</span> 이온(Cl⁻)의 수는 변하지 않고, <span class="r-ans">${ansOf("i10")}</span> 이온(Na⁺)의 수는 계속 늘어난다.</p>
 
     <h2>5. 결론</h2>
-    <p class="r-sent">산의 <span class="r-ans">${ansOf("c1")}</span> 이온과 염기의 <span class="r-ans">${ansOf("c2")}</span> 이온이 1:1로 반응하여 물을 생성하는 반응을 <span class="r-ans">${ansOf("c3")}</span>이라고 하며, 이때 <span class="r-ans">${ansOf("c4")}</span>이 발생한다. 알짜 이온 반응식은 H⁺ + OH⁻ ⟶ <span class="r-ans">${ansOf("c5")}</span>이고, 반응에 참여하지 않는 Na⁺, Cl⁻는 <span class="r-ans">${ansOf("c6")}</span> 이온이다.</p>
+    <p class="r-sent">산의 <span class="r-ans">${ansOf("c1")}</span> 이온과 염기의 <span class="r-ans">${ansOf("c2")}</span> 이온이 1:1로 반응하여 물을 생성하는 반응을 <span class="r-ans">${ansOf("c3")}</span>이라고 하며, 이때 <span class="r-ans">${ansOf("c4")}</span>이 발생한다.</p>
+
+    <h2>6. 더 생각해 보기</h2>
+    <p class="r-sent"><b>Q.</b> 가~마에서 중화 반응으로 생성된 물 분자의 수가 가장 많은 것부터 순서대로 써 보자.</p>
+    <p class="r-sent">${ansOf("think1", "(작성하지 않음)")}</p>
   `;
 }
 $("rebuildBtn").addEventListener("click", buildReport);
