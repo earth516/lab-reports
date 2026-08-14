@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>산과 염기 — 산성과 염기성을 나타내는 이온의 확인</title>
+<title>통합과학 실험 보고서 — 산성과 염기성을 나타내는 이온의 확인</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-:root{
+:root{color-scheme:dark;
   --paper:#0c0e12;--surface:#171a20;--sunk:#1e222b;
   --ink:#e8eaee;--body:#b4b9c4;--faint:#8b909b;
   --line:#2a2e37;--line-soft:#22262b;
@@ -96,21 +96,21 @@ a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radi
 
 .site-footer{padding:1.4rem 2.6rem 1.8rem;background:var(--paper);border-top:1px solid var(--line)}
 .site-footer-top{position:relative;display:flex;align-items:center;justify-content:flex-end;
-  min-height:2.5rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+  min-height:2.4rem}
 .site-footer-copy{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  margin:0;font-size:.76rem;color:var(--faint);line-height:1.25rem;text-align:center;white-space:nowrap}
+  margin:0;font-size:12px;color:var(--faint);line-height:1.5;text-align:center;white-space:nowrap}
 .site-footer-links{display:flex;align-items:center;gap:.6rem}
 @media(max-width:640px){
   .site-footer-top{position:static;flex-direction:column-reverse;align-items:center;gap:.8rem}
   .site-footer-copy{position:static;transform:none;white-space:normal}
 }
-.yt-badge{display:inline-flex;align-items:center;gap:.5rem;height:2.5rem;padding:0 1.1rem 0 .85rem;
-  box-sizing:border-box;background:var(--surface);border:1px solid var(--line);border-radius:999px;
+.yt-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem .5rem .7rem;
+  background:var(--surface);border:1.5px solid var(--line);border-radius:999px;
   color:var(--ink);text-decoration:none;font-weight:700;font-size:.8rem;
   transition:border-color .15s,transform .1s}
 .yt-badge:hover{border-color:var(--sea);transform:translateY(-1px)}
 .yt-badge .play{display:inline-flex;align-items:center;justify-content:center;
-  width:1.15rem;height:1.15rem;border-radius:.35rem;background:var(--sea);flex:none}
+  width:18px;height:18px;border-radius:5px;background:var(--sea);flex:none}
 .yt-badge .play::before{content:"";width:0;height:0;margin-left:2px;
   border-style:solid;border-width:4px 0 4px 7px;border-color:transparent transparent transparent #0c0e12}
 .yt-badge .badge-icon{font-size:.85rem;line-height:1}
@@ -218,7 +218,7 @@ a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radi
 <body>
 <div class="sheet">
 <header class="top">
-  <div class="kicker">통합과학 (화학)</div>
+  <div class="kicker">통합과학 실험 보고서</div>
   <h1>산성과 염기성을 나타내는 이온의 확인</h1>
 </header>
 <nav>
@@ -234,11 +234,13 @@ a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radi
 <!-- 01 -->
 <section class="step" data-step="1">
   <h2 class="head"><span class="n">01</span> 정보 입력</h2>
-  <p class="lead">실험에 참여하는 학생의 기본 정보를 입력해 주세요.</p>
+  <p class="lead">보고서에 표시될 정보입니다.</p>
   <table class="info-form"><tbody>
-    <tr><td class="lbl">일자</td><td><input id="f_date" class="save" type="date" required></td></tr>
-    <tr><td class="lbl">학번</td><td><input id="f_id" class="save" type="text" placeholder="예: 20101" required></td></tr>
-    <tr><td class="lbl">이름</td><td><input id="f_name" class="save" type="text" placeholder="홍길동" required></td></tr>
+    <tr>
+      <td class="lbl">일자</td><td><input id="f_date" class="save" type="date" required></td>
+      <td class="lbl">학번</td><td><input id="f_id" class="save" type="text" placeholder="예: 20101" required></td>
+      <td class="lbl">이름</td><td><input id="f_name" class="save" type="text" placeholder="홍길동" required></td>
+    </tr>
   </tbody></table>
 </section>
 
