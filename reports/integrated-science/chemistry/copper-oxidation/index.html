@@ -8,7 +8,7 @@
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-:root{
+:root{color-scheme:dark;
   --paper:#0c0e12; --surface:#171a20; --sunk:#1e222b;
   --ink:#e8eaee; --body:#b4b9c4; --faint:#8b909b;
   --line:#2a2e37; --line-soft:#22262b;
@@ -210,21 +210,21 @@ table.cmp td b{color:var(--ink)}
 #report table.r-info td.k{background:#f5f5f5;font-weight:700;color:#141414;width:19%;white-space:nowrap}
 .site-footer{padding:1.4rem 2.6rem 1.8rem;background:var(--paper);border-top:1px solid var(--line)}
 .site-footer-top{position:relative;display:flex;align-items:center;justify-content:flex-end;
-  min-height:2.5rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+  min-height:2.4rem}
 .site-footer-copy{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  margin:0;font-size:.76rem;color:var(--faint);line-height:1.25rem;text-align:center;white-space:nowrap}
+  margin:0;font-size:12px;color:var(--faint);line-height:1.5;text-align:center;white-space:nowrap}
 .site-footer-links{display:flex;align-items:center;gap:.6rem}
 @media(max-width:640px){
   .site-footer-top{position:static;flex-direction:column-reverse;align-items:center;gap:.8rem}
   .site-footer-copy{position:static;transform:none;white-space:normal}
 }
-.yt-badge{display:inline-flex;align-items:center;gap:.5rem;height:2.5rem;padding:0 1.1rem 0 .85rem;
-  box-sizing:border-box;background:var(--surface);border:1px solid var(--line);border-radius:999px;
+.yt-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem .5rem .7rem;
+  background:var(--surface);border:1.5px solid var(--line);border-radius:999px;
   color:var(--ink);text-decoration:none;font-weight:700;font-size:.8rem;
   transition:border-color .15s,transform .1s}
 .yt-badge:hover{border-color:var(--sea);transform:translateY(-1px)}
 .yt-badge .play{display:inline-flex;align-items:center;justify-content:center;
-  width:1.15rem;height:1.15rem;border-radius:.35rem;background:var(--sea);flex:none}
+  width:18px;height:18px;border-radius:5px;background:var(--sea);flex:none}
 .yt-badge .play::before{content:"";width:0;height:0;margin-left:2px;
   border-style:solid;border-width:4px 0 4px 7px;border-color:transparent transparent transparent #0c0e12}
 .yt-badge .badge-icon{font-size:.85rem;line-height:1}
@@ -405,9 +405,9 @@ table.cmp td b{color:var(--ink)}
         <td class="lbl">일자</td>
         <td><input type="date" id="f_date" class="save mono" required></td>
         <td class="lbl">학번</td>
-        <td><input id="f_id" class="save mono" inputmode="numeric" maxlength="10" placeholder="20100" required></td>
+        <td><input id="f_id" class="save mono" inputmode="numeric" maxlength="10" placeholder="예: 10900" required></td>
         <td class="lbl">이름</td>
-        <td><input id="f_name" class="save" maxlength="20" placeholder="홍길동" required></td>
+        <td><input id="f_name" class="save" maxlength="20" placeholder="김우신" required></td>
       </tr>
     </tbody>
   </table>
