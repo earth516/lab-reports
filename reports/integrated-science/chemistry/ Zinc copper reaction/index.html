@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>산화·환원 실험(2) · 활동 보고서</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root{color-scheme:dark;
+  --paper:#0c0e12; --surface:#171a20; --sunk:#1e222b;
+  --ink:#e8eaee; --body:#b4b9c4; --faint:#8b909b;
+  --line:#2a2e37; --line-soft:#22262b;
+  --sea:#7dd3c8; --sea-deep:#7dd3c8; --sea-soft:rgba(125,211,200,.14);
+  --coral:#e06a5b;
+  --copper:#d98a4f; --copper-bright:#e8a468;
+  --zinc:#c3c9d1; --zinc-dark:#8a9099;
+  --sol-blue:#2f8fc7; --sol-blue-deep:#1c6fb0; --sol-pale:#bfe3f2;
+
+  --sans:'Pretendard','Pretendard Variable',-apple-system,system-ui,sans-serif;
+  --mono:var(--sans);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);
+  font-size:17px;line-height:1.75;letter-spacing:-.01em;word-break:keep-all;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3{margin:0;letter-spacing:-.025em;line-height:1.4}
+.mono{font-family:var(--mono)}
+
+.sheet{max-width:1060px;margin:0 auto;background:var(--surface);
+  border-left:1px solid var(--line);border-right:1px solid var(--line);min-height:100vh}
+@media(max-width:820px){.sheet{border:0}}
+
+header.top{background:#101216;color:#e8eaee;padding:1.5rem 2.6rem;border-bottom:1px solid var(--line)}
+header.top .kicker{font-family:var(--sans);font-size:.9rem;font-weight:600;
+  color:var(--sea);letter-spacing:-.01em;margin-bottom:.15rem}
+header.top h1{font-family:var(--sans);font-size:1.4rem;font-weight:700;color:#fff;letter-spacing:-.03em}
+@media(max-width:700px){header.top{padding:1.2rem 1.4rem}header.top h1{font-size:1.2rem}}
+
+nav{display:flex;background:var(--sunk);border-bottom:1px solid var(--line);
+  overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:20}
+nav::-webkit-scrollbar{display:none}
+.tab{flex:1 0 auto;padding:1rem 1.1rem;background:none;border:0;border-bottom:2px solid transparent;
+  font-family:var(--sans);font-size:.92rem;font-weight:600;color:var(--body);cursor:pointer;
+  white-space:nowrap;display:flex;gap:.55rem;align-items:baseline;transition:.16s;letter-spacing:-.01em}
+.tab .n{font-family:var(--mono);font-size:.76rem;color:var(--ink);font-weight:500;letter-spacing:0}
+.tab:hover{background:rgba(255,255,255,.06);color:var(--ink)}
+.tab.active{background:var(--surface);color:var(--sea);border-bottom-color:var(--sea);font-weight:700}
+.tab.done .n::after{content:"✓";margin-left:.25rem;color:var(--sea)}
+
+.wrap{padding:3rem 2.6rem 1rem}
+@media(max-width:700px){.wrap{padding:1.8rem 1.4rem .5rem}}
+.step{display:none}
+.step.active{display:block;animation:in .3s cubic-bezier(.16,1,.3,1)}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+h2.head{font-size:1.55rem;font-weight:700;margin-bottom:.4rem;
+  display:flex;align-items:baseline;gap:.75rem;letter-spacing:-.03em}
+h2.head .n{font-family:var(--mono);font-size:.8rem;color:var(--sea);font-weight:500;
+  letter-spacing:.06em;background:none;padding:0}
+.lead{color:var(--body);font-size:1.02rem;margin:0 0 2.6rem;padding-bottom:1.3rem;
+  border-bottom:1px solid var(--line)}
+
+.block{margin-bottom:2.4rem}
+.block h3{font-size:1.15rem;font-weight:700;margin-bottom:.5rem;color:var(--sea)}
+.block p{margin:0 0 .5rem;color:var(--body)}
+.block p:last-child{margin-bottom:0}
+.block b{color:var(--ink);font-weight:600}
+.rule{border:0;border-top:1px solid var(--line-soft);margin:2.6rem 0}
+.rules{margin:0;padding-left:1.3rem;color:var(--body)}
+.rules li{margin-bottom:.4rem}
+.rules li:last-child{margin-bottom:0}
+.check-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  padding:.9rem 1.1rem;border:1.5px solid var(--line);border-radius:10px;background:var(--sunk);
+  margin-top:1.2rem;font-size:1rem;color:var(--ink);transition:.14s}
+.check-toggle{display:flex;align-items:center;gap:.55rem;cursor:pointer;white-space:nowrap;font-weight:600}
+.check-toggle input[type="checkbox"]{width:18px;height:18px;flex:0 0 auto;accent-color:var(--sea);cursor:pointer}
+.check-row:has(input.invalid){border-color:var(--coral);background:rgba(224,106,91,.08)}
+
+.panel{background:var(--sunk);border:1px solid var(--line);border-radius:14px;padding:1.8rem}
+label{display:block;font-size:.85rem;color:var(--faint);margin-bottom:.5rem;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase}
+input,select,textarea{width:100%;padding:.65rem .8rem;border:1.5px solid var(--line);border-radius:12px;
+  background:var(--paper);font-family:var(--sans);font-size:1.03rem;color:var(--ink);
+  letter-spacing:-.01em;transition:.14s;color-scheme:dark}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--sea);
+  box-shadow:0 0 0 3px var(--sea-soft)}
+input::placeholder,textarea::placeholder{color:#5b616c}
+textarea{resize:vertical;line-height:1.95}
+.invalid{border-color:var(--coral)!important;background:rgba(224,106,91,.1)}
+.blank{display:inline-block;width:6.2rem;padding:.05rem .4rem;border:0;
+  border-bottom:2px solid var(--ink);border-radius:4px 4px 0 0;text-align:center;font-weight:600;
+  color:var(--ink);font-size:1.02rem;background:var(--paper);letter-spacing:-.01em}
+.blank.wide{width:9rem}
+.blank::placeholder{color:#5b616c;font-weight:400;font-size:.85em;letter-spacing:0}
+.blank:focus{outline:none;box-shadow:none;background:var(--surface);border-bottom-color:var(--sea)}
+.blank.invalid{border-bottom-color:var(--coral)!important;background:rgba(224,106,91,.1)}
+.blank.correct{border-bottom-color:#4ade80!important;background:rgba(74,222,128,.1)}
+.hint{font-size:.92rem;color:var(--faint);margin:-.1rem 0 .75rem;letter-spacing:-.005em}
+
+/* 정보 입력 : 표 형태 */
+.info-form{width:100%;border-collapse:collapse;background:var(--surface);
+  border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.info-form td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);
+  padding:0;vertical-align:middle}
+.info-form tr:last-child td{border-bottom:0}
+.info-form td:last-child{border-right:0}
+.info-form td.lbl{width:1%;padding:0 1rem;font-size:.85rem;font-weight:700;color:var(--sea);
+  letter-spacing:.03em;background:var(--sunk);white-space:nowrap}
+.info-form input{width:100%;border:0;border-radius:0;background:transparent;
+  padding:.85rem 1rem;font-family:var(--sans);font-size:1.02rem;color:var(--ink);letter-spacing:-.01em}
+.info-form input:focus{outline:none;box-shadow:none;background:var(--sea-soft)}
+.info-form input.invalid{background:rgba(224,106,91,.1)}
+@media(max-width:700px){
+  .info-form, .info-form tbody, .info-form tr, .info-form td{display:block;width:100%}
+  .info-form td{border-right:0}
+  .info-form td.lbl{border-bottom:0;padding:.6rem 1rem .2rem}
+  .info-form td:not(.lbl){padding-bottom:.2rem}
+}
+
+/* 고정 안내 박스 */
+.fixed-note{display:flex;gap:.8rem;align-items:baseline;padding:.75rem 1.05rem;
+  background:var(--sunk);border:1px solid var(--line);border-radius:10px;margin-bottom:.8rem}
+.fixed-note:last-of-type{margin-bottom:1.6rem}
+.fixed-note b{flex:none;font-size:.82rem;font-weight:700;color:var(--sea);letter-spacing:.04em}
+.fixed-note span{color:var(--body)}
+
+.bar{display:flex;gap:.7rem;align-items:center;padding:1.6rem 2.6rem 3.2rem;
+  border-top:1px solid var(--line);margin-top:1.6rem;background:var(--sunk)}
+@media(max-width:700px){.bar{padding:1.2rem 1.4rem 2.4rem}}
+.btn{font-family:var(--sans);font-size:1rem;font-weight:700;padding:.72rem 1.7rem;border-radius:999px;
+  border:1.5px solid #39404b;background:var(--surface);color:var(--ink);cursor:pointer;
+  transition:.16s;letter-spacing:-.01em}
+.btn:hover{background:var(--sea-soft)}
+.btn:disabled{opacity:.3;cursor:not-allowed;background:var(--surface)}
+.btn.solid{background:var(--sea);color:#0c0e12;border-color:var(--sea)}
+.btn.solid:hover{background:#62beb3;border-color:#62beb3}
+.btn.quiet{border-color:transparent;color:var(--faint);background:transparent;padding:.5rem 1rem}
+.btn.quiet:hover{color:var(--body);background:transparent}
+.btn.small{font-size:.85rem;padding:.45rem 1rem}
+.grow{flex:1}
+
+.note{padding:.9rem 1.15rem;font-size:.95rem;border-radius:8px;margin-top:1.2rem;display:none}
+.note.err{display:block;background:rgba(224,106,91,.12);color:#f0a99e;border-left:3px solid var(--coral)}
+.note.ok{display:block;background:var(--sea-soft);color:var(--ink);border-left:3px solid var(--sea)}
+
+a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radius:999px;
+  background:var(--sea);color:#0c0e12;text-decoration:none;font-size:1rem;font-weight:700;
+  letter-spacing:-.01em;transition:.14s}
+a.submit:hover{background:#62beb3}
+
+/* 이론적 배경 : 목록 및 비교 표 */
+.rx-list{margin:0 0 1.4rem;padding-left:1.3rem;color:var(--body)}
+.rx-list li{margin-bottom:.3rem}
+table.cmp{width:100%;border-collapse:collapse;font-size:.95rem;margin-top:.4rem}
+table.cmp th,table.cmp td{border:1px solid var(--line);padding:.7rem .9rem;text-align:left;vertical-align:top}
+table.cmp th{background:var(--sunk);font-weight:700;color:var(--ink);width:22%}
+table.cmp td{color:var(--body)}
+table.cmp td b{color:var(--ink)}
+.eq-box{background:var(--sunk);border:1px solid var(--line);border-radius:10px;
+  padding:1rem 1.2rem;font-family:var(--mono);font-size:1rem;color:var(--ink);
+  text-align:center;margin:.8rem 0 1.2rem}
+
+/* ===== 보고서 : 항상 흰 종이 위에 검은 글씨로 인쇄되도록 지역 변수 재정의 ===== */
+#report{background:#fff;padding:20mm 16mm;color:#141414;font-size:15px;line-height:1.85;
+  overflow-wrap:break-word;word-break:break-word;font-family:var(--sans);
+  --ink:#141414;--body:#4a4a4a;--faint:#9a9a9a;--line:#e0e0e0;--line-soft:#ececec;
+  --sea:#141414;--sea-deep:#000000;--sea-soft:#ececec}
+#report .r-head{border-bottom:2px solid var(--sea);padding-bottom:.8rem;margin-bottom:.5rem;
+  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem;
+  page-break-inside:avoid}
+#report .r-head h2{font-size:1.3rem;font-weight:700;color:var(--sea-deep)}
+#report .r-head .who{display:block;font-family:var(--mono);font-size:.82rem;color:var(--body)}
+#report .r-sec{margin-top:1.8rem}
+#report .r-lab{font-family:var(--sans);font-size:1.05rem;font-weight:700;letter-spacing:.02em;
+  color:var(--sea);border-bottom:1px solid var(--line);padding-bottom:.3rem;margin-bottom:.7rem;
+  display:block;background:none;page-break-after:avoid}
+#report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3}
+#report .r-hang{padding-left:1.6em;text-indent:-1.6em;color:#141414;font-weight:600;margin:0 0 .5rem}
+#report .r-eq{font-family:var(--mono);color:var(--copper);font-weight:700;margin-top:.3rem}
+#report table.r-info{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:.92rem;
+  table-layout:fixed;page-break-inside:avoid}
+#report table.r-info td{border:1px solid var(--line);text-align:left;padding:.6rem .85rem;
+  color:#38484f;vertical-align:top}
+#report table.r-info td.k{background:#f5f5f5;font-weight:700;color:#141414;width:19%;white-space:nowrap}
+.site-footer{padding:1.4rem 2.6rem 1.8rem;background:var(--paper);border-top:1px solid var(--line)}
+.site-footer-top{position:relative;display:flex;align-items:center;justify-content:flex-end;
+  min-height:2.4rem}
+.site-footer-copy{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  margin:0;font-size:12px;color:var(--faint);line-height:1.5;text-align:center;white-space:nowrap}
+.site-footer-links{display:flex;align-items:center;gap:.6rem}
+@media(max-width:640px){
+  .site-footer-top{position:static;flex-direction:column-reverse;align-items:center;gap:.8rem}
+  .site-footer-copy{position:static;transform:none;white-space:normal}
+}
+.yt-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem .5rem .7rem;
+  background:var(--surface);border:1.5px solid var(--line);border-radius:999px;
+  color:var(--ink);text-decoration:none;font-weight:700;font-size:.8rem;
+  transition:border-color .15s,transform .1s}
+.yt-badge:hover{border-color:var(--sea);transform:translateY(-1px)}
+.yt-badge .play{display:inline-flex;align-items:center;justify-content:center;
+  width:18px;height:18px;border-radius:5px;background:var(--sea);flex:none}
+.yt-badge .play::before{content:"";width:0;height:0;margin-left:2px;
+  border-style:solid;border-width:4px 0 4px 7px;border-color:transparent transparent transparent #0c0e12}
+.yt-badge .badge-icon{font-size:.85rem;line-height:1}
+@media print{nav,header.top,.bar{display:none!important}}
+
+/* ===== 04 실험 및 관찰 : 하위 단계 탭 ===== */
+.exp-tabbar{display:flex;flex-wrap:wrap;gap:.5rem;border-bottom:1.5px solid var(--line);margin-bottom:1.4rem}
+.exp-tab{flex:1 1 45%;padding:.7rem .8rem;background:none;border:0;border-bottom:2px solid transparent;
+  font-family:var(--sans);font-size:.86rem;font-weight:600;color:var(--body);cursor:pointer;
+  display:flex;gap:.5rem;align-items:baseline;transition:.16s}
+@media(min-width:640px){.exp-tab{flex:1 0 auto;font-size:.9rem}}
+.exp-tab .n{font-family:var(--mono);font-size:.72rem;width:18px;height:18px;line-height:18px;
+  text-align:center;border-radius:50%;background:var(--line);color:var(--body);flex:none}
+.exp-tab.active{color:var(--ink);border-bottom-color:var(--sea);font-weight:700}
+.exp-tab.active .n{background:var(--sea);color:#0c0e12}
+.exp-tab.locked{opacity:.4;cursor:not-allowed;pointer-events:none}
+.exp-tab.done .n{background:var(--copper);color:#fff}
+
+.exp-pane{display:none}
+.exp-pane.active{display:block;animation:in .25s ease}
+.sub-next{margin-top:1.2rem}
+
+/* 준비물 체크리스트 */
+.prep-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem}
+@media(max-width:600px){.prep-grid{grid-template-columns:1fr}}
+.prep-item{display:flex;align-items:center;gap:.7rem;padding:.9rem 1rem;border:1.5px solid var(--line);
+  border-radius:12px;background:var(--sunk);cursor:pointer;transition:.14s}
+.prep-item:has(input:checked){border-color:var(--sea);background:var(--sea-soft)}
+.prep-item .ico{font-size:1.35rem;flex:none}
+.prep-item input{width:18px;height:18px;flex:none;accent-color:var(--sea);cursor:pointer}
+.prep-item .lbl-txt{flex:1;color:var(--ink);font-weight:600;font-size:.95rem}
+
+/* 반응 전 모습 : 작은 정적 비커 (SVG로 그림, 아래 씬과 같은 비커 모양 재사용) */
+.before-card{position:relative;border-radius:14px;overflow:hidden;max-width:480px;margin:0 auto;
+  background:radial-gradient(circle at 30% 30%, #1a2530, #12181f 80%);
+  aspect-ratio:16/9;display:flex;align-items:flex-end;justify-content:center;gap:2.8rem;padding:1.6rem 1rem}
+.before-item{display:flex;flex-direction:column;align-items:center;gap:.7rem}
+.before-item .cap{font-size:.82rem;color:var(--body);font-weight:600;white-space:nowrap}
+.before-item svg{display:block;filter:drop-shadow(0 4px 10px rgba(0,0,0,.35))}
+.example-answer{margin-top:.6rem}
+.example-answer .note{margin-top:.6rem}
+
+/* 씬(SVG) + 드래그 */
+.svg-scene-wrap{position:relative;max-width:600px;margin:0 auto;user-select:none;
+  border-radius:14px;overflow:hidden;background:radial-gradient(circle at 30% 20%, #1a2530, #12181f 80%);
+  box-shadow:0 6px 18px rgba(0,0,0,.4)}
+.svg-scene-wrap svg{display:block;width:100%;aspect-ratio:460/300}
+
+.safety-badge{position:absolute;top:12px;left:12px;background:var(--coral);color:#fff;font-weight:700;
+  font-size:11.5px;padding:6px 10px;border-radius:8px;z-index:5;line-height:1.4}
+
+/* 집게+아연판 그룹 — 판의 "맨 아래 끝"이 그룹 좌표 원점이 되도록 그려서,
+   회전이 몇 도든 그룹의 translate 값이 곧 그 끝점의 실제 위치가 되게 한다
+   (렌더링된 좌표를 다시 재는 방식보다 훨씬 정확하고 화면 크기에 안전하다).
+   위치 이동은 JS에서 requestAnimationFrame으로 직접 애니메이션하므로,
+   여기서는 CSS transition을 걸지 않는다(SVG 좌표 왜곡을 피하기 위해 transform은
+   항상 속성으로만 설정한다). */
+#tongsWrapRx{ cursor:grab; touch-action:none;
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.5)); }
+#tongsWrapRx:active{ cursor:grabbing; }
+/* 반응이 끝나 판이 비커에 자리 잡으면, 실제로 손을 뗀 것처럼 집게 부분은 서서히 사라지고
+   판만 비커에 비스듬히 걸쳐 있는 모습으로 남는다(참고 그림처럼). */
+.tongs-part{ transition:opacity .2s ease }
+#tongsWrapRx.settled .tongs-part{ opacity:0; transition:opacity .5s ease .35s; }
+#zincPlateRx{ transition:opacity .2s ease }
+
+/* 수용액·아연판 색 변화는 그라데이션 stop 색을 클래스로 갈아끼워 부드럽게 전환한다 */
+.sol-top{ stop-color:#3fa2d6; transition:stop-color 1.6s ease }
+.sol-bot{ stop-color:#1c6fb0; transition:stop-color 1.6s ease }
+#svgRx.rx-faded .sol-top{ stop-color:#bfe3f2 }
+#svgRx.rx-faded .sol-bot{ stop-color:#8fc6de }
+.plate-s1{ stop-color:#eef1f4; transition:stop-color 1.6s ease }
+.plate-s2{ stop-color:#c3c9d1; transition:stop-color 1.6s ease }
+.plate-s3{ stop-color:#c3c9d1; transition:stop-color 1.6s ease }
+.plate-s4{ stop-color:#8a9099; transition:stop-color 1.6s ease }
+.plate-s5{ stop-color:#8a9099; transition:stop-color 1.6s ease }
+#svgRx.rx-coated .plate-s1{ stop-color:#eef1f4 }
+#svgRx.rx-coated .plate-s2{ stop-color:#c3c9d1 }
+#svgRx.rx-coated .plate-s3{ stop-color:#8a5a3f }
+#svgRx.rx-coated .plate-s4{ stop-color:#3a2418 }
+#svgRx.rx-coated .plate-s5{ stop-color:#241611 }
+
+.rx-bar{position:absolute;left:12px;right:12px;bottom:10px;z-index:5;display:flex;align-items:center;gap:8px;
+  opacity:0;transition:opacity .2s ease}
+.rx-bar.show{opacity:1}
+.rx-bar .lbl{font-size:11px;font-weight:700;color:#fff;flex:none;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.rx-bar .track{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.3);position:relative;overflow:hidden}
+.rx-bar .track .fill{position:absolute;left:0;top:0;bottom:0;width:0%;background:var(--copper-bright)}
+
+.caption{font-size:.92rem;color:var(--body);margin-top:.8rem}
+.exp-instruction{font-size:.85rem;color:var(--faint);margin-top:.5rem;margin-bottom:1.2rem}
+
+/* 실험 장면 오른쪽 위에 얹는 이온 관찰 돋보기 */
+.loupe-mini{position:absolute;top:10px;right:10px;width:128px;height:128px;border-radius:50%;
+  border:3px solid rgba(255,255,255,.6);
+  background:radial-gradient(circle at 35% 30%, var(--sunk), var(--paper) 55%), var(--surface);
+  box-shadow:0 4px 10px rgba(0,0,0,.35), inset 0 0 14px rgba(0,0,0,.4);
+  overflow:hidden;z-index:7}
+.loupe-mini .loupe-surface{position:absolute;bottom:0;left:0;right:0;height:34%;
+  background:linear-gradient(180deg,var(--zinc),var(--zinc-dark));transition:background 1.4s ease}
+.loupe-mini .loupe-surface.coated{background:linear-gradient(180deg,#7a4a34,#2c1b14)}
+.loupe-mini .loupe-mol{position:absolute;display:flex;align-items:center;gap:1px;transition:all 2.1s ease}
+.loupe-mini .atom{width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:8.5px;color:#fff;font-weight:900;letter-spacing:-.02em}
+.atom.ZN2{background:#6b7178}
+.atom.CU2{background:var(--copper)}
+.atom.CU{background:#8a4a22}
+.status-line{text-align:center;font-size:.85rem;color:var(--body);min-height:18px;margin:.9rem 0 0}
+
+/* 입자 모형(전자 이동) 정적 일러스트 — 03단계에서 이어지는 서브탭 4 */
+.pmodel-wrap{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin:1.2rem 0 .6rem}
+.pmodel-col{text-align:center}
+.pmodel-circle{position:relative;width:260px;height:260px;border-radius:50%;overflow:hidden;
+  border:3px dashed rgba(176,138,58,.65);
+  box-shadow:0 8px 20px rgba(0,0,0,.4)}
+.pmodel-circle.pm-before{background:radial-gradient(circle at 30% 16%, #3fa2d6 0%, #7cc7e6 42%, #cdeefb 82%, #e4f6fb 100%)}
+.pmodel-circle.pm-after{background:radial-gradient(circle at 30% 16%, #bfe6f4 0%, #d8f1f8 55%, #eef9fc 100%)}
+@media(max-width:640px){.pmodel-circle{width:82vw;height:82vw;max-width:260px;max-height:260px}}
+.pmodel-label{font-size:.92rem;color:var(--faint);margin-top:.7rem;font-weight:600}
+
+/* 금속 원자·이온 — 구슬 자체는 비워두고, 이름표는 위/아래에 인출선과 함께 검정 글씨로 붙인다 */
+.p-atom{position:absolute;transform:translate(-50%,-50%);border-radius:50%;
+  box-shadow:0 2px 5px rgba(0,0,0,.35),inset -3px -3px 5px rgba(0,0,0,.18)}
+.p-atom.zn{background:radial-gradient(circle at 35% 32%, #eef1f4, var(--zinc-dark) 78%)}
+.p-atom.cu{background:radial-gradient(circle at 35% 32%, var(--copper-bright), #c07a3e 78%)}
+.p-atom.zn2{background:radial-gradient(circle at 35% 32%, #c7ccd2, #8a9099 78%)}
+.p-atom.cu2{background:radial-gradient(circle at 35% 32%, var(--copper-bright), var(--copper) 78%)}
+.p-tag{position:absolute;display:flex;flex-direction:column;align-items:center;pointer-events:none}
+.p-tag.above{transform:translate(-50%,-100%)}
+.p-tag.below{transform:translate(-50%,0)}
+.p-tag .lab{font-size:12.5px;font-weight:800;color:#15303d;white-space:nowrap;
+  text-shadow:0 1px 2px rgba(255,255,255,.6)}
+.p-tag .tick{width:1.5px;height:9px;background:rgba(21,48,61,.6)}
+.p-tag.above .tick{margin-top:1px}
+.p-tag.below .tick{margin-bottom:1px}
+
+/* 전자 이동 화살표(반응 전에만 표시) */
+.p-arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+/* 전자 2개 — 작은 원 두 개로 표현한다 */
+.p-electron{position:absolute;transform:translate(-50%,-50%);width:15px;height:15px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #4a8fd6, #1f5f9c 80%);border:1.3px solid #cfe6ff;
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:900;
+  box-shadow:0 2px 4px rgba(0,0,0,.35)}
+
+/* 실험이 끝난 뒤 접시로 가져와 확대해서 살펴보는 모달 */
+.zoom-modal{position:fixed;inset:0;background:rgba(6,8,10,.72);display:none;
+  align-items:center;justify-content:center;z-index:999;padding:1.6rem}
+.zoom-modal.show{display:flex}
+.zoom-card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;
+  padding:2.4rem 2rem 2rem;max-width:380px;width:100%;text-align:center;
+  box-shadow:0 24px 60px rgba(0,0,0,.55);animation:zoomIn .22s cubic-bezier(.16,1,.3,1)}
+@keyframes zoomIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.zoom-close{position:absolute;top:.7rem;right:.7rem;width:32px;height:32px;border-radius:50%;
+  border:1px solid var(--line);background:var(--sunk);color:var(--ink);font-size:1.15rem;line-height:1;
+  cursor:pointer}
+.zoom-close:hover{background:var(--sea-soft)}
+.zoom-strip{width:70px;height:130px;margin:0 auto 1.3rem;border-radius:5px;
+  background:linear-gradient(100deg,#eef1f4 0%,var(--zinc) 55%,var(--zinc-dark) 100%);
+  box-shadow:0 10px 22px rgba(0,0,0,.45), inset 0 -4px 8px rgba(0,0,0,.3)}
+.zoom-strip.coated{background:linear-gradient(180deg,#eef1f4 0%,var(--zinc) 22%,#7a4a34 55%,#2c1b14 100%)}
+.zoom-title{font-weight:700;font-size:1.12rem;color:var(--ink);margin:0 0 .5rem}
+.zoom-desc{color:var(--body);font-size:.92rem;line-height:1.6;margin:0}
+.answer-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.5rem;text-align:left;max-height:55vh;overflow-y:auto}
+.answer-row{display:flex;flex-direction:column;gap:.2rem;padding:.65rem .85rem;
+  background:var(--sunk);border:1px solid var(--line);border-radius:8px;font-size:.92rem;text-align:left}
+.answer-row b{font-family:var(--sans);color:var(--faint);font-weight:600;font-size:.76rem;
+  text-transform:uppercase;letter-spacing:.02em}
+.answer-row span{color:var(--ink);font-weight:700;font-size:1rem}
+.answer-row-simple{padding:.55rem .85rem;background:var(--sunk);border:1px solid var(--line);
+  border-radius:8px;font-size:.92rem;color:var(--body)}
+</style>
+</head>
+<body>
+<!-- 여러 탭에서 공유하는 SVG 그라데이션/클립 정의. display:none인 탭 안에 있으면
+     다른 곳에서 참조할 때 깨지는 브라우저가 있어서, 항상 렌더링되는 이 자리에 따로 둔다. -->
+<svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
+  <defs>
+    <linearGradient id="gDish" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,.55)"/><stop offset="100%" stop-color="rgba(150,162,168,.3)"/>
+    </linearGradient>
+    <linearGradient id="gGlassFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,.16)"/><stop offset="60%" stop-color="rgba(255,255,255,.03)"/>
+    </linearGradient>
+    <linearGradient id="gMetal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#9a958b"/><stop offset="45%" stop-color="#f5f1ea"/>
+      <stop offset="75%" stop-color="#c7c2b9"/><stop offset="100%" stop-color="#8f8a80"/>
+    </linearGradient>
+    <clipPath id="cpBeaker"><path d="M 0,0 L 0,132 Q 0,150 18,150 L 102,150 Q 120,150 120,132 L 120,0 Z"/></clipPath>
+  </defs>
+</svg>
+<div class="sheet">
+
+<header class="top">
+  <div class="kicker">통합과학</div>
+  <h1>산화·환원 실험(2) - 아연판과 황산 구리(Ⅱ) 수용액의 반응</h1>
+</header>
+
+<nav>
+  <button class="tab active" data-step="1"><span class="n">01</span>정보 입력</button>
+  <button class="tab" data-step="2"><span class="n">02</span>안전 수칙</button>
+  <button class="tab" data-step="3"><span class="n">03</span>이론적 배경</button>
+  <button class="tab" data-step="4"><span class="n">04</span>실험하기</button>
+  <button class="tab" data-step="5"><span class="n">05</span>결론</button>
+  <button class="tab" data-step="6"><span class="n">06</span>보고서</button>
+</nav>
+
+<div class="wrap">
+
+<!-- 01 정보 입력 -->
+<section class="step active" data-step="1">
+  <h2 class="head"><span class="n">01</span>정보 입력</h2>
+  <p class="lead">보고서에 표시될 정보입니다.</p>
+
+  <table class="info-form">
+    <tbody>
+      <tr>
+        <td class="lbl">일자</td>
+        <td><input type="date" id="f_date" class="save mono" required></td>
+        <td class="lbl">학번</td>
+        <td><input id="f_id" class="save mono" inputmode="numeric" maxlength="10" placeholder="예: 10900" required></td>
+        <td class="lbl">이름</td>
+        <td><input id="f_name" class="save" maxlength="20" placeholder="김우신" required></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 02 안전 수칙 -->
+<section class="step" data-step="2">
+  <h2 class="head"><span class="n">02</span>안전 수칙</h2>
+  <p class="lead">황산 구리(Ⅱ) 수용액을 다루기 전에 꼭 읽어 주세요.</p>
+
+  <div class="fixed-note"><b>목표</b><span id="disp_goal"></span></div>
+  <div class="fixed-note"><b>준비물</b><span id="disp_materials"></span></div>
+
+  <div class="block">
+    <h3>유의사항</h3>
+    <ul class="rules">
+      <li>황산 구리(Ⅱ) 수용액은 피부나 눈에 자극을 줄 수 있으므로 직접 닿지 않도록 주의한다.</li>
+      <li>용액이 튀었을 경우 즉시 많은 양의 물로 씻어내고 선생님께 알린다.</li>
+      <li>아연판은 반드시 집게로 집어서 다루고, 가장자리에 손을 베지 않도록 맨손으로 만지지 않는다.</li>
+      <li>실험 중에는 보안경을 착용한다.</li>
+      <li>사용한 수용액은 하수구에 흘려보내지 말고, 정해진 폐액통에 모아 처리한다.</li>
+    </ul>
+  </div>
+
+  <div class="check-row">
+    <span>위 유의사항을 모두 확인하였나요?</span>
+    <label class="check-toggle">
+      <input type="checkbox" id="chk_safety" class="save" required>
+      <span>확인하였습니다.</span>
+    </label>
+  </div>
+</section>
+
+<!-- 03 이론적 배경 -->
+<section class="step" data-step="3">
+  <h2 class="head"><span class="n">03</span>이론적 배경</h2>
+  <p class="lead">실험을 시작하기 전에, 전자의 이동으로 설명하는 산화·환원의 개념과 아연·구리의 반응성 차이를 정리해 보세요. 빈칸의 정답을 맞혀야 다음 단계로 넘어갈 수 있어요.</p>
+
+  <div class="block">
+    <h3>전자의 이동에 따른 산화·환원</h3>
+    <p>금속이 이온이 되거나, 이온이 금속으로 되돌아가는 반응에는 다음과 같은 규칙이 있다.</p>
+    <ul class="rx-list">
+      <li>나트륨(Na)이 전자를 <input class="blank save" id="ph1" placeholder="ㅇㅇ" required> 나트륨 이온(Na⁺)이 된다.</li>
+      <li>염소(Cl)가 전자를 <input class="blank save" id="ph2" placeholder="ㅇㄷ" required> 염화 이온(Cl⁻)이 된다.</li>
+      <li>마그네슘(Mg)이 전자를 <input class="blank save" id="ph3" placeholder="ㅇㅇ" required> 마그네슘 이온(Mg²⁺)이 된다.</li>
+    </ul>
+    <p>물질이 전자를 잃는 반응을 <input class="blank save" id="r2" placeholder="ㅅㅎ" required>라 하고, 물질이 전자를 얻는 반응을 <input class="blank save" id="r4" placeholder="ㅎㅇ" required>이라고 한다.</p>
+    <div class="example-answer">
+      <button class="btn small quiet" type="button" id="show-theory-a">채점하기</button>
+      <div id="theory-a-example" class="note"></div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <div class="block">
+    <h3>TMI) 아연(Zn)과 구리(Cu)의 반응성 차이</h3>
+    <p class="hint">금속마다 전자를 잃고 이온이 되려는 정도(반응성)가 다르다. 아연은 구리보다 반응성이 커서 전자를 더 쉽게 잃는다. 빈칸을 채워 표를 완성해 보세요.</p>
+    <table class="cmp">
+      <tr><th>구분</th><th>아연(Zn)</th><th>구리 이온(Cu²⁺)</th></tr>
+      <tr><td>반응성<br>(전자를 잃으려는 경향)</td>
+        <td><input class="blank save" id="sg1" placeholder="ㅋㄷ" required> (전자를 잃기 쉽다)</td>
+        <td><input class="blank save" id="sg2" placeholder="ㅈㄷ" required> (전자를 얻기 쉽다)</td>
+      </tr>
+      <tr><td>수용액 속에서</td>
+        <td>전자를 잃고 <input class="blank save" id="sg3" placeholder="ㅅㅎ" required>되어 Zn²⁺이 됨</td>
+        <td>전자를 얻고 <input class="blank save" id="sg4" placeholder="ㅎㅇ" required>되어 Cu가 됨</td>
+      </tr>
+    </table>
+    <button class="btn small quiet" type="button" id="toggle-ionization-tmi" style="margin-top:.8rem">🔎 반응성은 왜 다를까? (2학년 내용 살짝 보기)</button>
+    <div id="ionization-tmi" class="note ok" style="display:none">
+      금속마다 전자를 잃고 양이온이 되려는 정도가 다른데, 이를 금속의 <b>이온화 경향</b>이라고 해요. 이온화 경향이 큰 금속일수록 전자를 잃고 산화되기 쉬워요.<br><br>
+      대표적인 금속을 이온화 경향이 큰 순서대로 나열하면 다음과 같아요.<br>
+      <span class="mono">K &gt; Ca &gt; Na &gt; Mg &gt; Al &gt; Zn &gt; Fe &gt; Ni &gt; Sn &gt; Pb &gt; (H) &gt; Cu &gt; Hg &gt; Ag &gt; Pt &gt; Au</span><br><br>
+      이 순서에서 아연(Zn)이 구리(Cu)보다 왼쪽에 있죠? 그래서 아연이 구리보다 반응성이 크고, 전자를 더 쉽게 잃어요.<br><br>
+      이온화 경향은 2학년 화학에서 자세히 배우는 내용이라, 지금은 "아연이 구리보다 반응성이 크다"는 결과만 기억해 두면 충분해요.
+    </div>
+    <div class="example-answer">
+      <button class="btn small quiet" type="button" id="show-theory-b">채점하기</button>
+      <div id="theory-b-example" class="note"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 실험하기 -->
+<section class="step" data-step="4">
+  <h2 class="head"><span class="n">04</span>실험하기</h2>
+  <p class="lead">아래 순서대로 하나씩 진행하며 아연판과 수용액의 변화를 직접 관찰해 보세요.</p>
+
+  <div class="exp-tabbar">
+    <button class="exp-tab active" data-sub="1"><span class="n">1</span>준비물 확인</button>
+    <button class="exp-tab locked" data-sub="2"><span class="n">2</span>반응 전 모습</button>
+    <button class="exp-tab locked" data-sub="3"><span class="n">3</span>수용액에 넣기</button>
+    <button class="exp-tab locked" data-sub="4"><span class="n">4</span>입자 모형 보기</button>
+    <button class="exp-tab locked" data-sub="5"><span class="n">5</span>실험 해석하기</button>
+  </div>
+
+  <!-- 1. 준비물 확인 -->
+  <div class="exp-pane active" data-sub-pane="1">
+    <p class="hint">실험에 필요한 준비물을 하나씩 확인해 보세요.</p>
+    <div class="prep-grid">
+      <label class="prep-item"><span class="ico">🥈</span><span class="lbl-txt">아연판</span><input type="checkbox" class="save prep-chk" id="chk_prep_zn"></label>
+      <label class="prep-item"><span class="ico">🧪</span><span class="lbl-txt">황산 구리(Ⅱ) 수용액</span><input type="checkbox" class="save prep-chk" id="chk_prep_sol"></label>
+      <label class="prep-item"><span class="ico">🥃</span><span class="lbl-txt">비커</span><input type="checkbox" class="save prep-chk" id="chk_prep_beaker"></label>
+      <label class="prep-item"><span class="ico">🥢</span><span class="lbl-txt">시험관 집게</span><input type="checkbox" class="save prep-chk" id="chk_prep_tongs"></label>
+      <label class="prep-item"><span class="ico">🥽</span><span class="lbl-txt">보안경</span><input type="checkbox" class="save prep-chk" id="chk_prep_goggles"></label>
+    </div>
+    <button class="btn sub-next" type="button" id="subNext1" disabled>다음 단계 →</button>
+  </div>
+
+  <!-- 2. 반응 전 모습 -->
+  <div class="exp-pane" data-sub-pane="2">
+    <p class="hint">반응 전 아연판과 수용액의 원래 색을 눈으로 확인하고, 나중에 변화와 비교해 보세요.</p>
+    <div class="before-card">
+      <div class="before-item">
+        <svg viewBox="0 0 24 120" width="24" height="120">
+          <defs>
+            <linearGradient id="gPlateStatic" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#8a9099"/><stop offset="45%" stop-color="#f5f1ea"/>
+              <stop offset="80%" stop-color="#c3c9d1"/><stop offset="100%" stop-color="#8a9099"/>
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="24" height="120" rx="2" fill="url(#gPlateStatic)"/>
+        </svg>
+        <span class="cap">아연판</span>
+      </div>
+      <div class="before-item">
+        <svg viewBox="0 0 120 150" width="92" height="115">
+          <defs>
+            <linearGradient id="gSolutionStatic" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#3fa2d6"/><stop offset="100%" stop-color="#1c6fb0"/>
+            </linearGradient>
+          </defs>
+          <path d="M -8,4 L 2,-9 L 13,3 Z" fill="rgba(255,255,255,.5)"/>
+          <path d="M 0,0 L 0,132 Q 0,150 18,150 L 102,150 Q 120,150 120,132 L 120,0"
+            fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.55)" stroke-width="3.5" stroke-linejoin="round"/>
+          <g clip-path="url(#cpBeaker)"><rect x="0" y="42" width="120" height="108" fill="url(#gSolutionStatic)"/></g>
+        </svg>
+        <span class="cap">황산 구리(Ⅱ) 수용액</span>
+      </div>
+    </div>
+    <p class="block" style="margin:1rem 0 0;">반응 전 아연판은 <input class="blank save" id="b0" placeholder="ㅇ" required> 색이고, 황산 구리(Ⅱ) 수용액은 <input class="blank save" id="s0" placeholder="ㅍㄹ" required> 색이다.</p>
+    <div class="example-answer">
+      <button class="btn small quiet" type="button" id="show-b0">채점하기</button>
+      <div id="b0-example" class="note"></div>
+    </div>
+    <button class="btn sub-next" type="button" id="subNext2" disabled>다음 단계 →</button>
+  </div>
+
+  <!-- 3. 아연판을 수용액에 넣었을 때 -->
+  <div class="exp-pane" data-sub-pane="3">
+    <p class="exp-instruction" id="instrRx">🖐️ 아연판을 손가락(또는 마우스)으로 눌러 그대로 끌어서, 비커 속 수용액에 담가 보세요. 반응이 끝난 뒤 접시로 다시 가져오면 확대해서 살펴볼 수 있어요.</p>
+
+    <div class="svg-scene-wrap" id="sceneRx">
+      <svg id="svgRx" viewBox="0 0 460 300" style="touch-action:none">
+        <!-- 수용액·아연판 색은 반응에 따라 바뀌어야 해서, 이 장면 전용으로 로컬 정의한다
+             (다른 탭과 색이 섞이지 않도록 공용 defs에는 넣지 않는다). -->
+        <defs>
+          <linearGradient id="gSolution" x1="0" y1="0" x2="0" y2="1">
+            <stop class="sol-top" offset="0%"/><stop class="sol-bot" offset="100%"/>
+          </linearGradient>
+          <linearGradient id="gPlate" x1="0" y1="0" x2="0" y2="1">
+            <stop class="plate-s1" offset="0%"/>
+            <stop class="plate-s2" offset="16%"/>
+            <stop class="plate-s3" offset="46%"/>
+            <stop class="plate-s4" offset="78%"/>
+            <stop class="plate-s5" offset="100%"/>
+          </linearGradient>
+        </defs>
+
+        <!-- 접시(거치대) — 비커와 같은 "바닥"에 놓인 것처럼 아래쪽 왼편에 둔다 -->
+        <ellipse id="dishRx" cx="70" cy="245" rx="52" ry="15" fill="url(#gDish)" stroke="rgba(255,255,255,.6)" stroke-width="2"/>
+        <text x="70" y="273" text-anchor="middle" font-family="Pretendard,sans-serif" font-size="11" fill="rgba(255,255,255,.45)">거치대</text>
+
+        <!-- 비커 : 열린 윗변(선 없음) + 둥근 바닥. 안쪽은 옅은 유리 색, 그 안에 수용액이 채워진다 -->
+        <g id="beakerGroupRx" transform="translate(170,110)">
+          <path id="beakerPathRx" d="M 0,0 L 0,132 Q 0,150 18,150 L 102,150 Q 120,150 120,132 L 120,0" fill="url(#gGlassFill)" stroke="rgba(255,255,255,.55)" stroke-width="3.5" stroke-linejoin="round"/>
+          <g clip-path="url(#cpBeaker)">
+            <rect id="solutionRx" x="0" y="42" width="120" height="108" fill="url(#gSolution)"/>
+          </g>
+        </g>
+
+        <!-- 집게 + 아연판 : 판의 "맨 아래 끝"이 이 그룹의 원점(0,0)이 되도록 그려서,
+             회전이 항상 그 끝을 중심으로 정확하게 일어나게 한다(별도 좌표 보정이 필요 없다). -->
+        <g id="tongsWrapRx" style="cursor:grab" transform="translate(70,238) rotate(-14)">
+          <rect class="tongs-part" x="-3.5" y="-192" width="7" height="60" rx="3" fill="url(#gMetal)"/>
+          <circle class="tongs-part" cx="0" cy="-133" r="7" fill="url(#gMetal)"/>
+          <path class="tongs-part" d="M -3,-126 Q -23,-118 -18,-100" fill="none" stroke="url(#gMetal)" stroke-width="6" stroke-linecap="round"/>
+          <path class="tongs-part" d="M 3,-126 Q 23,-118 18,-100" fill="none" stroke="url(#gMetal)" stroke-width="6" stroke-linecap="round"/>
+          <rect id="zincPlateRx" x="-12" y="-132" width="24" height="132" rx="2" fill="url(#gPlate)"/>
+        </g>
+      </svg>
+
+      <div class="loupe-mini" id="loupeRx"><div class="loupe-surface" id="loupeSurfaceRx"></div></div>
+      <div class="rx-bar" id="rxBar"><span class="lbl">⚗️ 반응 진행 중</span><div class="track"><div class="fill" id="fillRx"></div></div></div>
+    </div>
+
+    <div class="block" style="margin-top:1.4rem;">
+      <h3>아연판을 수용액에 담갔을 때</h3>
+      <p>아연판 표면에 <input class="blank save" id="b1" placeholder="ㅂㅇ" required> 색의 구리가 석출되었다. 이는 아연(Zn)이 전자를 잃고 <input class="blank save" id="b2" placeholder="ㅅㅎ" required>되어 아연 이온(Zn²⁺)이 되었기 때문이다. 또한 황산 구리(Ⅱ) 수용액의 푸른색은 시간이 지날수록 점점 <input class="blank save" id="b5" placeholder="ㅇㅇㅈㄷ" required>.</p>
+      <div class="eq-box">Zn → Zn²⁺ + 2e⁻ &nbsp;&nbsp;(아연의 산화)</div>
+      <div class="example-answer">
+        <button class="btn small quiet" type="button" id="show-rx-obs">채점하기</button>
+        <div id="rx-obs-example" class="note"></div>
+      </div>
+    </div>
+
+    <button class="btn small quiet" type="button" id="retryRx" style="margin-top:.4rem">↺ 다시 해보기</button>
+    <button class="btn sub-next" type="button" id="subNext3" disabled>다음 단계 →</button>
+  </div>
+
+  <!-- 4. 입자 모형으로 알아보기 -->
+  <div class="exp-pane" data-sub-pane="4">
+    <p class="hint">눈에 보이는 변화를 입자(원자·이온) 수준에서 살펴보면, 전자가 아연에서 구리 이온으로 이동하는 것을 알 수 있어요.</p>
+
+    <div class="pmodel-wrap">
+      <div class="pmodel-col">
+        <div class="pmodel-circle pm-before" id="pmBefore"></div>
+        <div class="pmodel-label">반응 전</div>
+      </div>
+      <div class="pmodel-col">
+        <div class="pmodel-circle pm-after" id="pmAfter"></div>
+        <div class="pmodel-label">반응 후</div>
+      </div>
+    </div>
+
+    <div class="block" style="margin-top:1rem;">
+      <h3>구리 이온(Cu²⁺)에서 일어난 일</h3>
+      <p>수용액 속 구리 이온(Cu²⁺)은 아연이 내놓은 전자를 <input class="blank save" id="b3" placeholder="ㅇㅇ" required>어 <input class="blank save" id="b4" placeholder="ㅎㅇ" required>되어 금속 구리(Cu)로 석출되었다.</p>
+      <div class="eq-box">Cu²⁺ + 2e⁻ → Cu &nbsp;&nbsp;(구리 이온의 환원)</div>
+      <div class="example-answer">
+        <button class="btn small quiet" type="button" id="show-pm-obs">채점하기</button>
+        <div id="pm-obs-example" class="note"></div>
+      </div>
+    </div>
+
+    <button class="btn sub-next" type="button" id="subNext4" disabled>다음 단계 →</button>
+  </div>
+
+  <!-- 5. 실험 해석하기 -->
+  <div class="exp-pane" data-sub-pane="5">
+    <p class="hint">아연과 구리의 반응성 차이와 관련지어, 실험에서 관찰한 변화가 나타나는 까닭을 아래 순서대로 하나씩 채워가며 정리해 보세요.</p>
+
+    <div class="block">
+      <h3>① 아연(Zn)의 특징</h3>
+      <p>아연은 구리보다 반응성이 커서, 전자를 <input class="blank save" id="i1" placeholder="ㅇㄱ" required> 쉽다는 특징이 있다.</p>
+    </div>
+    <div class="block">
+      <h3>② 아연판에 일어난 일</h3>
+      <p>아연은 <input class="blank save" id="i2" placeholder="ㅈㅈ" required>를 잃어 <input class="blank save" id="i3" placeholder="ㅅㅎ" required>되어 아연 이온(Zn²⁺)이 되었다.</p>
+    </div>
+    <div class="block">
+      <h3>③ 구리 이온(Cu²⁺)의 특징</h3>
+      <p>구리 이온은 아연보다 반응성이 작아서, 전자를 <input class="blank save" id="i4" placeholder="ㅇㄱ" required> 쉽다는 특징이 있다.</p>
+    </div>
+    <div class="block">
+      <h3>④ 구리 이온에 일어난 일</h3>
+      <p>구리 이온은 <input class="blank save" id="i5" placeholder="ㅈㅈ" required>를 얻어 <input class="blank save" id="i6" placeholder="ㅎㅇ" required>되어 금속 구리(Cu)로 석출되었다.</p>
+    </div>
+    <div class="block">
+      <h3>⑤ 전체 정리</h3>
+      <p class="hint">위 ①~④에서 답한 내용을 이어 붙여, 하나의 완결된 문단으로 정리해 보세요.</p>
+      <textarea class="save" id="reason" rows="5" required placeholder="예: 아연은 구리보다 반응성이 커서 전자를 잃기 쉬우므로 산화되어 아연 이온이 되고, 수용액 속 구리 이온은…"></textarea>
+      <div class="example-answer">
+        <button class="btn small quiet" type="button" id="show-reason">예시 답안 보기</button>
+        <div id="reason-example" class="note"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 결론 -->
+<section class="step" data-step="5">
+  <h2 class="head"><span class="n">05</span>결론</h2>
+  <p class="lead">실험 결과를 바탕으로 산화·환원 반응을 정리하고, 우리 생활 속 예를 찾아 성찰해 보세요.</p>
+
+  <div class="block">
+    <h3>실험 결과 정리하기</h3>
+    <p>아연판을 황산 구리(Ⅱ) 수용액에 넣으면 아연판 표면에 <input class="blank save" id="c1" placeholder="ㅂㅇㅅ" required>의 구리가 석출된다. 이것은 아연(Zn)이 전자를 <input class="blank save" id="c2" placeholder="ㅇㅇ" required> <input class="blank save" id="c3" placeholder="ㅅㅎ" required>되어 아연 이온(Zn²⁺)으로 변하기 때문이다.</p>
+    <div class="eq-box">산화&nbsp;&nbsp; Zn → Zn²⁺ + 2e⁻ &nbsp;&nbsp;(아연 → 아연 이온 + 전자)</div>
+    <p>동시에 수용액 속 구리 이온(Cu²⁺)은 전자를 <input class="blank save" id="c5" placeholder="ㅇㅇ" required> <input class="blank save" id="c6" placeholder="ㅎㅇ" required>되어 구리(Cu)로 석출되므로, 수용액의 푸른색은 점점 <input class="blank save" id="c4" placeholder="ㅇㅇㅈㄷ" required>.</p>
+    <div class="eq-box">환원&nbsp;&nbsp; Cu²⁺ + 2e⁻ → Cu &nbsp;&nbsp;(구리 이온 + 전자 → 구리)</div>
+    <p>이처럼 어떤 물질이 전자를 잃을 때 다른 물질은 전자를 얻으므로, 산화와 환원은 <input class="blank save wide" id="c7" placeholder="ㄷㅅㅇ" required> 일어난다.</p>
+    <div class="example-answer">
+      <button class="btn small quiet" type="button" id="check-conclusion">채점하기</button>
+      <div id="conclusion-note" class="note"></div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <div class="block">
+    <h3>하나의 반응식으로 나타내면</h3>
+    <p class="hint">두 반쪽 반응(산화·환원)을 합치면, 교과서 그림처럼 하나의 전체 반응식으로도 나타낼 수 있다.</p>
+    <div class="eq-box" style="font-size:1.15rem;letter-spacing:.02em">Zn + Cu²⁺ &nbsp;→&nbsp; Zn²⁺ + Cu</div>
+    <table class="cmp">
+      <tr><th>변화</th><th>반응 종류</th></tr>
+      <tr><td>Zn → Zn²⁺ (전자를 잃음)</td><td><b>산화</b></td></tr>
+      <tr><td>Cu²⁺ → Cu (전자를 얻음)</td><td><b>환원</b></td></tr>
+    </table>
+  </div>
+
+  <hr class="rule">
+
+  <div class="block">
+    <h3>우리 생활 속 산화·환원</h3>
+    <p>우리 주변에서는 전자의 이동에 의한 산화·환원 반응이 활발하게 일어난다. 건전지 속에서도 두 금속 사이의 반응성 차이를 이용해 전자를 이동시켜 전기를 만들며, 철이 녹스는 것도 철이 전자를 잃고 산화되는 현상이다.</p>
+    <p class="hint">위 내용 외에, 우리 생활 속에서 찾을 수 있는 산화·환원 반응의 예를 한 가지 더 써 보고 그렇게 생각한 까닭을 적어 보세요.</p>
+    <textarea class="save" id="reflect" rows="4" required placeholder="예: 금속에 도금을 하는 것도 전자의 이동을 이용해 표면에 다른 금속을 얇게 입히는 산화·환원 반응이다…"></textarea>
+  </div>
+</section>
+
+<!-- 06 보고서 -->
+<section class="step" data-step="6">
+  <h2 class="head"><span class="n">06</span>보고서</h2>
+  <p class="lead">확인한 뒤 PDF로 저장하고, 제출 링크에 올려 주세요.</p>
+
+  <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+    <button class="btn solid" id="pdf-btn">PDF로 저장</button>
+  </div>
+  <div id="msg" class="note"></div>
+  <div id="link-area"></div>
+
+  <div style="margin-top:2rem;border:1px solid var(--line)">
+    <div id="report">
+      <div class="r-head">
+        <h2>산화·환원 실험(2) 활동 보고서</h2>
+        <div class="who mono"><span id="p_id"></span> <span id="p_name"></span></div>
+      </div>
+
+      <div class="r-sec" style="margin-top:1.4rem">
+        <table class="r-info">
+          <tbody>
+            <tr><td class="k">일자</td><td id="p_date"></td><td class="k">학번</td><td id="p_id2"></td></tr>
+            <tr><td class="k">이름</td><td colspan="3" id="p_name2"></td></tr>
+            <tr><td class="k">목표</td><td colspan="3" id="p_goal"></td></tr>
+            <tr><td class="k">준비물</td><td colspan="3" id="p_materials"></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="r-sec">
+        <span class="r-lab">1. 이론적 배경</span>
+        <div class="r-txt" id="rep_theory"></div>
+      </div>
+
+      <div class="r-sec">
+        <span class="r-lab">2. 실험하기</span>
+        <p class="r-hang"><b>가.</b> 아연판 반응 관찰 (산화)</p>
+        <div class="r-txt" id="rep_rx"></div>
+        <div class="r-eq">Zn → Zn²⁺ + 2e⁻</div>
+        <p class="r-hang" style="margin-top:1rem"><b>나.</b> 구리 이온 반응 관찰 (환원)</p>
+        <div class="r-txt" id="rep_pm"></div>
+        <div class="r-eq">Cu²⁺ + 2e⁻ → Cu</div>
+        <p class="r-hang" style="margin-top:1rem"><b>다.</b> 까닭 설명</p>
+        <div class="r-txt" id="rep_reason"></div>
+      </div>
+
+      <div class="r-sec">
+        <span class="r-lab">3. 결론</span>
+        <div class="r-txt" id="rep_conclusion"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- wrap -->
+
+<div class="bar">
+  <button class="btn" id="prev">이전</button>
+  <button class="btn grow" id="next">다음</button>
+  <button class="btn quiet" id="reset">초기화</button>
+</div>
+
+<footer class="site-footer">
+  <div class="site-footer-top">
+    <p class="site-footer-copy">© 교사 이상준. All rights reserved.<br>오류제보/문의: cepheid@kakao.com</p>
+    <div class="site-footer-links">
+      <a class="yt-badge" href="https://www.youtube.com/@science_earth" target="_blank" rel="noopener">
+        <span class="play"></span> 유튜브
+      </a>
+      <a class="yt-badge" href="https://linktr.ee/earth_sj" target="_blank" rel="noopener">
+        <span class="badge-icon">🌍</span> Linktree
+      </a>
+    </div>
+  </div>
+</footer>
+
+</div><!-- sheet -->
+
+<div class="zoom-modal" id="zoomModal">
+  <div class="zoom-card">
+    <button class="zoom-close" type="button" id="zoomClose" aria-label="닫기">×</button>
+    <div class="zoom-strip" id="zoomStrip"></div>
+    <p class="zoom-title" id="zoomTitle"></p>
+    <p class="zoom-desc" id="zoomDesc"></p>
+  </div>
+</div>
+
+<div class="zoom-modal" id="answerModal">
+  <div class="zoom-card" style="max-width:560px;text-align:left">
+    <button class="zoom-close" type="button" id="answerModalClose" aria-label="닫기">×</button>
+    <p class="zoom-title" id="answerModalTitle">정답 안내</p>
+    <p class="zoom-desc" id="answerModalHint" style="margin-bottom:1rem"></p>
+    <div class="answer-list" id="answerModalBody"></div>
+  </div>
+</div>
+
+<script>
+const DEFAULT_SUBMIT_URL = "";
+const FIXED_GOAL = "아연판을 황산 구리(Ⅱ) 수용액에 넣어, 전자의 이동으로 설명하는 산화·환원 반응을 이해한다.";
+const FIXED_MATERIALS = "아연판, 황산 구리(Ⅱ) 수용액, 비커, 시험관 집게, 보안경";
+
+document.addEventListener('DOMContentLoaded', () => {
+const $ = id => document.getElementById(id);
+const KEY = 'redox_zinc_copper_2_v1_';
+const TOTAL = 6;
+let step = 1;
+const norm = s => (s || '').replace(/\s+/g, '');
+
+/* 제출 링크 */
+const submitUrl = () => {
+  const raw = new URLSearchParams(location.search).get('link') || DEFAULT_SUBMIT_URL;
+  if (!raw) return null;
+  try { const u = new URL(raw); return /^https?:$/.test(u.protocol) ? u.href : null; }
+  catch { return null; }
+};
+const renderLink = () => {
+  const u = submitUrl();
+  $('link-area').innerHTML = u
+    ? `<a class="submit" href="${u}" target="_blank" rel="noopener">저장한 PDF 제출하러 가기 →</a>`
+    : `<p class="hint" style="margin-top:1rem">제출 링크가 설정되지 않았습니다. 선생님이 안내한 곳에 PDF를 올려 주세요.</p>`;
+};
+const renderFixedInfo = () => {
+  $('disp_goal').textContent = FIXED_GOAL;
+  $('disp_materials').textContent = FIXED_MATERIALS;
+};
+
+/* 정답 확인 — 각 빈칸 그룹마다 "채점하기" 버튼으로 직접 채점한다.
+   1회차 오답: 몇 개 틀렸는지만 팝업으로 안내(정답 비공개), 2회차에도 틀리면 정답을 공개하고
+   통과 처리한다. 통과해야만 다음(하위)단계로 넘어갈 수 있다. */
+const THEORY_GROUP_A = { ph1:'잃어', ph2:'얻어', ph3:'잃어', r2:'산화', r4:'환원' };
+const THEORY_GROUP_B = { sg1:'크다', sg2:'작다', sg3:'산화', sg4:'환원' };
+const BEFORE_ANSWERS = { b0:'은', s0:'파란' };
+const RX_ANSWERS = { b1:'붉은', b2:'산화', b5:'옅어진다' };
+const PM_ANSWERS = { b3:'얻어', b4:'환원' };
+const CONCLUSION_ANSWERS = { c1:'붉은색', c2:'잃어', c3:'산화', c4:'옅어진다', c5:'얻어', c6:'환원', c7:'동시에' };
+
+const BLANK_LABELS = {
+  ph1: '나트륨 예시', ph2: '염소 예시', ph3: '마그네슘 예시',
+  r2: '핵심 문장 · 전자를 잃는 반응', r4: '핵심 문장 · 전자를 얻는 반응',
+  sg1: '아연 · 반응성', sg2: '구리 이온 · 반응성',
+  sg3: '아연 · 변화', sg4: '구리 이온 · 변화',
+  b0: '반응 전 아연판 색', s0: '반응 전 수용액 색',
+  b1: '석출된 구리 색', b2: '아연 · 반응 종류', b5: '수용액 색 변화',
+  b3: '구리 이온 · 얻다/잃다', b4: '구리 이온 · 반응 종류',
+  c1: '아연판에 석출된 구리 색', c2: '아연 · 얻다/잃다', c3: '아연 · 반응 종류',
+  c4: '수용액 색 변화', c5: '구리 이온 · 얻다/잃다', c6: '구리 이온 · 반응 종류',
+  c7: '산화·환원의 관계',
+};
+
+/* 정답 공개 팝업 — 파일 안에 채점 구간이 여러 개 있어도 이 팝업 하나만 공유해서 쓴다 */
+let answerModalCb = null;
+function showAnswerModal(title, hint, wrong, revealAnswer, onClose) {
+  $('answerModalTitle').textContent = title;
+  $('answerModalHint').textContent = hint;
+  $('answerModalBody').innerHTML = wrong.map(r => {
+    const label = BLANK_LABELS[r.id] || `${r.id.toUpperCase()}번 칸`;
+    return revealAnswer
+      ? `<div class="answer-row"><b>${label}</b><span>${r.answer}</span></div>`
+      : `<div class="answer-row-simple">${label}</div>`;
+  }).join('');
+  $('answerModal').classList.add('show');
+  answerModalCb = onClose || null;
+}
+function closeAnswerModal() {
+  $('answerModal').classList.remove('show');
+  if (answerModalCb) { const cb = answerModalCb; answerModalCb = null; cb(); }
+}
+$('answerModalClose').addEventListener('click', closeAnswerModal);
+$('answerModal').addEventListener('click', e => { if (e.target === $('answerModal')) closeAnswerModal(); });
+
+/* 빈칸 하나하나마다, 입력할 때 바로 맞았는지/틀렸는지 표시한다 */
+function wireLiveCheck(id, answer) {
+  const el = $(id);
+  const check = () => {
+    el.classList.remove('correct', 'invalid');
+    const val = el.value.trim();
+    if (!val) return;
+    el.classList.add(norm(val) === norm(answer) ? 'correct' : 'invalid');
+  };
+  el.addEventListener('input', check);
+  el.addEventListener('change', check);
+}
+
+/* 빈칸 그룹 하나를 "채점하기" 버튼에 연결한다 — 그룹마다 반복해서 쓴다 */
+function makeChecker(answers, noteId, opts) {
+  opts = opts || {};
+  let attempts = 0;
+  let passed = false;
+  function check() {
+    const results = Object.entries(answers).map(([id, answer]) => {
+      const el = $(id);
+      const ok = norm(el.value) === norm(answer);
+      el.classList.toggle('correct', ok);
+      el.classList.toggle('invalid', !ok);
+      return { id, answer, ok };
+    });
+    const wrong = results.filter(r => !r.ok);
+    if (wrong.length === 0) {
+      passed = true;
+      const note = $(noteId);
+      note.textContent = '모두 정답이에요! 다음 단계로 진행할 수 있어요.';
+      note.className = 'note ok';
+      if (opts.onChange) opts.onChange();
+      return;
+    }
+    $(noteId).className = 'note';
+    attempts++;
+    if (attempts >= 2) {
+      passed = true;
+      showAnswerModal('정답 안내', '틀린 칸의 정답이에요. 팝업을 닫으면 틀린 칸이 비워지니, 직접 다시 입력해 보세요.', wrong, true, () => {
+        wrong.forEach(r => { $(r.id).classList.remove('invalid', 'correct'); $(r.id).value = ''; });
+        $(wrong[0].id).focus();
+        save();
+        if (opts.onChange) opts.onChange();
+      });
+      if (opts.onChange) opts.onChange();
+    } else {
+      showAnswerModal('다시 확인해 보세요', `빨갛게 표시된 칸 중 ${wrong.length}개가 틀렸어요. 다시 한번 확인해 보세요. (${attempts}/2회)`, wrong, false);
+    }
+  }
+  return { check, isPassed: () => passed };
+}
+
+const theoryAChecker = makeChecker(THEORY_GROUP_A, 'theory-a-example');
+const theoryBChecker = makeChecker(THEORY_GROUP_B, 'theory-b-example');
+const beforeChecker = makeChecker(BEFORE_ANSWERS, 'b0-example', { onChange: () => refreshBefore() });
+const rxObsChecker = makeChecker(RX_ANSWERS, 'rx-obs-example', { onChange: () => refreshRxObs() });
+const pmObsChecker = makeChecker(PM_ANSWERS, 'pm-obs-example', { onChange: () => refreshPmObs() });
+const conclusionChecker = makeChecker(CONCLUSION_ANSWERS, 'conclusion-note');
+
+$('show-theory-a').addEventListener('click', theoryAChecker.check);
+$('show-theory-b').addEventListener('click', theoryBChecker.check);
+$('toggle-ionization-tmi').addEventListener('click', () => {
+  const box = $('ionization-tmi');
+  const willOpen = box.style.display === 'none';
+  box.style.display = willOpen ? 'block' : 'none';
+  $('toggle-ionization-tmi').textContent = willOpen ? '🔎 접기' : '🔎 반응성은 왜 다를까? (2학년 내용 살짝 보기)';
+});
+$('show-b0').addEventListener('click', beforeChecker.check);
+$('show-rx-obs').addEventListener('click', rxObsChecker.check);
+$('show-pm-obs').addEventListener('click', pmObsChecker.check);
+$('check-conclusion').addEventListener('click', conclusionChecker.check);
+
+[THEORY_GROUP_A, THEORY_GROUP_B, BEFORE_ANSWERS, RX_ANSWERS, PM_ANSWERS, CONCLUSION_ANSWERS]
+  .forEach(dict => Object.entries(dict).forEach(([id, a]) => wireLiveCheck(id, a)));
+
+/* ===== 저장/복원 ===== */
+const savers = () => [...document.querySelectorAll('.save')];
+const save = () => {
+  savers().forEach(el => {
+    localStorage.setItem(KEY + el.id, el.type === 'checkbox' ? (el.checked ? '1' : '0') : el.value);
+  });
+};
+const restore = () => {
+  savers().forEach(el => {
+    const v = localStorage.getItem(KEY + el.id);
+    if (v === null) return;
+    if (el.type === 'checkbox') el.checked = v === '1';
+    else if (v) el.value = v;
+  });
+};
+const clearAll = () => {
+  if (!confirm('작성한 내용을 모두 지웁니다. 계속할까요?')) return;
+  savers().forEach(el => localStorage.removeItem(KEY + el.id));
+  location.reload();
+};
+
+/* ===== 단계 이동 ===== */
+const MSG = {
+  1: '일자, 학번, 이름을 모두 입력해 주세요.',
+  2: '유의사항을 확인했다면 체크해 주세요.',
+  3: '빈칸을 채운 뒤 "채점하기" 버튼을 눌러 확인해 주세요.',
+  4: '실험을 진행하고, 빈칸과 까닭 설명을 모두 채워 주세요.',
+  5: '빈칸을 채운 뒤 "채점하기" 버튼을 눌러 확인해 주세요.',
+};
+const secOf = n => document.querySelector(`.step[data-step="${n}"]`);
+const isFilled = i => i.type === 'checkbox' ? i.checked : i.value.trim() !== '';
+/* "채워졌는지"가 아니라 "채점을 통과했는지"만 본다 — 정답 공개 후 칸을 비우면
+   required 조건 때문에 오히려 못 넘어가는 버그가 생기므로, 채점 구간이 있는 단계는
+   해당 채점기의 통과 여부(theoryAChecker 등)로만 판단한다. */
+const stepValid = n => {
+  if (n === 3) return theoryAChecker.isPassed() && theoryBChecker.isPassed();
+  if (n === 5) return conclusionChecker.isPassed() && isFilled($('reflect'));
+  if (n === 4) {
+    return prepChecks.every(c => c.checked)
+      && beforeChecker.isPassed()
+      && rxDone && rxObsChecker.isPassed()
+      && pmObsChecker.isPassed()
+      && ['i1', 'i2', 'i3', 'i4', 'i5', 'i6', 'reason'].every(id => isFilled($(id)));
+  }
+  return [...secOf(n).querySelectorAll('[required]')].every(isFilled);
+};
+const markInvalid = n => {
+  if (n === 3 || n === 5) return; // 이 단계는 "채점하기" 버튼으로만 확인한다
+  let first = null;
+  secOf(n).querySelectorAll('[required]').forEach(i => {
+    const bad = !isFilled(i);
+    i.classList.toggle('invalid', bad);
+    if (bad && !first) first = i;
+  });
+  if (first) first.focus();
+};
+const showMsg = (t, ok) => { const m = $('msg'); m.textContent = t; m.className = 'note ' + (ok ? 'ok' : 'err'); };
+const hideMsg = () => { $('msg').className = 'note'; };
+const flash = n => {
+  const el = secOf(n);
+  el.querySelectorAll('.flash').forEach(x => x.remove());
+  if (!MSG[n]) return;
+  const d = document.createElement('div');
+  d.className = 'note err flash'; d.textContent = MSG[n];
+  el.appendChild(d);
+  setTimeout(() => d.remove(), 4000);
+};
+
+const render = () => {
+  document.querySelectorAll('.step').forEach(el => el.classList.toggle('active', +el.dataset.step === step));
+  document.querySelectorAll('.tab').forEach(t => {
+    const n = +t.dataset.step;
+    t.classList.toggle('active', n === step);
+    t.classList.toggle('done', n !== step && n < TOTAL && stepValid(n));
+  });
+  $('prev').disabled = step === 1;
+  $('next').disabled = step === TOTAL;
+  $('next').textContent = step === TOTAL ? '완료' : '다음';
+  if (step === TOTAL) buildReport();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+const goTo = n => { step = Math.min(TOTAL, Math.max(1, n)); render(); };
+
+/* ===== 보고서 ===== */
+const buildReport = () => {
+  const v = id => ($(id).value || '').trim();
+  const dateRaw = v('f_date');
+  const dateTxt = dateRaw ? new Date(dateRaw + 'T00:00:00').toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' }) : '(미입력)';
+  const idv = v('f_id') || '(미입력)';
+  const nm = v('f_name') || '(미입력)';
+  $('p_id').textContent = idv; $('p_name').textContent = nm;
+  $('p_date').textContent = dateTxt; $('p_id2').textContent = idv; $('p_name2').textContent = nm;
+  $('p_goal').textContent = FIXED_GOAL;
+  $('p_materials').textContent = FIXED_MATERIALS;
+
+  $('rep_theory').textContent = `물질이 전자를 잃는 반응을 ${v('r2') || '(미입력)'} 반응이라 하고, 물질이 전자를 얻는 반응을 ${v('r4') || '(미입력)'} 반응이라고 한다. 아연은 구리보다 반응성이 커서 전자를 잃기 쉽고, 구리 이온은 전자를 얻기 쉽다.`;
+  $('rep_rx').textContent = `반응 전 아연판은 ${v('b0') || '(미입력)'} 색, 수용액은 ${v('s0') || '(미입력)'} 색이었다. 수용액에 담그자 아연판 표면에 ${v('b1') || '(미입력)'} 색의 구리가 석출되었다. 아연이 전자를 잃는 ${v('b2') || '(미입력)'} 반응이다. 수용액의 푸른색은 점점 ${v('b5') || '(미입력)'}.`;
+  $('rep_pm').textContent = `구리 이온(Cu²⁺)은 전자를 ${v('b3') || '(미입력)'}어 ${v('b4') || '(미입력)'}되어 금속 구리로 석출되었다.`;
+  $('rep_reason').textContent = v('reason') || '(작성되지 않음)';
+  $('rep_conclusion').textContent =
+`Zn + Cu²⁺ → Zn²⁺ + Cu (Zn의 산화, Cu²⁺의 환원)
+어떤 물질이 전자를 잃을 때 다른 물질은 전자를 얻으므로, 산화와 환원은 ${v('c7') || '(미입력)'} 일어난다.
+
+[우리 생활 속 예] ${v('reflect') || '(작성되지 않음)'}`;
+};
+
+/* ===== PDF ===== */
+const exportPDF = () => {
+  for (let n = 1; n < TOTAL; n++) {
+    if (!stepValid(n)) { goTo(n); markInvalid(n); flash(n); return; }
+  }
+  buildReport(); hideMsg();
+  const tag = `${$('f_date').value || ''}_${$('f_id').value}_${$('f_name').value}`;
+  const btn = $('pdf-btn');
+  btn.disabled = true; btn.textContent = '저장 중…';
+
+  const reportEl = $('report');
+  const restorePadding = () => { reportEl.style.paddingTop = ''; reportEl.style.paddingBottom = ''; };
+  reportEl.style.paddingTop = '0';
+  reportEl.style.paddingBottom = '0';
+
+  html2pdf().set({
+    margin: [20, 0, 20, 0],
+    filename: `산화와환원실험2_아연판과황산구리수용액의반응_${tag}.pdf`,
+    image: { type: 'jpeg', quality: .95 },
+    html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['css'] },
+  }).from(reportEl).save()
+    .then(() => { restorePadding(); btn.disabled = false; btn.textContent = 'PDF로 저장'; showMsg('PDF를 저장했습니다. 제출 링크에 올려 주세요.', true); })
+    .catch(() => { restorePadding(); btn.disabled = false; btn.textContent = 'PDF로 저장'; showMsg('PDF 저장에 실패했습니다. 다시 시도해 주세요.', false); });
+};
+
+/* ===== 이벤트: 단계 이동 ===== */
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => goTo(+t.dataset.step)));
+$('next').addEventListener('click', () => {
+  if (step < TOTAL && !stepValid(step)) {
+    markInvalid(step);
+    flash(step);
+    return;
+  }
+  goTo(step + 1);
+});
+$('prev').addEventListener('click', () => goTo(step - 1));
+$('reset').addEventListener('click', clearAll);
+$('pdf-btn').addEventListener('click', exportPDF);
+
+const ALL_GRADED_IDS = new Set([
+  ...Object.keys(THEORY_GROUP_A), ...Object.keys(THEORY_GROUP_B),
+  ...Object.keys(BEFORE_ANSWERS), ...Object.keys(RX_ANSWERS), ...Object.keys(PM_ANSWERS),
+  ...Object.keys(CONCLUSION_ANSWERS),
+]);
+document.addEventListener('input', e => {
+  if (!ALL_GRADED_IDS.has(e.target.id)) e.target.classList.remove('invalid');
+  if (e.target.classList.contains('save')) save();
+});
+document.addEventListener('change', e => {
+  if (e.target.classList.contains('save')) save();
+});
+
+/* =====================================================================
+   04 실험하기 : 5단계 하위 진행 + 드래그로 아연판을 수용액에 넣기
+   ===================================================================== */
+const expTabs = [...document.querySelectorAll('.exp-tab')];
+const expPanes = [...document.querySelectorAll('.exp-pane')];
+
+let subStage = 1;
+let maxUnlocked = 1;
+let rxDone = false;
+
+function switchSub(n) {
+  subStage = n;
+  expTabs.forEach(t => {
+    const tn = +t.dataset.sub;
+    t.classList.toggle('active', tn === n);
+    t.classList.toggle('locked', tn > maxUnlocked);
+  });
+  expPanes.forEach(p => p.classList.toggle('active', +p.dataset.subPane === n));
+  if (n === 3 && !rxDone) requestAnimationFrame(() => goToRest(false));
+}
+expTabs.forEach(t => t.addEventListener('click', () => switchSub(+t.dataset.sub)));
+
+function unlock(n) {
+  maxUnlocked = Math.max(maxUnlocked, n);
+  expTabs.forEach(t => { if (+t.dataset.sub <= maxUnlocked) t.classList.remove('locked'); });
+}
+function markSubDone(n) {
+  const t = expTabs.find(t => +t.dataset.sub === n);
+  if (t) t.classList.add('done');
+}
+
+/* 1. 준비물 확인 */
+const prepChecks = [...document.querySelectorAll('.prep-chk')];
+const subNext1 = $('subNext1');
+function refreshPrep() {
+  subNext1.disabled = !prepChecks.every(c => c.checked);
+}
+prepChecks.forEach(c => c.addEventListener('change', refreshPrep));
+subNext1.addEventListener('click', () => { markSubDone(1); unlock(2); switchSub(2); });
+
+/* 2. 반응 전 모습 — "채점하기"를 통과해야 다음으로 넘어갈 수 있다 */
+const b0 = $('b0'), s0 = $('s0');
+const subNext2 = $('subNext2');
+function refreshBefore() { subNext2.disabled = !beforeChecker.isPassed(); }
+subNext2.addEventListener('click', () => { markSubDone(2); unlock(3); switchSub(3); });
+
+/* 3. 아연판 담그기 → 4. 입자 모형 : 관찰 빈칸도 "채점하기"로 확인한다 */
+const b1 = $('b1'), b2 = $('b2'), b3 = $('b3'), b4 = $('b4'), b5 = $('b5'), reasonEl = $('reason');
+const subNext3 = $('subNext3');
+function refreshRxObs() { subNext3.disabled = !(rxDone && rxObsChecker.isPassed()); }
+subNext3.addEventListener('click', () => { markSubDone(3); unlock(4); switchSub(4); });
+
+const subNext4 = $('subNext4');
+function refreshPmObs() { subNext4.disabled = !pmObsChecker.isPassed(); }
+subNext4.addEventListener('click', () => { markSubDone(4); unlock(5); switchSub(5); });
+
+/* '까닭 정리(reason)'는 정답이 정해진 빈칸이 아니라 열린 서술형이라 채점 대상이 아니다 —
+   눌렀을 때 바로 예시 답안을 보여준다. */
+$('show-reason').addEventListener('click', () => {
+  const box = $('reason-example');
+  box.textContent = '예시 답안: 아연은 구리보다 반응성이 커서 전자를 잃기 쉬우므로 산화되어 아연 이온이 된다. 반대로 수용액 속 구리 이온은 반응성이 작아 전자를 얻기 쉬우므로 환원되어 금속 구리로 석출된다.';
+  box.className = 'note ok';
+});
+
+/* ===== 드래그로 아연판을 수용액에 넣기 ===== */
+/* Zn²⁺는 판(표면)을 떠나 위쪽 수용액 속으로 녹아 들어가고,
+   Cu²⁺는 반대로 수용액 위쪽에서 아래(표면)로 내려와 금속으로 석출된다 — 서로 반대 방향으로 움직여야 한다. */
+function spawnLoupeMolecule(loupeEl, kind, x, y) {
+  const wrap = document.createElement('div');
+  wrap.className = 'loupe-mol';
+  wrap.style.left = x + 'px'; wrap.style.top = y + 'px';
+  let dy = 0;
+  if (kind === 'ZN2') { wrap.innerHTML = '<div class="atom ZN2">Zn²⁺</div>'; dy = -42; }
+  else if (kind === 'CU2') { wrap.innerHTML = '<div class="atom CU2">Cu²⁺</div>'; dy = 42; }
+  else { wrap.innerHTML = '<div class="atom CU">Cu</div>'; dy = 0; }
+  loupeEl.appendChild(wrap);
+  requestAnimationFrame(() => { wrap.style.top = (parseFloat(wrap.style.top) + dy) + 'px'; wrap.style.opacity = '0'; });
+  setTimeout(() => wrap.remove(), 2100);
+}
+
+function reactionSequence(loupeEl, fillEl, durationMs, onComplete) {
+  let start = null;
+  const spawnTimer = setInterval(() => {
+    /* 반응식(Zn + Cu²⁺ → Zn²⁺ + Cu)이 1:1이므로, 매번 두 이온을 함께 생성해 개수를 맞춘다 */
+    spawnLoupeMolecule(loupeEl, 'ZN2', 10 + Math.random() * 78, 58 + Math.random() * 22); // 표면 근처에서 시작해 위로
+    spawnLoupeMolecule(loupeEl, 'CU2', 10 + Math.random() * 78, 4 + Math.random() * 22); // 용액 위쪽에서 시작해 아래로
+  }, 480);
+  function frame(ts) {
+    if (start === null) start = ts;
+    const pct = Math.min(100, ((ts - start) / durationMs) * 100);
+    fillEl.style.width = pct + '%';
+    if (pct >= 100) { clearInterval(spawnTimer); onComplete(); return; }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+/**
+ * 아연판을 손가락/마우스로 눌러 끌어서 비커 속 수용액에 담그는 드래그 앤 드롭.
+ *
+ * SVG 좌표계를 그대로 쓴다는 점이 핵심이다 — 집게 그룹을 "판의 맨 아래 끝(피벗)"이
+ * 그룹 자신의 원점(0,0)이 되도록 그렸기 때문에, 회전(rotate)이 몇 도로 바뀌든 그룹의
+ * translate 값이 곧 그 끝점의 실제 위치와 정확히 같다. 화면에 렌더링된 크기를 다시
+ * getBoundingClientRect로 재서 어긋남을 보정하는 방식이 아예 필요 없다 — 화면 크기가
+ * 달라져도, 회전이 바뀌어도 항상 정확하다.
+ */
+const svgRx = $('svgRx');
+const tongsWrapRx = $('tongsWrapRx');
+const loupeRx = $('loupeRx'), loupeSurfaceRx = $('loupeSurfaceRx');
+
+const REST_POS = { x: 70, y: 238, rot: -14 };  // 접시 위에 쉬는 자리 (비커와 같은 바닥 높이)
+const DIP_POS = { x: 220, y: 236, rot: 18 };   // 비커 수용액 속 자리(비스듬히 푹 담근 모습)
+const DISH_BOX = { x1: 12, y1: 225, x2: 128, y2: 265 };     // 접시 판정 영역(여유 포함)
+const BEAKER_BOX = { x1: 150, y1: 128, x2: 312, y2: 282 };  // 비커(수용액) 판정 영역(여유 포함)
+
+let pos = { ...REST_POS };
+let dragging = false, dragOffX = 0, dragOffY = 0;
+let animFrame = null;
+
+/* 위치는 반드시 SVG의 transform "속성"으로만 옮긴다 — CSS transform(px 단위)을
+   viewBox가 있는 SVG 요소에 쓰면 브라우저가 화면 배율과 뒤섞어 해석해서 크기·위치가
+   뒤틀리는 경우가 있다. 속성으로 직접 쓰면 좌표계가 항상 그대로 유지된다. */
+function applyTongsTransform() {
+  tongsWrapRx.setAttribute('transform', `translate(${pos.x},${pos.y}) rotate(${pos.rot})`);
+}
+applyTongsTransform();
+
+function svgPt(evt) {
+  const pt = svgRx.createSVGPoint();
+  pt.x = evt.clientX; pt.y = evt.clientY;
+  return pt.matrixTransform(svgRx.getScreenCTM().inverse());
+}
+function inBox(x, y, box) { return x >= box.x1 && x <= box.x2 && y >= box.y1 && y <= box.y2; }
+
+/* CSS transition 대신 requestAnimationFrame으로 직접 부드럽게 이동시킨다
+   (속성 기반 transform은 CSS transition의 대상이 될 수 없어서). */
+function animateTongsTo(target, duration) {
+  if (animFrame) cancelAnimationFrame(animFrame);
+  const start = { ...pos };
+  const t0 = performance.now();
+  function step(now) {
+    const t = Math.min(1, (now - t0) / duration);
+    const eased = 1 - Math.pow(1 - t, 3); // ease-out
+    pos = {
+      x: start.x + (target.x - start.x) * eased,
+      y: start.y + (target.y - start.y) * eased,
+      rot: start.rot + (target.rot - start.rot) * eased,
+    };
+    applyTongsTransform();
+    if (t < 1) { animFrame = requestAnimationFrame(step); }
+    else { pos = { ...target }; applyTongsTransform(); animFrame = null; }
+  }
+  animFrame = requestAnimationFrame(step);
+}
+
+/* 판을 접시 위 쉬는 자리로 되돌린다. animate=false면 순간 이동, true면 부드럽게 이동한다. */
+function goToRest(animate) {
+  if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+  if (animate) { animateTongsTo(REST_POS, 480); }
+  else { pos = { ...REST_POS }; applyTongsTransform(); }
+}
+
+function down(e) {
+  if (subStage !== 3) return;
+  e.preventDefault();
+  if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+  dragging = true;
+  tongsWrapRx.classList.remove('settled'); // 다시 잡으면 집게가 다시 보이도록
+  try { tongsWrapRx.setPointerCapture(e.pointerId); } catch (_) {}
+  const p = svgPt(e);
+  dragOffX = p.x - pos.x; dragOffY = p.y - pos.y;
+}
+function move(e) {
+  if (!dragging) return;
+  const p = svgPt(e);
+  pos = { x: p.x - dragOffX, y: p.y - dragOffY, rot: pos.rot };
+  applyTongsTransform();
+}
+function up(e) {
+  if (!dragging) return;
+  dragging = false;
+
+  const hitBeaker = inBox(pos.x, pos.y, BEAKER_BOX);
+  const hitDish = !hitBeaker && inBox(pos.x, pos.y, DISH_BOX);
+
+  if (hitBeaker) {
+    animateTongsTo(DIP_POS, 380);
+    $('rxBar').classList.add('show');
+    reactionSequence(loupeRx, $('fillRx'), 2600, () => {
+      $('rxBar').classList.remove('show');
+      $('fillRx').style.width = '0%';
+      onDropSuccessRx();
+    });
+  } else if (hitDish) {
+    if (rxDone) { onInspectRx(); } else { revertRx(); }
+    goToRest(true);
+  } else {
+    goToRest(true);
+  }
+}
+tongsWrapRx.addEventListener('pointerdown', down);
+tongsWrapRx.addEventListener('pointermove', move);
+tongsWrapRx.addEventListener('pointerup', up);
+tongsWrapRx.addEventListener('pointercancel', up);
+
+/* 실험을 마친 뒤에도 판을 다시 접시로 끌어다 놓으면(또는 '다시 해보기' 버튼으로) 이 상태로 되돌아간다 */
+function revertRx() {
+  svgRx.classList.remove('rx-coated', 'rx-faded');
+  loupeSurfaceRx.classList.remove('coated');
+  tongsWrapRx.classList.remove('settled');
+  $('rxBar').classList.remove('show');
+  $('fillRx').style.width = '0%';
+  rxDone = false;
+  refreshRxObs();
+}
+function onDropSuccessRx() {
+  svgRx.classList.add('rx-coated', 'rx-faded');
+  loupeSurfaceRx.classList.add('coated');
+  tongsWrapRx.classList.add('settled');
+  spawnLoupeMolecule(loupeRx, 'CU', 46, 20);
+  rxDone = true;
+  markSubDone(3);
+  refreshRxObs();
+  onInspectRx(); // 반응이 끝나면 바로 설명 팝업을 띄운다(접시로 다시 안 가져와도 됨)
+}
+function onInspectRx() {
+  showZoom('coated', '아연판에 구리가 석출되었어요',
+    '아연(Zn)이 전자를 잃고 산화되어 아연 이온(Zn²⁺)으로 녹아 들어가고, 그 전자를 받은 구리 이온(Cu²⁺)이 환원되어 아연판 표면에 금속 구리(Cu)로 석출되었습니다.');
+}
+
+/* 실험이 끝난 뒤 접시로 가져와 확대해서 살펴보는 모달 */
+const zoomModal = $('zoomModal'), zoomStrip = $('zoomStrip'), zoomTitle = $('zoomTitle'), zoomDesc = $('zoomDesc');
+function showZoom(stateClass, title, desc) {
+  zoomStrip.className = 'zoom-strip' + (stateClass ? ' ' + stateClass : '');
+  zoomTitle.textContent = title;
+  zoomDesc.textContent = desc;
+  zoomModal.classList.add('show');
+}
+function closeZoom() { zoomModal.classList.remove('show'); }
+$('zoomClose').addEventListener('click', closeZoom);
+zoomModal.addEventListener('click', e => { if (e.target === zoomModal) closeZoom(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeZoom(); closeAnswerModal(); closeThinkModal(); } });
+
+/* ===== 다시 해보기 : 장면을 처음 상태로 되돌려 다시 드래그해볼 수 있게 한다 ===== */
+function resetRxScene() {
+  revertRx();
+  goToRest(true);
+}
+$('retryRx').addEventListener('click', resetRxScene);
+
+b3.addEventListener('input', save);
+b4.addEventListener('input', save);
+reasonEl.addEventListener('input', save);
+
+/* ===== 입자 모형(전자 이동) 정적 일러스트 그리기 — 첨부 그림(그림 I-23) 스타일 ===== */
+function buildParticleModel(el, phase) {
+  el.innerHTML = '';
+  const NS = 'http://www.w3.org/2000/svg';
+
+  /* 빈 구슬(라벨 없음) */
+  const atom = (cls, left, top, size) => {
+    const d = document.createElement('div');
+    d.className = 'p-atom ' + cls;
+    d.style.left = left + '%'; d.style.top = top + '%';
+    d.style.width = size + 'px'; d.style.height = size + 'px';
+    el.appendChild(d);
+  };
+  /* 대표로 이름표를 붙일 구슬 — 구슬은 비워 두고, 위(또는 아래)에 인출선+이름표를 단다 */
+  const labeled = (cls, label, left, top, size, dir) => {
+    atom(cls, left, top, size);
+    const t = document.createElement('div');
+    t.className = 'p-tag ' + dir;
+    t.style.left = left + '%';
+    t.style.top = dir === 'below'
+      ? `calc(${top}% + ${size / 2 + 5}px)`
+      : `calc(${top}% - ${size / 2 + 5}px)`;
+    t.innerHTML = dir === 'below'
+      ? `<span class="tick"></span><span class="lab">${label}</span>`
+      : `<span class="lab">${label}</span><span class="tick"></span>`;
+    el.appendChild(t);
+  };
+  /* 전자 이동 화살표(반응 전에만 표시) */
+  const arrows = (pairs) => {
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.classList.add('p-arrows');
+    svg.innerHTML = `<defs><marker id="pmArrow-${phase}" viewBox="0 0 10 10" refX="8" refY="5"
+      markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0L10,5L0,10z" fill="#d8382a"/></marker></defs>`;
+    pairs.forEach(([x1, y1, x2, y2]) => {
+      const p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', `M${x1},${y1} L${x2},${y2}`);
+      p.setAttribute('stroke', '#d8382a');
+      p.setAttribute('stroke-width', '1.5');
+      p.setAttribute('fill', 'none');
+      p.setAttribute('marker-end', `url(#pmArrow-${phase})`);
+      svg.appendChild(p);
+    });
+    el.appendChild(svg);
+  };
+  /* 전자 2개 — 작은 원 두 개를 나란히 붙여서 표현한다 */
+  const electronPair = (left, top) => {
+    [-8, 8].forEach(dxPx => {
+      const d = document.createElement('div');
+      d.className = 'p-electron';
+      d.textContent = '−';
+      d.style.left = `calc(${left}% + ${dxPx}px)`;
+      d.style.top = top + '%';
+      el.appendChild(d);
+    });
+  };
+
+  if (phase === 'before') {
+    /* 오른쪽 아래 : 아연판 표면(Zn 원자 덩어리). 대표로 Zn 하나, 막 석출된 Cu 하나에만 이름표를 단다 */
+    atom('zn', 80, 10, 46); atom('zn', 95, 28, 40); atom('zn', 68, 26, 42);
+    atom('zn', 84, 46, 44); atom('zn', 98, 62, 38); atom('zn', 72, 60, 40);
+    atom('zn', 88, 80, 42); atom('zn', 60, 82, 36);
+    labeled('zn', 'Zn', 54, 40, 42, 'above');
+    labeled('cu', 'Cu', 48, 60, 38, 'below');
+    /* 왼쪽 : 수용액 속을 떠다니는 이온들 — 대표로 하나씩만 이름표를 달고, 나머지는 빈 구슬로 둔다 */
+    labeled('zn2', 'Zn²⁺', 22, 32, 34, 'above');
+    labeled('cu2', 'Cu²⁺', 20, 66, 34, 'below');
+    atom('cu2', 34, 10, 30); atom('cu2', 12, 16, 28);
+    atom('cu2', 14, 86, 28); atom('cu2', 34, 90, 28);
+    /* Zn(금속) → Zn²⁺(이온) 로 전자 2개가 떠나고, 그 전자를 Cu²⁺(이온)이 얻어 Cu(금속)가 된다 */
+    arrows([[54, 40, 26, 30], [20, 66, 44, 58]]);
+    electronPair(37, 42);
+  } else {
+    /* 오른쪽 아래 : 반응이 진행되어 구리가 더 많이 섞여 붙은 표면(라벨 없음) */
+    atom('cu', 80, 8, 42); atom('zn', 96, 26, 38); atom('cu', 66, 24, 44);
+    atom('cu', 84, 44, 46); atom('zn', 98, 60, 36); atom('cu', 70, 58, 42);
+    atom('cu', 88, 78, 40); atom('zn', 58, 80, 34); atom('cu', 50, 40, 40);
+    /* 왼쪽 : 아연이 빠져나가 Zn²⁺ 이온이 늘어나고, Cu²⁺ 이온은 거의 남지 않는다 — 대표로 하나씩만 이름표 */
+    labeled('zn2', 'Zn²⁺', 22, 32, 34, 'above');
+    atom('zn2', 34, 10, 28); atom('zn2', 12, 16, 28);
+    atom('zn2', 12, 60, 28); atom('zn2', 34, 90, 28);
+    labeled('cu2', 'Cu²⁺', 18, 82, 32, 'below');
+  }
+}
+buildParticleModel($('pmBefore'), 'before');
+buildParticleModel($('pmAfter'), 'after');
+
+
+
+
+/* ===== 시작 ===== */
+restore();
+renderLink();
+renderFixedInfo();
+refreshPrep();
+refreshBefore();
+refreshRxObs();
+refreshPmObs();
+render();
+});
+</script>
+</body>
+</html>
