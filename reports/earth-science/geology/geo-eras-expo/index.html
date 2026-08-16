@@ -12,7 +12,7 @@
   --paper:#0c0e12; --surface:#171a20; --sunk:#1e222b;
   --ink:#e8eaee; --body:#b4b9c4; --faint:#8b909b;
   --line:#2a2e37; --line-soft:#22262b;
-  --sea:#7dd3c8; --sea-deep:#7dd3c8; --sea-soft:rgba(125,211,200,.14);
+  --sea:#e0913e; --sea-deep:#e0913e; --sea-soft:rgba(224,145,62,.14);
   --coral:#e06a5b;
 
   --sans:'Pretendard','Pretendard Variable',-apple-system,system-ui,sans-serif;
@@ -325,7 +325,7 @@ a.submit:hover{background:#62beb3}
     </ul>
   </div>
 
-  <button class="btn" type="button" id="check-theory" style="margin-top:.6rem">채점하기</button>
+  <button class="btn" type="button" id="check-theory" style="margin-top:.6rem">정답 확인하기</button>
   <div id="theory-note" class="note"></div>
 
   <div class="modal-overlay" id="answerModal" style="display:none">
@@ -757,6 +757,18 @@ const render = () => {
 };
 const goTo = n => { step = Math.min(TOTAL, Math.max(1, n)); render(); };
 
+/* 보고서 탭 들어가기 전 — 안 끝난 게 있으면 한 번에 모아서 팝업으로 보여준다 */
+const showChecklist = () => {
+  const incomplete = [];
+  for (let n = 1; n < TOTAL; n++) { if (!stepValid(n)) incomplete.push(MSG[n]); }
+  if (incomplete.length === 0) return true;
+  $('answerModalTitle').textContent = '아직 안 끝난 게 있어요';
+  $('answerModalHint').textContent = '보고서를 만들기 전에 아래 항목을 마저 채워 주세요.';
+  $('answerModalBody').innerHTML = incomplete.map(m => `• ${m}`).join('<br><br>');
+  $('answerModal').style.display = 'flex';
+  return false;
+};
+
 /* 보고서 */
 const CONCEPT_PARTS = [
   '가. 지구에서는 크고 작은 지각 변동이 일어났으며, 다양한 생물이 출현하거나 멸종하는 등의 수많은 변화가 나타났다. 지구가 탄생한 약 46억 년 전부터 현재까지를 {b1}라고 하며, 지질 시대에 살았던 생물의 유해나 흔적이 지층 속에 남아 있는 것을 {b2}이라고 한다. 화석 연구를 통해 지층의 생성 시기와 환경, 생물의 진화 과정 등 지구의 역사를 이해할 수 있다. 특히 지구 환경의 급격한 변화로 인한 생물계의 큰 변화는 지질 시대를 구분하는 중요한 기준으로 사용된다.',
@@ -810,9 +822,7 @@ const waitForImages = async root => {
 };
 
 const exportPDF = async () => {
-  for (let n = 1; n < TOTAL; n++) {
-    if (!stepValid(n)) { goTo(n); markInvalid(n); flash(n); return; }
-  }
+  if (!showChecklist()) return;
   buildReport(); hideMsg();
   const tag = `${$('f_id').value}_${$('f_name').value}`;
   const btn = $('pdf-btn');
@@ -845,9 +855,13 @@ const exportPDF = async () => {
 };
 
 /* 이벤트 */
-document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => goTo(+t.dataset.step)));
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  const n = +t.dataset.step;
+  if (n === TOTAL && !showChecklist()) return;
+  goTo(n);
+}));
 $('next').addEventListener('click', () => {
-  if (step < TOTAL && !stepValid(step)) { markInvalid(step); flash(step); return; }
+  if (step + 1 === TOTAL && !showChecklist()) return;
   goTo(step + 1);
 });
 $('prev').addEventListener('click', () => goTo(step - 1));
