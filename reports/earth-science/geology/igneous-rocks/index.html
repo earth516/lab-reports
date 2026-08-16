@@ -12,7 +12,7 @@
   --paper:#0c0e12; --surface:#171a20; --sunk:#1e222b;
   --ink:#e8eaee; --body:#b4b9c4; --faint:#8b909b;
   --line:#2a2e37; --line-soft:#22262b;
-  --sea:#7dd3c8; --sea-deep:#7dd3c8; --sea-soft:rgba(125,211,200,.14);
+  --sea:#e0913e; --sea-deep:#e0913e; --sea-soft:rgba(224,145,62,.14);
   --coral:#e06a5b;
 
   --sans:'Pretendard','Pretendard Variable',-apple-system,system-ui,sans-serif;
@@ -237,7 +237,7 @@ a.submit:hover{background:#62beb3}
 <div class="sheet">
 
 <header class="top">
-  <div class="kicker">지구과학 탐구 활동 (지질)</div>
+  <div class="kicker">지구과학 탐구활동 (지질)</div>
   <h1>화성암 관찰하기 🔎</h1>
 </header>
 
@@ -322,7 +322,7 @@ a.submit:hover{background:#62beb3}
     <p>화성암은 마그마가 냉각되는 속도에 따라 화산암과 심성암으로 분류하기도 한다. 화산암은 용암이 빠르게 냉각되면서 굳어져 구성 광물의 입자 크기가 작은 <input class="blank save" id="b5" placeholder="ㅅㄹㅈ" required> 조직이 나타난다. 심성암은 지하 깊은 곳에서 마그마가 서서히 냉각되면서 굳어져 구성 광물의 입자 크기가 큰 <input class="blank save" id="b6" placeholder="ㅈㄹㅈ" required> 조직이 나타난다.</p>
   </div>
 
-  <button class="btn" type="button" id="check-theory" style="margin-top:.6rem">채점하기</button>
+  <button class="btn" type="button" id="check-theory" style="margin-top:.6rem">정답 확인하기</button>
   <div id="theory-note" class="note"></div>
 
   <div class="modal-overlay" id="answerModal" style="display:none">
@@ -742,6 +742,18 @@ const render = () => {
 };
 const goTo = n => { step = Math.min(TOTAL, Math.max(1, n)); render(); };
 
+/* 보고서 탭 들어가기 전 — 안 끝난 게 있으면 한 번에 모아서 팝업으로 보여준다 */
+const showChecklist = () => {
+  const incomplete = [];
+  for (let n = 1; n < TOTAL; n++) { if (!stepValid(n)) incomplete.push(MSG[n]); }
+  if (incomplete.length === 0) return true;
+  $('answerModalTitle').textContent = '아직 안 끝난 게 있어요';
+  $('answerModalHint').textContent = '보고서를 만들기 전에 아래 항목을 마저 채워 주세요.';
+  $('answerModalBody').innerHTML = incomplete.map(m => `• ${m}`).join('<br><br>');
+  $('answerModal').style.display = 'flex';
+  return false;
+};
+
 /* 보고서 */
 const CONCEPT_PARTS = [
   '가. 마그마가 식어서 굳어진 암석을 {b1}이라고 한다. SiO₂ 함량이 적은 현무암질 마그마가 식어서 굳은 암석으로는 현무암, {b2} 등이 있고, 안산암질 마그마가 식어서 굳은 암석으로는 안산암, {b3} 등이 있으며, SiO₂ 함량이 많은 유문암질 마그마가 식어서 굳은 암석으로는 유문암, {b4} 등이 있다.',
@@ -783,9 +795,7 @@ const waitForImages = async root => {
 };
 
 const exportPDF = async () => {
-  for (let n = 1; n < TOTAL; n++) {
-    if (!stepValid(n)) { goTo(n); markInvalid(n); flash(n); return; }
-  }
+  if (!showChecklist()) return;
   buildReport(); hideMsg();
   const classTag = $('f_class').value ? $('f_class').value + '반' : '';
   const tag = `${classTag}_${$('f_id').value}_${$('f_name').value}`;
@@ -819,9 +829,13 @@ const exportPDF = async () => {
 };
 
 /* 이벤트 */
-document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => goTo(+t.dataset.step)));
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  const n = +t.dataset.step;
+  if (n === TOTAL && !showChecklist()) return;
+  goTo(n);
+}));
 $('next').addEventListener('click', () => {
-  if (step < TOTAL && !stepValid(step)) { markInvalid(step); flash(step); return; }
+  if (step + 1 === TOTAL && !showChecklist()) return;
   goTo(step + 1);
 });
 $('prev').addEventListener('click', () => goTo(step - 1));
