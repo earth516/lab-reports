@@ -12,7 +12,7 @@
   --paper:#0c0e12; --surface:#171a20; --sunk:#1e222b;
   --ink:#e8eaee; --body:#b4b9c4; --faint:#8b909b;
   --line:#2a2e37; --line-soft:#22262b;
-  --sea:#7dd3c8; --sea-deep:#7dd3c8; --sea-soft:rgba(125,211,200,.14);
+  --sea:#e0913e; --sea-deep:#e0913e; --sea-soft:rgba(224,145,62,.14);
   --coral:#e06a5b;
 
   --sans:'Pretendard','Pretendard Variable',-apple-system,system-ui,sans-serif;
@@ -262,7 +262,7 @@ a.submit:hover{background:#62beb3}
 <div class="sheet">
 
 <header class="top">
-  <div class="kicker">지구과학 탐구 활동 (지질)</div>
+  <div class="kicker">지구과학 탐구활동 (지질)</div>
   <h1>퇴적암 관찰하기 🔎</h1>
 </header>
 
@@ -386,7 +386,7 @@ a.submit:hover{background:#62beb3}
     </table>
   </div>
 
-  <button class="btn" type="button" id="check-theory" style="margin-top:.6rem">채점하기</button>
+  <button class="btn" type="button" id="check-theory" style="margin-top:.6rem">정답 확인하기</button>
   <div id="theory-note" class="note"></div>
 
   <div class="modal-overlay" id="answerModal" style="display:none">
@@ -863,7 +863,7 @@ const clearAll = () => {
 const MSG = {
   1:'반, 학번, 이름, 일시, 장소를 모두 입력해 주세요.',
   2:'유의사항을 확인했다면 체크해 주세요.',
-  3:'빈칸을 채운 뒤 "채점하기"를 눌러 정답을 확인해 주세요. (2회 시도 후에는 정답이 자동으로 공개돼요)',
+  3:'빈칸을 채운 뒤 "정답 확인하기"를 눌러 정답을 확인해 주세요. (2회 시도 후에는 정답이 자동으로 공개돼요)',
   4:'여섯 표본의 관찰한 특징을 모두 입력해 주세요.',
   5:'조사한 퇴적암과 활용 예시를 입력해 주세요.',
 };
@@ -907,6 +907,18 @@ const render = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 const goTo = n => { step = Math.min(TOTAL, Math.max(1, n)); render(); };
+
+/* 보고서 탭 들어가기 전 — 안 끝난 게 있으면 한 번에 모아서 팝업으로 보여준다 */
+const showChecklist = () => {
+  const incomplete = [];
+  for (let n = 1; n < TOTAL; n++) { if (!stepValid(n)) incomplete.push(MSG[n]); }
+  if (incomplete.length === 0) return true;
+  $('answerModalTitle').textContent = '아직 안 끝난 게 있어요';
+  $('answerModalHint').textContent = '보고서를 만들기 전에 아래 항목을 마저 채워 주세요.';
+  $('answerModalBody').innerHTML = incomplete.map(m => `• ${m}`).join('<br><br>');
+  $('answerModal').style.display = 'flex';
+  return false;
+};
 
 /* 보고서 */
 const CONCEPT_PARTS = [
@@ -980,9 +992,7 @@ const waitForImages = async root => {
 };
 
 const exportPDF = async () => {
-  for (let n = 1; n < TOTAL; n++) {
-    if (!stepValid(n)) { goTo(n); markInvalid(n); flash(n); return; }
-  }
+  if (!showChecklist()) return;
   buildReport(); hideMsg();
   const classTag = $('f_class').value ? $('f_class').value + '반' : '';
   const tag = `${classTag}_${$('f_id').value}_${$('f_name').value}`;
@@ -1016,9 +1026,13 @@ const exportPDF = async () => {
 };
 
 /* 이벤트 */
-document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => goTo(+t.dataset.step)));
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  const n = +t.dataset.step;
+  if (n === TOTAL && !showChecklist()) return;
+  goTo(n);
+}));
 $('next').addEventListener('click', () => {
-  if (step < TOTAL && !stepValid(step)) { markInvalid(step); flash(step); return; }
+  if (step + 1 === TOTAL && !showChecklist()) return;
   goTo(step + 1);
 });
 $('prev').addEventListener('click', () => goTo(step - 1));
