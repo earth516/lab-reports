@@ -980,8 +980,15 @@ const showChecklist = () => {
 };
 
 /* ===== 보고서 ===== */
+/* html2canvas가 word-break:break-all을 완벽히 못 지켜서, 공백 없이 아주 긴 문자열(예: ^^^^^처럼
+   학생이 실수로 길게 친 경우)이 PDF에서 안 끊기고 페이지 밖으로 잘려 나가는 경우가 있다.
+   CSS에만 기대지 않고, 15자 이상 이어지는 공백없는 구간에 실제 줄바꿈 지점(zero-width space)을
+   미리 심어서 어떤 렌더러에서도 확실히 끊기게 한다. */
+const breakLongWords = (str, maxLen = 15) =>
+  str.replace(new RegExp(`\\S{${maxLen},}`, 'g'), s => s.replace(new RegExp(`(.{${maxLen}})`, 'g'), '$1\u200B'));
+
 const buildReport = () => {
-  const v = id => ($(id).value || '').trim();
+  const v = id => breakLongWords(($(id).value || '').trim());
   const dateRaw = v('f_date');
   const dateTxt = dateRaw ? new Date(dateRaw + 'T00:00:00').toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' }) : '(미입력)';
   const idv = v('f_id') || '(미입력)';
