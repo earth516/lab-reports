@@ -198,8 +198,7 @@ a.submit:hover{background:#62beb3}
   --ink:#141414;--body:#4a4a4a;--faint:#9a9a9a;--line:#e0e0e0;--line-soft:#ececec;
   --sea:#141414;--sea-deep:#000000;--sea-soft:#ececec}
 #report .r-head{border-bottom:2px solid var(--sea);padding-bottom:.8rem;margin-bottom:.5rem;
-  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem;
-  page-break-inside:avoid}
+  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem}
 #report .r-head h2{font-size:1.3rem;font-weight:700;color:var(--sea-deep)}
 #report .r-head .who{display:block;font-family:var(--mono);font-size:.82rem;color:var(--body)}
 #report .r-sec{margin-top:1.8rem}
@@ -210,7 +209,10 @@ a.submit:hover{background:#62beb3}
   margin:1.1rem 0 .5rem;page-break-after:avoid}
 #report .r-sub:first-of-type{margin-top:0}
 #report .r-pagebreak{page-break-before:always;break-before:page}
-#report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3}
+#report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3;overflow-wrap:break-word;word-break:break-all}
+/* 암석 카드 하나(고정 6개 + 동적으로 추가된 것 전부)는 관찰 특징이 200자로 제한돼 한 페이지 안에
+   들어가는 게 보장되므로, 카드 단위로 avoid를 건다. p_usage(400자)도 마찬가지. */
+#report .r-rock-col,#report #p_usage{page-break-inside:avoid;break-inside:avoid}
 #report .r-hang{padding-left:1.6em;text-indent:-1.6em;margin:0 0 .5rem;color:#38484f}
 #report .r-hang:last-child{margin-bottom:0}
 #report .r-rock-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
@@ -386,7 +388,7 @@ a.submit:hover{background:#62beb3}
     </table>
   </div>
 
-  <button class="btn" type="button" id="check-theory" style="margin-top:.6rem">정답 확인하기</button>
+  <button class="btn solid" type="button" id="check-theory" style="margin-top:.6rem">정답 확인하기</button>
   <div id="theory-note" class="note"></div>
 
   <div class="modal-overlay" id="answerModal" style="display:none">
@@ -412,21 +414,21 @@ a.submit:hover{background:#62beb3}
         <div class="drop" id="up_conglomerate"><span>클릭하여 사진 선택 (선택)</span></div>
         <input type="file" accept="image/*" id="ph_conglomerate" hidden>
         <label for="rock_conglomerate_feature">관찰한 특징</label>
-        <textarea id="rock_conglomerate_feature" class="save" rows="4" required></textarea>
+        <textarea id="rock_conglomerate_feature" class="save" rows="4" maxlength="200" required></textarea>
       </div>
       <div class="rock-col">
         <div class="rock-name">사암</div>
         <div class="drop" id="up_sandstone"><span>클릭하여 사진 선택 (선택)</span></div>
         <input type="file" accept="image/*" id="ph_sandstone" hidden>
         <label for="rock_sandstone_feature">관찰한 특징</label>
-        <textarea id="rock_sandstone_feature" class="save" rows="4" required></textarea>
+        <textarea id="rock_sandstone_feature" class="save" rows="4" maxlength="200" required></textarea>
       </div>
       <div class="rock-col">
         <div class="rock-name">이암</div>
         <div class="drop" id="up_mudstone"><span>클릭하여 사진 선택 (선택)</span></div>
         <input type="file" accept="image/*" id="ph_mudstone" hidden>
         <label for="rock_mudstone_feature">관찰한 특징</label>
-        <textarea id="rock_mudstone_feature" class="save" rows="4" required></textarea>
+        <textarea id="rock_mudstone_feature" class="save" rows="4" maxlength="200" required></textarea>
       </div>
     </div>
   </div>
@@ -442,14 +444,14 @@ a.submit:hover{background:#62beb3}
         <div class="drop" id="up_limestone"><span>클릭하여 사진 선택 (선택)</span></div>
         <input type="file" accept="image/*" id="ph_limestone" hidden>
         <label for="rock_limestone_feature">관찰한 특징</label>
-        <textarea id="rock_limestone_feature" class="save" rows="4" required></textarea>
+        <textarea id="rock_limestone_feature" class="save" rows="4" maxlength="200" required></textarea>
       </div>
       <div class="rock-col">
         <div class="rock-name">암염</div>
         <div class="drop" id="up_halite"><span>클릭하여 사진 선택 (선택)</span></div>
         <input type="file" accept="image/*" id="ph_halite" hidden>
         <label for="rock_halite_feature">관찰한 특징</label>
-        <textarea id="rock_halite_feature" class="save" rows="4" required></textarea>
+        <textarea id="rock_halite_feature" class="save" rows="4" maxlength="200" required></textarea>
       </div>
     </div>
   </div>
@@ -465,7 +467,7 @@ a.submit:hover{background:#62beb3}
         <div class="drop" id="up_coal"><span>클릭하여 사진 선택 (선택)</span></div>
         <input type="file" accept="image/*" id="ph_coal" hidden>
         <label for="rock_coal_feature">관찰한 특징</label>
-        <textarea id="rock_coal_feature" class="save" rows="4" required></textarea>
+        <textarea id="rock_coal_feature" class="save" rows="4" maxlength="200" required></textarea>
       </div>
     </div>
   </div>
@@ -492,7 +494,7 @@ a.submit:hover{background:#62beb3}
   <div class="block">
     <label for="usage_example">일상 속 활용 예시</label>
     <p class="hint">그 퇴적암이 어디에, 어떻게 쓰이는지 구체적으로 적어 보세요.</p>
-    <textarea id="usage_example" class="save" rows="5" required placeholder="예: 석회암은 시멘트의 주원료로 쓰이며, 건축 자재나 도로 포장재로도 활용된다."></textarea>
+    <textarea id="usage_example" class="save" rows="5" maxlength="400" required placeholder="예: 석회암은 시멘트의 주원료로 쓰이며, 건축 자재나 도로 포장재로도 활용된다."></textarea>
   </div>
   <div class="block">
     <label for="usage_source">출처</label>
@@ -790,7 +792,7 @@ const addExtraRock = () => {
     <div class="drop" id="up_${rid}"><span>클릭하여 사진 선택 (선택)</span></div>
     <input type="file" accept="image/*" id="ph_${rid}" hidden>
     <label for="info_${rid}">관찰한 특징</label>
-    <textarea id="info_${rid}" class="save extra-info" rows="4"></textarea>
+    <textarea id="info_${rid}" class="save extra-info" rows="4" maxlength="200"></textarea>
     <button type="button" class="btn quiet small del-rock">삭제</button>
   `;
   $('grid-extra').appendChild(col);
@@ -844,7 +846,7 @@ const restore = () => {
     const v = localStorage.getItem(KEY + el.id);
     if (v === null) return;
     if (el.type === 'checkbox') el.checked = v === '1';
-    else if (v) el.value = v;
+    else if (v) el.value = el.maxLength > 0 ? v.slice(0, el.maxLength) : v;
   });
   ROCKS.forEach(r => {
     const v = localStorage.getItem(KEY + 'ph_' + r);
@@ -929,7 +931,12 @@ const CONCEPT_PARTS = [
   '마. 유기적 퇴적암은 동식물이나 미생물의 {b12}가 쌓여 만들어진 암석으로, 석탄, 석회암, 처트 등이 있다.',
 ];
 const buildReport = () => {
-  const v = id => ($(id).value || '').trim();
+/* html2canvas가 word-break:break-all을 완벽히 못 지켜서, 공백 없이 아주 긴 문자열이
+   PDF에서 안 끊기고 페이지 밖으로 잘려 나가는 경우가 있다. CSS에만 기대지 않고,
+   15자 이상 이어지는 공백없는 구간에 실제 줄바꿈 지점(zero-width space)을 미리 심는다. */
+const breakLongWords = (str, maxLen = 15) =>
+  str.replace(new RegExp(`\S{${maxLen},}`, 'g'), s => s.replace(new RegExp(`(.{${maxLen}})`, 'g'), '$1​'));
+  const v = id => breakLongWords(($(id).value || '').trim());
   $('p_class').textContent = v('f_class') ? v('f_class') + '반' : '';
   ['id','name'].forEach(f => $('p_'+f).textContent = v('f_'+f));
 
@@ -960,7 +967,7 @@ const buildReport = () => {
   const extraHTML = extraItems.map(rid => {
     const name = ($('name_' + rid).value || '').trim();
     if (!name) return '';
-    const info = ($('info_' + rid).value || '').trim();
+    const info = breakLongWords(($('info_' + rid).value || '').trim());
     const photo = extraPhotos[rid] || null;
     return `<div class="r-rock-col">
       <div class="r-rock-name">${name}</div>
