@@ -236,8 +236,7 @@ a.submit:hover{background:#62beb3}
   --ink:#141414;--body:#4a4a4a;--faint:#9a9a9a;--line:#e0e0e0;--line-soft:#ececec;
   --sea:#141414;--sea-deep:#000000;--sea-soft:#ececec}
 #report .r-head{border-bottom:2px solid var(--sea);padding-bottom:.8rem;margin-bottom:.5rem;
-  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem;
-  page-break-inside:avoid}
+  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem}
 #report .r-head h2{font-size:1.3rem;font-weight:700;color:var(--sea-deep)}
 #report .r-head .who{display:block;font-family:var(--mono);font-size:.82rem;color:var(--body)}
 #report .r-sec{margin-top:1.8rem}
@@ -248,7 +247,10 @@ a.submit:hover{background:#62beb3}
   margin:1.1rem 0 .5rem;page-break-after:avoid}
 #report .r-sub:first-of-type{margin-top:0}
 #report .r-pagebreak{page-break-before:always;break-before:page}
-#report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3}
+#report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3;overflow-wrap:break-word;word-break:break-all}
+/* p_analysis(1500자)/p_conclusion(1500자)/p_extra(1000자)는 계산상 한 페이지 안에 들어가는 게
+   보장되므로, 페이지 경계에서 줄 중간이 잘리는 걸 막기 위해 개별적으로 avoid를 건다. */
+#report #p_analysis,#report #p_conclusion,#report #p_extra{page-break-inside:avoid;break-inside:avoid}
 #report table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.86rem}
 #report table th{font-weight:400;color:var(--faint);text-align:right;padding:.3rem .5rem;
   border-bottom:1px solid var(--line)}
@@ -395,7 +397,7 @@ a.submit:hover{background:#62beb3}
       <div><label for="pr_b_t">b 수온 (°C)</label><input type="number" step="0.1" class="save mono" id="pr_b_t" required></div>
       <div><label for="pr_b_s">b 염분 (psu)</label><input type="number" step="0.1" class="save mono" id="pr_b_s" required></div>
     </div>
-    <button class="btn" type="button" id="check-practice" style="margin-top:1.1rem">정답 확인하기</button>
+    <button class="btn solid" type="button" id="check-practice" style="margin-top:1.1rem">정답 확인하기</button>
     <div id="practice-note" class="note"></div>
   </div>
 
@@ -416,7 +418,7 @@ a.submit:hover{background:#62beb3}
     <p>→ 이러한 심층 해수의 움직임을 <input class="blank save" id="b7" placeholder="ㅅㅊ ㅅㅎ" required>이라고 한다.</p>
   </div>
 
-  <button class="btn" type="button" id="check-theory" style="margin-top:.6rem">정답 확인하기</button>
+  <button class="btn solid" type="button" id="check-theory" style="margin-top:.6rem">정답 확인하기</button>
   <div id="theory-note" class="note"></div>
 
   <div class="modal-overlay" id="answerModal" style="display:none">
@@ -1071,7 +1073,7 @@ const restore = () => {
     const v = localStorage.getItem(KEY + el.id);
     if (v === null) return;
     if (el.type === 'checkbox') el.checked = v === '1';
-    else if (v) el.value = v;
+    else if (v) el.value = el.maxLength > 0 ? v.slice(0, el.maxLength) : v;
   });
   ['ph1','ph2'].forEach(s => {
     const v = localStorage.getItem(KEY + s);
@@ -1156,7 +1158,12 @@ const CONCEPT_PARTS = [
   '다. 극 해역의 해수는 표층 수온이 매우 낮고, 결빙이 일어나면 주변 해수의 염분이 {b4} 밀도가 {b5}. 이렇게 밀도가 커진 해수는 {b6}하여 같은 밀도의 해수가 분포하는 수심에 도달한 후 수평 방향으로 이동하다가, 온대나 열대 해역에서 서서히 상승하는데, 이러한 심층 해수의 움직임을 {b7}이라고 한다.',
 ];
 const buildReport = () => {
-  const v = id => ($(id).value || '').trim();
+/* html2canvas가 word-break:break-all을 완벽히 못 지켜서, 공백 없이 아주 긴 문자열이
+   PDF에서 안 끊기고 페이지 밖으로 잘려 나가는 경우가 있다. CSS에만 기대지 않고,
+   15자 이상 이어지는 공백없는 구간에 실제 줄바꿈 지점(zero-width space)을 미리 심는다. */
+const breakLongWords = (str, maxLen = 15) =>
+  str.replace(new RegExp(`\S{${maxLen},}`, 'g'), s => s.replace(new RegExp(`(.{${maxLen}})`, 'g'), '$1​'));
+  const v = id => breakLongWords(($(id).value || '').trim());
   $('p_class').textContent = v('f_class') || '';
   ['id','name','role'].forEach(f => $('p_'+f).textContent = v('f_'+f));
 
