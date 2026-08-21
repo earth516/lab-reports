@@ -199,8 +199,7 @@ a.submit:hover{background:#62beb3}
   --ink:#141414;--body:#4a4a4a;--faint:#9a9a9a;--line:#e0e0e0;--line-soft:#ececec;
   --sea:#141414;--sea-deep:#000000;--sea-soft:#ececec}
 #report .r-head{border-bottom:2px solid var(--sea);padding-bottom:.8rem;margin-bottom:.5rem;
-  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem;
-  page-break-inside:avoid}
+  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem}
 #report .r-head h2{font-size:1.3rem;font-weight:700;color:var(--sea-deep)}
 #report .r-head .who{display:block;font-family:var(--mono);font-size:.82rem;color:var(--body)}
 #report .r-sec{margin-top:1.8rem}
@@ -210,7 +209,10 @@ a.submit:hover{background:#62beb3}
 #report .r-sub{font-family:var(--sans);font-size:.95rem;font-weight:700;color:var(--ink);
   margin:1.1rem 0 .5rem;page-break-after:avoid}
 #report .r-sub:first-of-type{margin-top:0}
-#report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3}
+#report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3;overflow-wrap:break-word;word-break:break-all}
+/* 각 암석 관찰 특징은 200자로 제한돼 한 페이지 안에 들어가는 게 보장되므로 개별적으로 avoid를 건다. */
+#report #rep_basalt,#report #rep_andesite,#report #rep_rhyolite,
+#report #rep_gabbro,#report #rep_diorite,#report #rep_granite{page-break-inside:avoid;break-inside:avoid}
 #report .r-rock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;
   page-break-inside:avoid;margin-bottom:1.4rem}
 #report .r-rock-grid:last-child{margin-bottom:0}
@@ -322,7 +324,7 @@ a.submit:hover{background:#62beb3}
     <p>화성암은 마그마가 냉각되는 속도에 따라 화산암과 심성암으로 분류하기도 한다. 화산암은 용암이 빠르게 냉각되면서 굳어져 구성 광물의 입자 크기가 작은 <input class="blank save" id="b5" placeholder="ㅅㄹㅈ" required> 조직이 나타난다. 심성암은 지하 깊은 곳에서 마그마가 서서히 냉각되면서 굳어져 구성 광물의 입자 크기가 큰 <input class="blank save" id="b6" placeholder="ㅈㄹㅈ" required> 조직이 나타난다.</p>
   </div>
 
-  <button class="btn" type="button" id="check-theory" style="margin-top:.6rem">정답 확인하기</button>
+  <button class="btn solid" type="button" id="check-theory" style="margin-top:.6rem">정답 확인하기</button>
   <div id="theory-note" class="note"></div>
 
   <div class="modal-overlay" id="answerModal" style="display:none">
@@ -348,21 +350,21 @@ a.submit:hover{background:#62beb3}
         <div class="drop" id="up_basalt"><span>클릭하여 사진 선택 (선택)</span></div>
         <input type="file" accept="image/*" id="ph_basalt" hidden>
         <label for="rock_basalt_feature">관찰한 특징</label>
-        <textarea id="rock_basalt_feature" class="save" rows="4" required></textarea>
+        <textarea id="rock_basalt_feature" class="save" rows="4" maxlength="200" required></textarea>
       </div>
       <div class="rock-col">
         <div class="rock-name">안산암</div>
         <div class="drop" id="up_andesite"><span>클릭하여 사진 선택 (선택)</span></div>
         <input type="file" accept="image/*" id="ph_andesite" hidden>
         <label for="rock_andesite_feature">관찰한 특징</label>
-        <textarea id="rock_andesite_feature" class="save" rows="4" required></textarea>
+        <textarea id="rock_andesite_feature" class="save" rows="4" maxlength="200" required></textarea>
       </div>
       <div class="rock-col">
         <div class="rock-name">유문암</div>
         <div class="drop" id="up_rhyolite"><span>클릭하여 사진 선택 (선택)</span></div>
         <input type="file" accept="image/*" id="ph_rhyolite" hidden>
         <label for="rock_rhyolite_feature">관찰한 특징</label>
-        <textarea id="rock_rhyolite_feature" class="save" rows="4" required></textarea>
+        <textarea id="rock_rhyolite_feature" class="save" rows="4" maxlength="200" required></textarea>
       </div>
     </div>
   </div>
@@ -377,21 +379,21 @@ a.submit:hover{background:#62beb3}
         <div class="drop" id="up_gabbro"><span>클릭하여 사진 선택 (선택)</span></div>
         <input type="file" accept="image/*" id="ph_gabbro" hidden>
         <label for="rock_gabbro_feature">관찰한 특징</label>
-        <textarea id="rock_gabbro_feature" class="save" rows="4" required></textarea>
+        <textarea id="rock_gabbro_feature" class="save" rows="4" maxlength="200" required></textarea>
       </div>
       <div class="rock-col">
         <div class="rock-name">섬록암</div>
         <div class="drop" id="up_diorite"><span>클릭하여 사진 선택 (선택)</span></div>
         <input type="file" accept="image/*" id="ph_diorite" hidden>
         <label for="rock_diorite_feature">관찰한 특징</label>
-        <textarea id="rock_diorite_feature" class="save" rows="4" required></textarea>
+        <textarea id="rock_diorite_feature" class="save" rows="4" maxlength="200" required></textarea>
       </div>
       <div class="rock-col">
         <div class="rock-name">화강암</div>
         <div class="drop" id="up_granite"><span>클릭하여 사진 선택 (선택)</span></div>
         <input type="file" accept="image/*" id="ph_granite" hidden>
         <label for="rock_granite_feature">관찰한 특징</label>
-        <textarea id="rock_granite_feature" class="save" rows="4" required></textarea>
+        <textarea id="rock_granite_feature" class="save" rows="4" maxlength="200" required></textarea>
       </div>
     </div>
   </div>
@@ -678,7 +680,7 @@ const restore = () => {
     const v = localStorage.getItem(KEY + el.id);
     if (v === null) return;
     if (el.type === 'checkbox') el.checked = v === '1';
-    else if (v) el.value = v;
+    else if (v) el.value = el.maxLength > 0 ? v.slice(0, el.maxLength) : v;
   });
   ROCKS.forEach(r => {
     const v = localStorage.getItem(KEY + 'ph_' + r);
@@ -760,7 +762,12 @@ const CONCEPT_PARTS = [
   '나. 화성암은 마그마가 냉각되는 속도에 따라 화산암과 심성암으로 분류하기도 한다. 화산암은 용암이 빠르게 냉각되면서 굳어져 구성 광물의 입자 크기가 작은 {b5} 조직이 나타난다. 심성암은 지하 깊은 곳에서 마그마가 서서히 냉각되면서 굳어져 구성 광물의 입자 크기가 큰 {b6} 조직이 나타난다.',
 ];
 const buildReport = () => {
-  const v = id => ($(id).value || '').trim();
+/* html2canvas가 word-break:break-all을 완벽히 못 지켜서, 공백 없이 아주 긴 문자열이
+   PDF에서 안 끊기고 페이지 밖으로 잘려 나가는 경우가 있다. CSS에만 기대지 않고,
+   15자 이상 이어지는 공백없는 구간에 실제 줄바꿈 지점(zero-width space)을 미리 심는다. */
+const breakLongWords = (str, maxLen = 15) =>
+  str.replace(new RegExp(`\S{${maxLen},}`, 'g'), s => s.replace(new RegExp(`(.{${maxLen}})`, 'g'), '$1​'));
+  const v = id => breakLongWords(($(id).value || '').trim());
   $('p_class').textContent = v('f_class') ? v('f_class') + '반' : '';
   ['id','name'].forEach(f => $('p_'+f).textContent = v('f_'+f));
 
