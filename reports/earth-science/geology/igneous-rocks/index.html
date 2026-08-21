@@ -270,7 +270,7 @@ a.submit:hover{background:#62beb3}
       <tr>
         <td class="lbl">반</td>
         <td>
-          <input id="f_class" class="save" placeholder="선택A" maxlength="6" required>
+          <input id="f_class" class="save" placeholder="1-9 또는 선택A" maxlength="6" required>
         </td>
         <td class="lbl">학번</td>
         <td><input id="f_id" class="save mono" inputmode="numeric" maxlength="10" required></td>
@@ -865,13 +865,6 @@ document.addEventListener('input', e => {
       e.target.classList.toggle('correct', ok);
       e.target.classList.toggle('invalid', !ok);
     }
-  }
-  if (e.target.id === 'f_class') {
-    const pos = e.target.selectionStart;
-    const before = e.target.value.length;
-    e.target.value = e.target.value.toUpperCase().replace(/[^가-힣A-Z0-9 -]/g, '');
-    const diff = before - e.target.value.length;
-    if (pos !== null) e.target.setSelectionRange(pos - diff, pos - diff);
   }
   if (e.target.classList.contains('save')) save();
 });
