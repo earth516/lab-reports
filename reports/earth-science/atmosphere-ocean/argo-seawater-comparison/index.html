@@ -177,18 +177,20 @@ table.cmp td b{color:var(--ink)}
   --ink:#141414;--body:#4a4a4a;--faint:#9a9a9a;--line:#e0e0e0;--line-soft:#ececec;
   --sea:#141414;--sea-soft:#ececec}
 #report .r-head{border-bottom:2px solid var(--sea);padding-bottom:.8rem;margin-bottom:.5rem;
-  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem;
-  page-break-inside:avoid}
+  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem}
 #report .r-head h2{font-size:1.3rem;font-weight:700;color:#000}
 #report .r-head .who{display:block;font-family:var(--mono);font-size:.82rem;color:var(--body)}
 #report .r-sec{margin-top:1.8rem}
 #report .r-lab{font-family:var(--sans);font-size:1.05rem;font-weight:700;letter-spacing:.02em;
   color:var(--sea);border-bottom:1px solid var(--line);padding-bottom:.3rem;margin-bottom:.7rem;
   display:block;background:none;page-break-after:avoid}
-#report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3}
+#report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3;overflow-wrap:break-word;word-break:break-all}
+/* rep_q1q2, rep_q3, rep_q4는 300~400자로 제한돼 한 페이지 안에 들어가는 게 보장되므로,
+   페이지 경계에서 줄 중간이 잘리는 걸 막기 위해 개별적으로 avoid를 건다. */
+#report #rep_q1q2,#report #rep_q3,#report #rep_q4{page-break-inside:avoid;break-inside:avoid}
 #report .r-hang{padding-left:1.6em;text-indent:-1.6em;color:#141414;font-weight:600;margin:0 0 .5rem}
 #report table.r-info{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:.92rem;
-  table-layout:fixed;page-break-inside:avoid}
+  table-layout:fixed}
 #report table.r-info td{border:1px solid var(--line);text-align:left;padding:.6rem .85rem;
   color:#38484f;vertical-align:top}
 #report table.r-info td.k{background:#f5f5f5;font-weight:700;color:#141414;width:19%;white-space:nowrap}
@@ -388,7 +390,7 @@ table.cmp td b{color:var(--ink)}
       <li>해수의 밀도는 <input class="blank save" id="th3" placeholder="ㅅㅇ" required>이 낮을수록, <input class="blank save" id="th4" placeholder="ㅇㅂ" required>이 높을수록 커진다.</li>
     </ul>
     <div class="example-answer">
-      <button class="btn small quiet" type="button" id="check-theory">정답 확인하기</button>
+      <button class="btn small solid" type="button" id="check-theory">정답 확인하기</button>
       <div id="theory-note" class="note"></div>
     </div>
   </div>
@@ -595,11 +597,13 @@ table.cmp td b{color:var(--ink)}
   <div class="exp-pane" data-sub-pane="4">
     <div class="block">
       <h3>1. 위도에 따라 표층 해수의 수온, 염분, 밀도에 차이가 나는 까닭을 설명해 보자.</h3>
-      <textarea class="save" id="q1" rows="4" required placeholder="위도에 따른 태양 복사 에너지의 차이, 증발량과 강수량의 차이 등을 근거로 작성해 보세요."></textarea>
+      <textarea class="save" id="q1" rows="4" maxlength="300" required placeholder="위도에 따른 태양 복사 에너지의 차이, 증발량과 강수량의 차이 등을 근거로 작성해 보세요."></textarea>
+      <div style="text-align:right;font-size:.78rem;color:var(--faint);margin-top:.3rem"><span id="q1Count">0</span> / 300</div>
     </div>
     <div class="block">
       <h3>2. 해양에 따라 표층 해수의 수온, 염분, 밀도에 차이가 나는 까닭을 설명해 보자.</h3>
-      <textarea class="save" id="q2" rows="4" required placeholder="위에서 조사한 태평양과 대서양의 수온·염분 자료를 근거로 작성해 보세요."></textarea>
+      <textarea class="save" id="q2" rows="4" maxlength="300" required placeholder="위에서 조사한 태평양과 대서양의 수온·염분 자료를 근거로 작성해 보세요."></textarea>
+      <div style="text-align:right;font-size:.78rem;color:var(--faint);margin-top:.3rem"><span id="q2Count">0</span> / 300</div>
     </div>
   </div>
 </section>
@@ -611,12 +615,14 @@ table.cmp td b{color:var(--ink)}
 
   <div class="block">
     <h3>1. 위도와 해양에 따른 해수의 성질을 비교하여 정리해 보자.</h3>
-    <textarea class="save" id="q3" rows="5" required placeholder="위도별 비교, 해양별 비교에서 얻은 결과를 종합해 하나의 결론으로 정리해 보세요."></textarea>
+    <textarea class="save" id="q3" rows="5" maxlength="400" required placeholder="위도별 비교, 해양별 비교에서 얻은 결과를 종합해 하나의 결론으로 정리해 보세요."></textarea>
+    <div style="text-align:right;font-size:.78rem;color:var(--faint);margin-top:.3rem"><span id="q3Count">0</span> / 400</div>
   </div>
 
   <div class="block">
     <h3>2. Plus! 활동을 진행하면서 추가로 알게 된 점이 있다면 적어보자. (선택)</h3>
-    <textarea class="save" id="q4" rows="4" placeholder="내용 입력 (선택사항)"></textarea>
+    <textarea class="save" id="q4" rows="4" maxlength="400" placeholder="내용 입력 (선택사항)"></textarea>
+    <div style="text-align:right;font-size:.78rem;color:var(--faint);margin-top:.3rem"><span id="q4Count">0</span> / 400</div>
   </div>
 </section>
 
@@ -874,7 +880,7 @@ const restore = () => {
     const v = localStorage.getItem(KEY + el.id);
     if (v === null) return;
     if (el.type === 'checkbox') el.checked = v === '1';
-    else if (v) el.value = v;
+    else if (v) el.value = el.maxLength > 0 ? v.slice(0, el.maxLength) : v;
   });
 };
 const clearAll = () => {
@@ -948,7 +954,12 @@ const showChecklist = () => {
 
 /* ===== 보고서 ===== */
 const buildReport = () => {
-  const v = id => ($(id).value || '').trim();
+/* html2canvas가 word-break:break-all을 완벽히 못 지켜서, 공백 없이 아주 긴 문자열이
+   PDF에서 안 끊기고 페이지 밖으로 잘려 나가는 경우가 있다. CSS에만 기대지 않고,
+   15자 이상 이어지는 공백없는 구간에 실제 줄바꿈 지점(zero-width space)을 미리 심는다. */
+const breakLongWords = (str, maxLen = 15) =>
+  str.replace(new RegExp(`\S{${maxLen},}`, 'g'), s => s.replace(new RegExp(`(.{${maxLen}})`, 'g'), '$1​'));
+  const v = id => breakLongWords(($(id).value || '').trim());
   const dateRaw = v('f_date');
   const dateTxt = dateRaw ? new Date(dateRaw + 'T00:00:00').toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' }) : '(미입력)';
   const idv = v('f_id') || '(미입력)';
@@ -1034,6 +1045,9 @@ $('pdf-btn').addEventListener('click', exportPDF);
 const ALL_GRADED_IDS = new Set(Object.keys(THEORY_ANSWERS));
 document.addEventListener('input', e => {
   if (!ALL_GRADED_IDS.has(e.target.id)) e.target.classList.remove('invalid');
+  ['q1', 'q2', 'q3', 'q4'].forEach(id => {
+    if (e.target.id === id) { const c = $(id + 'Count'); if (c) c.textContent = e.target.value.length; }
+  });
   if (e.target.classList.contains('save')) save();
 });
 document.addEventListener('change', e => {
@@ -1149,6 +1163,7 @@ wireImageUpload('ocean2ImgInput', 'ocean2ImgPreview', 'ocean2Img', refreshSub3);
 
 /* ===== 시작 ===== */
 restore();
+['q1', 'q2', 'q3', 'q4'].forEach(id => { const c = $(id + 'Count'); if (c) c.textContent = $(id).value.length; });
 restoreImagePreview('lat1Img', 'lat1ImgPreview');
 restoreImagePreview('lat2Img', 'lat2ImgPreview');
 restoreImagePreview('lat3Img', 'lat3ImgPreview');
