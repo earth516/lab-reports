@@ -310,6 +310,7 @@ td.empty{color:var(--faint);font-weight:400}
 #report .r-graph img{width:88%;max-width:560px}
 #report .r-note{font-size:11px;color:#767c88;margin-top:4px}
 #report .r-sent{margin-bottom:6px}
+#report #rep_think1{page-break-inside:avoid;break-inside:avoid}
 #report .r-ans{font-weight:700;color:#0e7d6f;border-bottom:2px solid #bfe4de;padding:0 2px}
 #report .r-chip{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:-1px;margin-right:4px;border:1px solid #99a5ba}
 .report-tools{display:flex;gap:.5rem;justify-content:center;margin:1rem 0;flex-wrap:wrap}
@@ -434,7 +435,7 @@ td.empty{color:var(--faint);font-weight:400}
         <input class="blank" id="t8" data-save size="9" placeholder="ㅇㅎ ㄴㅌㄹ">(NaCl)이다.</p>
     </div>
     <div class="grade-line">
-      <button class="btn grade" id="gradeTheory">✏️ 정답 확인하기</button>
+      <button class="btn primary" id="gradeTheory">✏️ 정답 확인하기</button>
       <span class="grade-msg" id="msgTheory"></span>
     </div>
   <div class="step-foot"><button class="btn ghost" data-go="2">← 이전</button><button class="btn primary" data-go="4">다음 단계 →</button></div>
@@ -604,7 +605,7 @@ td.empty{color:var(--faint);font-weight:400}
           <input class="blank" id="i8" data-save size="5" placeholder="ㅊㄹㅅ">을 띤다.</p>
       </div>
       <div class="grade-line">
-        <button class="btn grade" id="gradeInterp">✏️ 정답 확인하기</button>
+        <button class="btn primary" id="gradeInterp">✏️ 정답 확인하기</button>
         <span class="grade-msg" id="msgInterp"></span>
       </div>
     </div>
@@ -614,7 +615,8 @@ td.empty{color:var(--faint);font-weight:400}
     <h2>💭 더 생각해 보기 <span class="sub">서술형 — 스스로 써 본 뒤 예시 답안과 비교해 보세요 (버튼 3번 누르면 공개)</span></h2>
     <div class="q">
       <p><span class="qno">Q1.</span>가~마에서 중화 반응으로 생성된 <b>물 분자의 수</b>가 가장 많은 것부터 순서대로 써 보자.</p>
-      <textarea class="think-answer" id="think1" data-save placeholder="여기에 직접 써 보세요..." rows="3"></textarea>
+      <textarea class="think-answer" id="think1" data-save maxlength="300" placeholder="여기에 직접 써 보세요..." rows="3"></textarea>
+      <div style="text-align:right;font-size:.78rem;color:var(--faint);margin-top:.3rem"><span id="think1Count">0</span> / 300</div>
       <button class="btn" data-reveal="r1">예시 답안 보기 (3)</button>
       <div class="reveal-body" id="r1">
         <b>다 &gt; 나 = 라 &gt; 가 = 마</b><br>
@@ -637,7 +639,7 @@ td.empty{color:var(--faint);font-weight:400}
         <input class="blank" id="c4" data-save size="5" placeholder="ㅈㅎㅇ">이 발생한다.</p>
     </div>
     <div class="grade-line">
-      <button class="btn grade" id="gradeConc">✏️ 정답 확인하기</button>
+      <button class="btn primary" id="gradeConc">✏️ 정답 확인하기</button>
       <span class="grade-msg" id="msgConc"></span>
     </div>
   <div class="step-foot"><button class="btn ghost" data-go="5">← 이전</button><button class="btn primary" data-go="7">다음 단계 →</button></div>
@@ -1440,9 +1442,15 @@ function buildInterpRef(){
   $("interpGraphImg").src = reportGraphDataURL();
 }
 
+/* html2canvas가 word-break:break-all을 완벽히 못 지켜서, 공백 없이 아주 긴 문자열이
+   PDF에서 안 끊기고 페이지 밖으로 잘려 나가는 경우가 있다. CSS에만 기대지 않고,
+   15자 이상 이어지는 공백없는 구간에 실제 줄바꿈 지점(zero-width space)을 미리 심는다. */
+const breakLongWords = (str, maxLen = 15) =>
+  str.replace(new RegExp(`\\S{${maxLen},}`, 'g'), s => s.replace(new RegExp(`(.{${maxLen}})`, 'g'), '$1\u200B'));
+
 function ansOf(id, fallback){
   const el = $(id);
-  return (el && el.value.trim()) ? esc(el.value.trim()) : (fallback || "　　");
+  return (el && el.value.trim()) ? esc(breakLongWords(el.value.trim())) : (fallback || "　　");
 }
 function reportGraphDataURL(){
   /* 보고서용 그래프를 캔버스로 직접 그림 (PDF 렌더 안정성) */
@@ -1555,7 +1563,7 @@ function buildReport(){
 
     <h2>6. 더 생각해 보기</h2>
     <p class="r-sent"><b>Q.</b> 가~마에서 중화 반응으로 생성된 물 분자의 수가 가장 많은 것부터 순서대로 써 보자.</p>
-    <p class="r-sent">${ansOf("think1", "(작성하지 않음)")}</p>
+    <p class="r-sent" id="rep_think1">${ansOf("think1", "(작성하지 않음)")}</p>
   `;
 }
 $("rebuildBtn").addEventListener("click", buildReport);
@@ -1627,7 +1635,7 @@ function loadState(){
       const el = $(id);
       if(!el) continue;
       if(el.type === "checkbox") el.checked = !!d.fields[id];
-      else el.value = d.fields[id];
+      else el.value = el.maxLength > 0 ? String(d.fields[id]).slice(0, el.maxLength) : d.fields[id];
     }
   }
   if(d.records) records = d.records;
@@ -1648,6 +1656,7 @@ function loadState(){
   if(d.curStep) curStep = Math.max(1, Math.min(6, d.curStep));
 }
 document.addEventListener("input", e=>{
+  if(e.target.id === "think1"){ const c = $("think1Count"); if(c) c.textContent = e.target.value.length; }
   if(e.target.matches("[data-save]")) saveState();
 });
 
@@ -1674,6 +1683,7 @@ wireGrade("interp");
 wireGrade("conc");
 if(!$("f_date").value) $("f_date").value = new Date().toISOString().slice(0,10);
 loadState();
+if($("think1Count")) $("think1Count").textContent = $("think1").value.length;
 renderRecords();
 document.querySelectorAll("section.step").forEach(s=>{
   s.classList.toggle("on", Number(s.dataset.step)===curStep);
