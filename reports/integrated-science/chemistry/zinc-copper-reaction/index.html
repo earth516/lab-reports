@@ -169,19 +169,22 @@ table.cmp td b{color:var(--ink)}
   --ink:#141414;--body:#4a4a4a;--faint:#9a9a9a;--line:#e0e0e0;--line-soft:#ececec;
   --sea:#141414;--sea-deep:#000000;--sea-soft:#ececec}
 #report .r-head{border-bottom:2px solid var(--sea);padding-bottom:.8rem;margin-bottom:.5rem;
-  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem;
-  page-break-inside:avoid}
+  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem}
 #report .r-head h2{font-size:1.3rem;font-weight:700;color:var(--sea-deep)}
 #report .r-head .who{display:block;font-family:var(--mono);font-size:.82rem;color:var(--body)}
 #report .r-sec{margin-top:1.8rem}
 #report .r-lab{font-family:var(--sans);font-size:1.05rem;font-weight:700;letter-spacing:.02em;
   color:var(--sea);border-bottom:1px solid var(--line);padding-bottom:.3rem;margin-bottom:.7rem;
   display:block;background:none;page-break-after:avoid}
-#report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3}
+#report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3;overflow-wrap:break-word;word-break:break-all}
+/* 이 두 곳은 길이가 400자/200자로 제한돼 있어 한 페이지 안에 들어가는 게 보장되므로,
+   페이지 경계에서 줄 중간이 잘리는 걸 막기 위해 개별적으로 avoid를 건다.
+   (길이 제한이 없는 다른 .r-txt 요소에는 걸지 않는다 — 그러면 빈 페이지 버그가 재발한다) */
+#report #rep_reason,#report #rep_conclusion{page-break-inside:avoid;break-inside:avoid}
 #report .r-hang{padding-left:1.6em;text-indent:-1.6em;color:#141414;font-weight:600;margin:0 0 .5rem}
 #report .r-eq{font-family:var(--mono);color:var(--copper);font-weight:700;margin-top:.3rem}
 #report table.r-info{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:.92rem;
-  table-layout:fixed;page-break-inside:avoid}
+  table-layout:fixed}
 #report table.r-info td{border:1px solid var(--line);text-align:left;padding:.6rem .85rem;
   color:#38484f;vertical-align:top}
 #report table.r-info td.k{background:#f5f5f5;font-weight:700;color:#141414;width:19%;white-space:nowrap}
@@ -472,7 +475,7 @@ table.cmp td b{color:var(--ink)}
     </ul>
     <p>물질이 전자를 잃는 반응을 <input class="blank save" id="r2" placeholder="ㅅㅎ" required>라 하고, 물질이 전자를 얻는 반응을 <input class="blank save" id="r4" placeholder="ㅎㅇ" required>이라고 한다.</p>
     <div class="example-answer">
-      <button class="btn small quiet" type="button" id="show-theory-a">정답 확인하기</button>
+      <button class="btn small solid" type="button" id="show-theory-a">정답 확인하기</button>
       <div id="theory-a-example" class="note"></div>
     </div>
   </div>
@@ -502,7 +505,7 @@ table.cmp td b{color:var(--ink)}
       이온화 경향은 2학년 화학에서 자세히 배우는 내용이라, 지금은 "아연이 구리보다 반응성이 크다"는 결과만 기억해 두면 충분해요.
     </div>
     <div class="example-answer">
-      <button class="btn small quiet" type="button" id="show-theory-b">정답 확인하기</button>
+      <button class="btn small solid" type="button" id="show-theory-b">정답 확인하기</button>
       <div id="theory-b-example" class="note"></div>
     </div>
   </div>
@@ -567,7 +570,7 @@ table.cmp td b{color:var(--ink)}
     </div>
     <p class="block" style="margin:1rem 0 0;">반응 전 아연판은 <input class="blank save" id="b0" placeholder="ㅇ" required> 색이고, 황산 구리(Ⅱ) 수용액은 <input class="blank save" id="s0" placeholder="ㅍㄹ" required> 색이다.</p>
     <div class="example-answer">
-      <button class="btn small quiet" type="button" id="show-b0">정답 확인하기</button>
+      <button class="btn small solid" type="button" id="show-b0">정답 확인하기</button>
       <div id="b0-example" class="note"></div>
     </div>
     <button class="btn sub-next" type="button" id="subNext2" disabled>다음 단계 →</button>
@@ -626,7 +629,7 @@ table.cmp td b{color:var(--ink)}
       <p>아연판 표면에 <input class="blank save" id="b1" placeholder="ㅂㅇ" required> 색의 구리가 석출되었다. 이는 아연(Zn)이 전자를 잃고 <input class="blank save" id="b2" placeholder="ㅅㅎ" required>되어 아연 이온(Zn²⁺)이 되었기 때문이다. 또한 황산 구리(Ⅱ) 수용액의 푸른색은 시간이 지날수록 점점 <input class="blank save" id="b5" placeholder="ㅇㅇㅈㄷ" required>.</p>
       <div class="eq-box">Zn → Zn²⁺ + 2e⁻ &nbsp;&nbsp;(아연의 산화)</div>
       <div class="example-answer">
-        <button class="btn small quiet" type="button" id="show-rx-obs">정답 확인하기</button>
+        <button class="btn small solid" type="button" id="show-rx-obs">정답 확인하기</button>
         <div id="rx-obs-example" class="note"></div>
       </div>
     </div>
@@ -655,7 +658,7 @@ table.cmp td b{color:var(--ink)}
       <p>수용액 속 구리 이온(Cu²⁺)은 아연이 내놓은 전자를 <input class="blank save" id="b3" placeholder="ㅇㅇ" required>어 <input class="blank save" id="b4" placeholder="ㅎㅇ" required>되어 금속 구리(Cu)로 석출되었다.</p>
       <div class="eq-box">Cu²⁺ + 2e⁻ → Cu &nbsp;&nbsp;(구리 이온의 환원)</div>
       <div class="example-answer">
-        <button class="btn small quiet" type="button" id="show-pm-obs">정답 확인하기</button>
+        <button class="btn small solid" type="button" id="show-pm-obs">정답 확인하기</button>
         <div id="pm-obs-example" class="note"></div>
       </div>
     </div>
@@ -686,7 +689,8 @@ table.cmp td b{color:var(--ink)}
     <div class="block">
       <h3>⑤ 전체 정리</h3>
       <p class="hint">위 ①~④에서 답한 내용을 이어 붙여, 하나의 완결된 문단으로 정리해 보세요.</p>
-      <textarea class="save" id="reason" rows="5" required placeholder="예: 아연은 구리보다 반응성이 커서 전자를 잃기 쉬우므로 산화되어 아연 이온이 되고, 수용액 속 구리 이온은…"></textarea>
+      <textarea class="save" id="reason" rows="5" maxlength="400" required placeholder="예: 아연은 구리보다 반응성이 커서 전자를 잃기 쉬우므로 산화되어 아연 이온이 되고, 수용액 속 구리 이온은…"></textarea>
+      <div style="text-align:right;font-size:.78rem;color:var(--faint);margin-top:.3rem"><span id="reasonCount">0</span> / 400</div>
       <div class="example-answer">
         <button class="btn small quiet" type="button" id="show-reason">예시 답안 보기</button>
         <div id="reason-example" class="note"></div>
@@ -708,7 +712,7 @@ table.cmp td b{color:var(--ink)}
     <div class="eq-box">환원&nbsp;&nbsp; Cu²⁺ + 2e⁻ → Cu &nbsp;&nbsp;(구리 이온 + 전자 → 구리)</div>
     <p>이처럼 어떤 물질이 전자를 잃을 때 다른 물질은 전자를 얻으므로, 산화와 환원은 <input class="blank save wide" id="c7" placeholder="ㄷㅅㅇ" required> 일어난다.</p>
     <div class="example-answer">
-      <button class="btn small quiet" type="button" id="check-conclusion">정답 확인하기</button>
+      <button class="btn small solid" type="button" id="check-conclusion">정답 확인하기</button>
       <div id="conclusion-note" class="note"></div>
     </div>
   </div>
@@ -732,7 +736,8 @@ table.cmp td b{color:var(--ink)}
     <h3>우리 생활 속 산화·환원</h3>
     <p>우리 주변에서는 전자의 이동에 의한 산화·환원 반응이 활발하게 일어난다. 건전지 속에서도 두 금속 사이의 반응성 차이를 이용해 전자를 이동시켜 전기를 만들며, 철이 녹스는 것도 철이 전자를 잃고 산화되는 현상이다.</p>
     <p class="hint">위 내용 외에, 우리 생활 속에서 찾을 수 있는 산화·환원 반응의 예를 한 가지 더 써 보고 그렇게 생각한 까닭을 적어 보세요.</p>
-    <textarea class="save" id="reflect" rows="4" required placeholder="예: 금속에 도금을 하는 것도 전자의 이동을 이용해 표면에 다른 금속을 얇게 입히는 산화·환원 반응이다…"></textarea>
+    <textarea class="save" id="reflect" rows="4" maxlength="200" required placeholder="예: 금속에 도금을 하는 것도 전자의 이동을 이용해 표면에 다른 금속을 얇게 입히는 산화·환원 반응이다…"></textarea>
+    <div style="text-align:right;font-size:.78rem;color:var(--faint);margin-top:.3rem"><span id="reflectCount">0</span> / 200</div>
   </div>
 </section>
 
@@ -994,7 +999,7 @@ const restore = () => {
     const v = localStorage.getItem(KEY + el.id);
     if (v === null) return;
     if (el.type === 'checkbox') el.checked = v === '1';
-    else if (v) el.value = v;
+    else if (v) el.value = el.maxLength > 0 ? v.slice(0, el.maxLength) : v;
   });
 };
 const clearAll = () => {
@@ -1079,7 +1084,12 @@ const showChecklist = () => {
 
 /* ===== 보고서 ===== */
 const buildReport = () => {
-  const v = id => ($(id).value || '').trim();
+/* html2canvas가 word-break:break-all을 완벽히 못 지켜서, 공백 없이 아주 긴 문자열이
+   PDF에서 안 끊기고 페이지 밖으로 잘려 나가는 경우가 있다. CSS에만 기대지 않고,
+   15자 이상 이어지는 공백없는 구간에 실제 줄바꿈 지점(zero-width space)을 미리 심는다. */
+const breakLongWords = (str, maxLen = 15) =>
+  str.replace(new RegExp(`\S{${maxLen},}`, 'g'), s => s.replace(new RegExp(`(.{${maxLen}})`, 'g'), '$1​'));
+  const v = id => breakLongWords(($(id).value || '').trim());
   const dateRaw = v('f_date');
   const dateTxt = dateRaw ? new Date(dateRaw + 'T00:00:00').toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' }) : '(미입력)';
   const idv = v('f_id') || '(미입력)';
@@ -1146,6 +1156,8 @@ const ALL_GRADED_IDS = new Set([
 ]);
 document.addEventListener('input', e => {
   if (!ALL_GRADED_IDS.has(e.target.id)) e.target.classList.remove('invalid');
+  if (e.target.id === 'reason') $('reasonCount').textContent = e.target.value.length;
+  if (e.target.id === 'reflect') $('reflectCount').textContent = e.target.value.length;
   if (e.target.classList.contains('save')) save();
 });
 document.addEventListener('change', e => {
@@ -1499,6 +1511,8 @@ buildParticleModel($('pmAfter'), 'after');
 
 /* ===== 시작 ===== */
 restore();
+$('reasonCount').textContent = $('reason').value.length;
+$('reflectCount').textContent = $('reflect').value.length;
 renderLink();
 renderFixedInfo();
 refreshPrep();
