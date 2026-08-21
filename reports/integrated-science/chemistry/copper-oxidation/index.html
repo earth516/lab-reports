@@ -201,6 +201,10 @@ table.cmp td b{color:var(--ink)}
   color:var(--sea);border-bottom:1px solid var(--line);padding-bottom:.3rem;margin-bottom:.7rem;
   display:block;background:none;page-break-after:avoid}
 #report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3;overflow-wrap:break-word;word-break:break-all}
+/* 이 두 곳은 길이가 400자/200자로 제한돼 있어 한 페이지 안에 들어가는 게 보장되므로,
+   페이지 경계에서 줄 중간이 잘리는 걸 막기 위해 개별적으로 avoid를 건다.
+   (길이 제한이 없는 다른 .r-txt 요소에는 걸지 않는다 — 그러면 빈 페이지 버그가 재발한다) */
+#report #rep_reason,#report #rep_conclusion{page-break-inside:avoid;break-inside:avoid}
 #report .r-eq{font-family:var(--mono);color:var(--copper);font-weight:700;margin-top:.3rem}
 #report table.r-info{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:.92rem;
   table-layout:fixed}
@@ -632,7 +636,8 @@ table.cmp td b{color:var(--ink)}
     <div class="block">
       <h3>⑤ 전체 정리</h3>
       <p class="hint">위 ①~④에서 답한 내용을 이어 붙여, 하나의 완결된 문단으로 정리해 보세요.</p>
-      <textarea class="save" id="reason" rows="5" required placeholder="예: 겉불꽃은 공기와 맞닿아 있어 산소가 풍부하게 공급되므로 구리가 산소를 얻어 산화되어 검게 변한다. 반대로 속불꽃은…"></textarea>
+      <textarea class="save" id="reason" rows="5" maxlength="400" required placeholder="예: 겉불꽃은 공기와 맞닿아 있어 산소가 풍부하게 공급되므로 구리가 산소를 얻어 산화되어 검게 변한다. 반대로 속불꽃은…"></textarea>
+      <div style="text-align:right;font-size:.78rem;color:var(--faint);margin-top:.3rem"><span id="reasonCount">0</span> / 400</div>
       <div class="example-answer">
         <button class="btn small quiet" type="button" id="show-reason">예시 답안 보기</button>
         <div id="reason-example" class="note"></div>
@@ -1056,6 +1061,7 @@ function isGradedField(id) {
 document.addEventListener('input', e => {
   if (!isGradedField(e.target.id)) e.target.classList.remove('invalid');
   if (e.target.id === 'reflect') $('reflectCount').textContent = e.target.value.length;
+  if (e.target.id === 'reason') $('reasonCount').textContent = e.target.value.length;
   if (e.target.classList.contains('save')) save();
 });
 document.addEventListener('change', e => {
@@ -1541,6 +1547,7 @@ reasonEl.addEventListener('input', save);
 /* ===== 시작 ===== */
 restore();
 $('reflectCount').textContent = $('reflect').value.length;
+$('reasonCount').textContent = $('reason').value.length;
 renderLink();
 renderFixedInfo();
 refreshPrep();
