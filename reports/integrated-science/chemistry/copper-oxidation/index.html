@@ -206,6 +206,12 @@ table.cmp td b{color:var(--ink)}
    (길이 제한이 없는 다른 .r-txt 요소에는 걸지 않는다 — 그러면 빈 페이지 버그가 재발한다) */
 #report #rep_reason,#report #rep_conclusion{page-break-inside:avoid;break-inside:avoid}
 #report .r-eq{font-family:var(--mono);color:var(--copper);font-weight:700;margin-top:.3rem}
+#report .r-exp-row{display:flex;gap:1.2rem;align-items:flex-start;page-break-inside:avoid;break-inside:avoid}
+#report .r-exp-text{flex:1;min-width:0}
+#report .r-exp-photo{flex:none;width:120px;display:flex;flex-direction:column;align-items:center;gap:.35rem}
+#report .r-exp-photo canvas{width:120px;height:120px;border-radius:12px;border:1px solid var(--line);display:block}
+#report .r-exp-caption{font-size:.74rem;color:#9a9a9a;text-align:center}
+@media(max-width:600px){#report .r-exp-row{flex-direction:column}#report .r-exp-photo{width:100%;flex-direction:row;justify-content:flex-start}#report .r-exp-photo canvas{width:70px;height:70px}}
 #report table.r-info{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:.92rem;
   table-layout:fixed}
 #report table.r-info td{border:1px solid var(--line);text-align:left;padding:.6rem .85rem;
@@ -722,14 +728,30 @@ table.cmp td b{color:var(--ink)}
 
       <div class="r-sec">
         <span class="r-lab">겉불꽃 실험 (산화)</span>
-        <div class="r-txt" id="rep_ga"></div>
-        <div class="r-eq">2Cu + O₂ → 2CuO</div>
+        <div class="r-exp-row">
+          <div class="r-exp-text">
+            <div class="r-txt" id="rep_ga"></div>
+            <div class="r-eq">2Cu + O₂ → 2CuO</div>
+          </div>
+          <div class="r-exp-photo">
+            <canvas id="rep_ga_swatch" width="120" height="120"></canvas>
+            <span class="r-exp-caption">반응 후 구리판 색</span>
+          </div>
+        </div>
       </div>
 
       <div class="r-sec">
         <span class="r-lab">속불꽃 실험 (환원)</span>
-        <div class="r-txt" id="rep_na"></div>
-        <div class="r-eq">CuO + CO → Cu + CO₂</div>
+        <div class="r-exp-row">
+          <div class="r-exp-text">
+            <div class="r-txt" id="rep_na"></div>
+            <div class="r-eq">CuO + CO → Cu + CO₂</div>
+          </div>
+          <div class="r-exp-photo">
+            <canvas id="rep_na_swatch" width="120" height="120"></canvas>
+            <span class="r-exp-caption">반응 후 구리판 색</span>
+          </div>
+        </div>
       </div>
 
       <div class="r-sec">
@@ -993,6 +1015,25 @@ const showChecklist = () => {
 const breakLongWords = (str, maxLen = 15) =>
   str.replace(new RegExp(`\\S{${maxLen},}`, 'g'), s => s.replace(new RegExp(`(.{${maxLen}})`, 'g'), '$1\u200B'));
 
+/* 겉불꽃(산화 후 검게)/속불꽃(환원 후 다시 구릿빛) 결과를 작은 색상 스와치로 그려서
+   보고서 오른쪽에 넣는다 — 실제 사진이 아니라 시뮬레이션 색상을 그대로 재현한 것. */
+const drawResultSwatch = (canvasId, oxidized) => {
+  const cv = $(canvasId);
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = 120 * dpr; cv.height = 120 * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, 120, 120);
+  const grad = ctx.createLinearGradient(0, 0, 0, 120);
+  if (oxidized) { grad.addColorStop(0, '#3a322c'); grad.addColorStop(1, '#26221f'); }
+  else { grad.addColorStop(0, '#d98a4f'); grad.addColorStop(1, '#6f3f22'); }
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.roundRect ? ctx.roundRect(0, 0, 120, 120, 12) : ctx.rect(0, 0, 120, 120);
+  ctx.fill();
+};
+
 const buildReport = () => {
   const v = id => breakLongWords(($(id).value || '').trim());
   const dateRaw = v('f_date');
@@ -1007,6 +1048,8 @@ const buildReport = () => {
   $('rep_theory').textContent = `물질이 산소를 얻는 반응을 ${v('r2') || '(미입력)'} 반응이라 하고, 물질이 산소를 잃는 반응을 ${v('r4') || '(미입력)'} 반응이라고 한다. 겉불꽃은 산소 공급이 풍부해 산화가 일어나고, 속불꽃은 산소가 부족해 환원이 일어난다.`;
   $('rep_ga').textContent = `가열 전 구리판은 ${v('b0') || '(미입력)'} 색이었다. 겉불꽃에 넣자 표면이 ${v('b1') || '(미입력)'} 색으로 변했다. 구리가 산소와 결합하는 ${v('b2') || '(미입력)'} 반응이다.`;
   $('rep_na').textContent = `검게 변했던 부분이 다시 ${v('b3') || '(미입력)'} 색으로 돌아왔다. 산화구리가 산소를 잃는 ${v('b4') || '(미입력)'} 반응이다.`;
+  drawResultSwatch('rep_ga_swatch', true);   // 겉불꽃 결과 = 산화되어 검게
+  drawResultSwatch('rep_na_swatch', false);  // 속불꽃 결과 = 환원되어 다시 구릿빛
   $('rep_reason').textContent = v('reason') || '(작성되지 않음)';
   $('rep_conclusion').textContent =
 `CuO → Cu 반응: ${v('g1') || '(미입력)'} / CO → CO₂ 반응: ${v('g2') || '(미입력)'}
