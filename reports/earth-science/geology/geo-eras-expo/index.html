@@ -201,8 +201,7 @@ a.submit:hover{background:#62beb3}
   --ink:#141414;--body:#4a4a4a;--faint:#9a9a9a;--line:#e0e0e0;--line-soft:#ececec;
   --sea:#141414;--sea-deep:#000000;--sea-soft:#ececec}
 #report .r-head{border-bottom:2px solid var(--sea);padding-bottom:.8rem;margin-bottom:.5rem;
-  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem;
-  page-break-inside:avoid}
+  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem}
 #report .r-head h2{font-size:1.3rem;font-weight:700;color:var(--sea-deep)}
 #report .r-head .who{display:block;font-family:var(--mono);font-size:.82rem;color:var(--body)}
 #report .r-sec{margin-top:1.8rem}
@@ -212,7 +211,7 @@ a.submit:hover{background:#62beb3}
 #report .r-sub{font-family:var(--sans);font-size:.95rem;font-weight:700;color:var(--ink);
   margin:1.1rem 0 .5rem;page-break-after:avoid}
 #report .r-sub:first-of-type{margin-top:0}
-#report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3}
+#report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3;overflow-wrap:break-word;word-break:break-all}
 #report .r-fossil{display:grid;grid-template-columns:1.4fr 1fr;gap:1rem;align-items:start;
   page-break-inside:avoid;margin-bottom:1.2rem}
 #report .r-fossil:last-child{margin-bottom:0}
@@ -325,7 +324,7 @@ a.submit:hover{background:#62beb3}
     </ul>
   </div>
 
-  <button class="btn" type="button" id="check-theory" style="margin-top:.6rem">정답 확인하기</button>
+  <button class="btn solid" type="button" id="check-theory" style="margin-top:.6rem">정답 확인하기</button>
   <div id="theory-note" class="note"></div>
 
   <div class="modal-overlay" id="answerModal" style="display:none">
@@ -348,7 +347,7 @@ a.submit:hover{background:#62beb3}
     <div class="fossil-grid">
       <div class="fossil-fields">
         <div><label for="std_precambrian_name">화석 이름</label><input id="std_precambrian_name" class="save" required></div>
-        <div class="grow"><label for="std_precambrian_feature">관찰한 특징</label><textarea id="std_precambrian_feature" class="save" rows="4" required></textarea></div>
+        <div class="grow"><label for="std_precambrian_feature">관찰한 특징</label><textarea id="std_precambrian_feature" class="save" rows="4" maxlength="200" required></textarea></div>
       </div>
       <div class="drop" id="up_precambrian"><span>클릭하여 사진 선택 (선택)</span></div>
     </div>
@@ -362,7 +361,7 @@ a.submit:hover{background:#62beb3}
     <div class="fossil-grid">
       <div class="fossil-fields">
         <div><label for="std_paleozoic_name">화석 이름</label><input id="std_paleozoic_name" class="save" required></div>
-        <div class="grow"><label for="std_paleozoic_feature">관찰한 특징</label><textarea id="std_paleozoic_feature" class="save" rows="4" required></textarea></div>
+        <div class="grow"><label for="std_paleozoic_feature">관찰한 특징</label><textarea id="std_paleozoic_feature" class="save" rows="4" maxlength="200" required></textarea></div>
       </div>
       <div class="drop" id="up_paleozoic"><span>클릭하여 사진 선택 (선택)</span></div>
     </div>
@@ -376,7 +375,7 @@ a.submit:hover{background:#62beb3}
     <div class="fossil-grid">
       <div class="fossil-fields">
         <div><label for="std_mesozoic_name">화석 이름</label><input id="std_mesozoic_name" class="save" required></div>
-        <div class="grow"><label for="std_mesozoic_feature">관찰한 특징</label><textarea id="std_mesozoic_feature" class="save" rows="4" required></textarea></div>
+        <div class="grow"><label for="std_mesozoic_feature">관찰한 특징</label><textarea id="std_mesozoic_feature" class="save" rows="4" maxlength="200" required></textarea></div>
       </div>
       <div class="drop" id="up_mesozoic"><span>클릭하여 사진 선택 (선택)</span></div>
     </div>
@@ -390,7 +389,7 @@ a.submit:hover{background:#62beb3}
     <div class="fossil-grid">
       <div class="fossil-fields">
         <div><label for="std_cenozoic_name">화석 이름</label><input id="std_cenozoic_name" class="save" required></div>
-        <div class="grow"><label for="std_cenozoic_feature">관찰한 특징</label><textarea id="std_cenozoic_feature" class="save" rows="4" required></textarea></div>
+        <div class="grow"><label for="std_cenozoic_feature">관찰한 특징</label><textarea id="std_cenozoic_feature" class="save" rows="4" maxlength="200" required></textarea></div>
       </div>
       <div class="drop" id="up_cenozoic"><span>클릭하여 사진 선택 (선택)</span></div>
     </div>
@@ -636,7 +635,7 @@ const addExtraRow = (required = false) => {
     <div class="fossil-grid">
       <div class="fossil-fields">
         <div><label for="name_${rid}">화석 이름</label><input id="name_${rid}" class="extra-name"${required ? ' required' : ''}></div>
-        <div class="grow"><label for="info_${rid}">찾은 정보</label><textarea id="info_${rid}" class="extra-info" rows="3"></textarea></div>
+        <div class="grow"><label for="info_${rid}">찾은 정보</label><textarea id="info_${rid}" class="extra-info" rows="3" maxlength="200"></textarea></div>
       </div>
       <div class="drop" id="up_${rid}"><span>클릭하여 사진 선택 (선택)</span></div>
     </div>
@@ -694,7 +693,7 @@ const restore = () => {
     const v = localStorage.getItem(KEY + el.id);
     if (v === null) return;
     if (el.type === 'checkbox') el.checked = v === '1';
-    else if (v) el.value = v;
+    else if (v) el.value = el.maxLength > 0 ? v.slice(0, el.maxLength) : v;
   });
   ERAS.forEach(era => {
     const v = localStorage.getItem(KEY + 'ph_' + era);
@@ -775,7 +774,12 @@ const CONCEPT_PARTS = [
   '나. 지질 시대는 화석이 매우 드물게 발견되는 {b3}와 화석이 비교적 많이 발견되는 고생대, 중생대, {b4}로 구분한다. 지질 시대 대부분을 차지하는 {b5}는 지구가 탄생한 이후부터 40억 년 이상 지속되었다. 고생대는 약 5억 3900만 년 전에, 중생대는 약 2억 5200만 년 전에, {b6}는 약 6600만 년 전에 시작되었다.',
 ];
 const buildReport = () => {
-  const v = id => ($(id).value || '').trim();
+/* html2canvas가 word-break:break-all을 완벽히 못 지켜서, 공백 없이 아주 긴 문자열이
+   PDF에서 안 끊기고 페이지 밖으로 잘려 나가는 경우가 있다. CSS에만 기대지 않고,
+   15자 이상 이어지는 공백없는 구간에 실제 줄바꿈 지점(zero-width space)을 미리 심는다. */
+const breakLongWords = (str, maxLen = 15) =>
+  str.replace(new RegExp(`\S{${maxLen},}`, 'g'), s => s.replace(new RegExp(`(.{${maxLen}})`, 'g'), '$1​'));
+  const v = id => breakLongWords(($(id).value || '').trim());
   ['id','name'].forEach(f => $('p_'+f).textContent = v('f_'+f));
 
   const dateRaw = v('f_date');
@@ -801,7 +805,7 @@ const buildReport = () => {
     .map(card => {
       const name = card.querySelector('.extra-name').value.trim();
       if (!name) return '';
-      const info = card.querySelector('.extra-info').value.trim();
+      const info = breakLongWords(card.querySelector('.extra-info').value.trim());
       const photo = extraPhotos[card.dataset.rid];
       return `<div class="r-fossil" style="margin-bottom:1.1rem">
         <div class="r-txt">${name}${info ? ' — ' + info : ''}</div>
