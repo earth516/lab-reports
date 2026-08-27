@@ -313,8 +313,8 @@ a.submit:hover{background:#62beb3}
 
   <div class="block">
     <h3>단열 변화와 구름의 생성</h3>
-    <p>지표면에서 높이 올라갈수록 기압은 <input class="blank save" id="b1" placeholder="낮아진다" required>진다. 이 때문에 지표에 있는 공기 덩어리가 상승하면 기압이 낮아져 부피가 팽창하고, 하강하면 기압이 높아져 부피가 작아진다. 이처럼 주변과 열 교환 없이 공기 덩어리가 상승하거나 하강하면서 팽창 또는 압축하는 것을 <input class="blank save" id="b2" placeholder="단열변화" required> 또는 단열 상태라고 한다. 공기 덩어리가 단열 팽창하면 주변 공기에 일을 한 것이므로 내부 에너지가 감소하여 기온이 <input class="blank save" id="b3" placeholder="낮아진다" required>지고, 반대로 단열 압축하면 내부 에너지가 증가하여 기온이 높아진다.</p>
-    <p style="margin-top:1rem">공기가 단열 팽창하면서 기온이 낮아지면 <input class="blank save" id="b4" placeholder="응결" required>이 일어나 구름이 생성된다. 이때 수증기가 물방울로 쉽게 응결할 수 있도록 중심 역할을 하는 미세한 입자를 <b>응결핵</b>(예: 알코올 증기, 향 연기, 먼지 등)이라고 한다.</p>
+    <p>지표면에서 높이 올라갈수록 기압은 <input class="blank save" id="b1" placeholder="" required>. 이 때문에 지표에 있는 공기 덩어리가 상승하면 기압이 낮아져 부피가 팽창하고, 하강하면 기압이 높아져 부피가 작아진다. 이처럼 주변과 열 교환 없이 공기 덩어리가 상승하거나 하강하면서 팽창 또는 압축하는 것을 <input class="blank save" id="b2" placeholder="" required> 또는 단열 상태라고 한다. 공기 덩어리가 단열 팽창하면 주변 공기에 일을 한 것이므로 내부 에너지가 감소하여 기온이 <input class="blank save" id="b3" placeholder="" required>, 반대로 단열 압축하면 내부 에너지가 증가하여 기온이 높아진다.</p>
+    <p style="margin-top:1rem">공기가 단열 팽창하면서 기온이 낮아지면 <input class="blank save" id="b4" placeholder="" required>이 일어나 구름이 생성된다. 이때 수증기가 물방울로 쉽게 응결할 수 있도록 중심 역할을 하는 미세한 입자를 <b>응결핵</b>(예: 알코올 증기, 향 연기, 먼지 등)이라고 한다.</p>
   </div>
 
   <button class="btn solid" type="button" id="check-theory" style="margin-top:.6rem">정답 확인하기</button>
@@ -438,9 +438,9 @@ a.submit:hover{background:#62beb3}
 
   <div class="block">
     <h3>개념 퀴즈</h3>
-    <p>1. 산의 정상이 추운 이유는 <input class="blank save" id="b5" placeholder="단열팽창" required>으로 설명할 수 있다. (단열 팽창 / 단열 압축)</p>
-    <p style="margin-top:.8rem">2. 타이어에 공기를 주입하면 펌프의 고무관이 따뜻해진다. 이는 <input class="blank save" id="b6" placeholder="단열압축" required>으로 설명할 수 있다. (단열 팽창 / 단열 압축)</p>
-    <p style="margin-top:.8rem">3. 스프레이를 뿌리고 나면 통이 차가워진다. 이는 <input class="blank save" id="b7" placeholder="단열팽창" required>으로 설명할 수 있다. (단열 팽창 / 단열 압축)</p>
+    <p>1. 산의 정상이 추운 이유는 <input class="blank save" id="b5" placeholder="" required>으로 설명할 수 있다. (단열 팽창 / 단열 압축)</p>
+    <p style="margin-top:.8rem">2. 타이어에 공기를 주입하면 펌프의 고무관이 따뜻해진다. 이는 <input class="blank save" id="b6" placeholder="" required>으로 설명할 수 있다. (단열 팽창 / 단열 압축)</p>
+    <p style="margin-top:.8rem">3. 스프레이를 뿌리고 나면 통이 차가워진다. 이는 <input class="blank save" id="b7" placeholder="" required>으로 설명할 수 있다. (단열 팽창 / 단열 압축)</p>
   </div>
   <button class="btn solid" type="button" id="check-quiz" style="margin-top:.6rem">퀴즈 정답 확인하기</button>
   <div id="quiz-note" class="note"></div>
@@ -594,7 +594,7 @@ $('closeAnswerModal').addEventListener('click', closeAnswerModal);
 
 const norm = s => (s || '').replace(/\s+/g, '');
 const THEORY_ANSWERS = {
-  b1:'낮아진다', b2:'단열변화', b3:'낮아진다', b4:'응결',
+  b1:'낮아진다', b2:'단열변화', b3:'낮아지고', b4:'응결',
 };
 const BLANK_LABELS = {
   b1:'높이 올라갈수록 기압이 (  )진다',
@@ -773,8 +773,8 @@ const showChecklist = () => {
 };
 
 const CONCEPT_PARTS = [
-  '가. 지표면에서 높이 올라갈수록 기압은 {b1}진다. 지표에 있는 공기 덩어리가 상승하면 기압이 낮아져 부피가 팽창하고, 하강하면 기압이 높아져 부피가 작아진다. 주변과 열 교환 없이 공기 덩어리가 상승하거나 하강하면서 팽창 또는 압축하는 것을 {b2} 또는 단열 상태라고 한다.',
-  '나. 공기 덩어리가 단열 팽창하면 주변 공기에 일을 한 것이므로 내부 에너지가 감소하여 기온이 {b3}지고, 반대로 단열 압축하면 내부 에너지가 증가하여 기온이 높아진다.',
+  '가. 지표면에서 높이 올라갈수록 기압은 {b1}. 지표에 있는 공기 덩어리가 상승하면 기압이 낮아져 부피가 팽창하고, 하강하면 기압이 높아져 부피가 작아진다. 주변과 열 교환 없이 공기 덩어리가 상승하거나 하강하면서 팽창 또는 압축하는 것을 {b2} 또는 단열 상태라고 한다.',
+  '나. 공기 덩어리가 단열 팽창하면 주변 공기에 일을 한 것이므로 내부 에너지가 감소하여 기온이 {b3}, 반대로 단열 압축하면 내부 에너지가 증가하여 기온이 높아진다.',
   '다. 공기가 단열 팽창하면서 기온이 낮아지면 {b4}이 일어나 구름이 생성된다. 이때 응결핵(알코올 증기, 향 연기 등)이 수증기의 응결을 돕는 역할을 한다.',
 ];
 /* html2canvas가 word-break:break-all을 완벽히 못 지켜서, 공백 없이 아주 긴 문자열이
