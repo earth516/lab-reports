@@ -144,8 +144,8 @@ textarea{resize:vertical;line-height:1.95}
 table.lab-table{width:100%;border-collapse:collapse;background:var(--surface);
   border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:1.8rem;font-size:.95rem}
 table.lab-table th, table.lab-table td{border:1px solid var(--line);padding:.7rem .8rem;text-align:center;vertical-align:middle}
-table.lab-table thead th{background:var(--sunk);color:var(--sea);font-weight:700;font-size:.88rem}
-table.lab-table td.lbl{background:var(--sunk);font-weight:600;color:var(--ink);width:20%}
+table.lab-table thead th{background:var(--sunk);color:var(--sea);font-weight:700;font-size:1.02rem}
+table.lab-table td.lbl{background:var(--sunk);font-weight:600;color:var(--ink);width:13%}
 
 .bar{display:flex;gap:.7rem;align-items:center;padding:1.6rem 2.6rem 3.2rem;
   border-top:1px solid var(--line);margin-top:1.6rem;background:var(--sunk)}
@@ -216,6 +216,8 @@ a.submit:hover{background:#62beb3}
 #report .r-ph{display:flex;gap:10px;page-break-inside:avoid}
 #report .r-ph figure{flex:1;margin:0}
 #report .r-ph img{width:100%;height:140px;object-fit:contain;border:1px solid var(--line);background:#fff}
+#report .r-ph-empty{width:100%;height:140px;display:flex;align-items:center;justify-content:center;
+  border:1px dashed var(--line);color:#9a9a9a;font-size:.85rem;background:#fafafa}
 #report .r-ph figcaption{font-size:.8rem;color:var(--faint);text-align:center;margin-top:.35rem}
 #report table.r-info{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:.92rem;table-layout:fixed}
 #report table.r-info td{border:1px solid var(--line);text-align:left;padding:.6rem .85rem;color:#38484f;vertical-align:top}
@@ -225,13 +227,27 @@ a.submit:hover{background:#62beb3}
 #report table.r-lab-table th{background:#f5f5f5;color:#141414;font-weight:700}
 #report table.r-lab-table td.lbl{background:#f5f5f5;font-weight:700;color:#141414}
 
-.modal-overlay{position:fixed;inset:0;background:rgba(6,8,11,.72);display:flex;
-  align-items:center;justify-content:center;z-index:100;padding:1.5rem}
-.modal-box{background:var(--surface);border:1px solid var(--line);border-radius:16px;
-  padding:1.8rem;max-width:440px;width:100%;max-height:82vh;overflow-y:auto;
-  box-shadow:0 20px 50px rgba(0,0,0,.4)}
-.modal-box h3{font-size:1.15rem;font-weight:800;color:var(--sea);margin-bottom:.3rem}
-.modal-box .r-txt{white-space:pre-wrap;color:var(--body);line-height:1.9}
+.zoom-modal{position:fixed;inset:0;background:rgba(6,8,10,.72);display:none;
+  align-items:center;justify-content:center;z-index:999;padding:1.6rem}
+.zoom-modal.show{display:flex}
+.zoom-card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;
+  padding:2.4rem 2rem 2rem;max-width:380px;width:100%;text-align:center;
+  box-shadow:0 24px 60px rgba(0,0,0,.55);animation:zoomIn .22s cubic-bezier(.16,1,.3,1)}
+@keyframes zoomIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.zoom-close{position:absolute;top:.7rem;right:.7rem;width:32px;height:32px;border-radius:50%;
+  border:1px solid var(--line);background:var(--sunk);color:var(--ink);font-size:1.15rem;line-height:1;
+  cursor:pointer}
+.zoom-close:hover{background:var(--sea-soft)}
+.zoom-title{font-weight:700;font-size:1.12rem;color:var(--ink);margin:0 0 .5rem}
+.zoom-desc{color:var(--body);font-size:.92rem;line-height:1.6;margin:0}
+.answer-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.5rem;text-align:left;max-height:55vh;overflow-y:auto}
+.answer-row{display:flex;flex-direction:column;gap:.2rem;padding:.65rem .85rem;
+  background:var(--sunk);border:1px solid var(--line);border-radius:8px;font-size:.92rem;text-align:left}
+.answer-row b{font-family:var(--sans);color:var(--faint);font-weight:600;font-size:.76rem;
+  text-transform:uppercase;letter-spacing:.02em}
+.answer-row span{color:var(--ink);font-weight:700;font-size:1rem}
+.answer-row-simple{padding:.55rem .85rem;background:var(--sunk);border:1px solid var(--line);
+  border-radius:8px;font-size:.92rem;color:var(--body);text-align:left}
 @media print{nav,header.top,.bar{display:none!important}}
 </style>
 </head>
@@ -317,15 +333,15 @@ a.submit:hover{background:#62beb3}
     <p style="margin-top:1rem">공기가 단열 팽창하면서 기온이 낮아지면 <input class="blank save" id="b4" placeholder="" required>이 일어나 구름이 생성된다. 이때 수증기가 물방울로 쉽게 응결할 수 있도록 중심 역할을 하는 미세한 입자를 <b>응결핵</b>(예: 알코올 증기, 향 연기, 먼지 등)이라고 한다.</p>
   </div>
 
-  <button class="btn solid" type="button" id="check-theory" style="margin-top:.6rem">정답 확인하기</button>
+  <button class="btn solid" type="button" id="check-theory" style="margin-top:.6rem">빈칸 확인하기</button>
   <div id="theory-note" class="note"></div>
 
-  <div class="modal-overlay" id="answerModal" style="display:none">
-    <div class="modal-box">
-      <h3 id="answerModalTitle">정답 안내</h3>
-      <p class="hint" style="margin-top:-.3rem" id="answerModalHint"></p>
-      <div id="answerModalBody" class="r-txt"></div>
-      <button class="btn solid" type="button" id="closeAnswerModal" style="margin-top:1.2rem">확인했어요</button>
+  <div class="zoom-modal" id="answerModal">
+    <div class="zoom-card" style="max-width:560px;text-align:left">
+      <button class="zoom-close" type="button" id="answerModalClose" aria-label="닫기">×</button>
+      <p class="zoom-title" id="answerModalTitle">정답 안내</p>
+      <p class="zoom-desc" id="answerModalHint" style="margin-bottom:1rem"></p>
+      <div class="answer-list" id="answerModalBody"></div>
     </div>
   </div>
 </section>
@@ -350,9 +366,9 @@ a.submit:hover{background:#62beb3}
           <div style="margin-bottom:.5rem">
             <label style="font-size:.75rem">기온 변화 (°C)</label>
             <div style="display:flex;align-items:center;gap:6px;justify-content:center">
-              <div class="suffix-field" style="width:75px"><input type="number" step="0.1" class="save" id="e1_press_t1" placeholder="20" required><span class="suffix">°C</span></div>
+              <div class="suffix-field" style="width:92px"><input type="number" step="0.1" class="save" id="e1_press_t1" placeholder="20" required><span class="suffix">°C</span></div>
               <span style="font-weight:700">→</span>
-              <div class="suffix-field" style="width:75px"><input type="number" step="0.1" class="save" id="e1_press_t2" placeholder="22" required><span class="suffix">°C</span></div>
+              <div class="suffix-field" style="width:92px"><input type="number" step="0.1" class="save" id="e1_press_t2" placeholder="22" required><span class="suffix">°C</span></div>
             </div>
           </div>
           <div><label style="font-size:.75rem">페트병 내부 현상</label><input class="save" id="e1_press_h" placeholder="예: 투명함 유지" required></div>
@@ -361,9 +377,9 @@ a.submit:hover{background:#62beb3}
           <div style="margin-bottom:.5rem">
             <label style="font-size:.75rem">기온 변화 (°C)</label>
             <div style="display:flex;align-items:center;gap:6px;justify-content:center">
-              <div class="suffix-field" style="width:75px"><input type="number" step="0.1" class="save" id="e2_press_t1" placeholder="20" required><span class="suffix">°C</span></div>
+              <div class="suffix-field" style="width:92px"><input type="number" step="0.1" class="save" id="e2_press_t1" placeholder="20" required><span class="suffix">°C</span></div>
               <span style="font-weight:700">→</span>
-              <div class="suffix-field" style="width:75px"><input type="number" step="0.1" class="save" id="e2_press_t2" placeholder="23" required><span class="suffix">°C</span></div>
+              <div class="suffix-field" style="width:92px"><input type="number" step="0.1" class="save" id="e2_press_t2" placeholder="23" required><span class="suffix">°C</span></div>
             </div>
           </div>
           <div><label style="font-size:.75rem">페트병 내부 현상</label><input class="save" id="e2_press_h" placeholder="예: 투명함 유지" required></div>
@@ -375,9 +391,9 @@ a.submit:hover{background:#62beb3}
           <div style="margin-bottom:.5rem">
             <label style="font-size:.75rem">기온 변화 (°C)</label>
             <div style="display:flex;align-items:center;gap:6px;justify-content:center">
-              <div class="suffix-field" style="width:75px"><input type="number" step="0.1" class="save" id="e1_open_t1" placeholder="22" required><span class="suffix">°C</span></div>
+              <div class="suffix-field" style="width:92px"><input type="number" step="0.1" class="save" id="e1_open_t1" placeholder="22" required><span class="suffix">°C</span></div>
               <span style="font-weight:700">→</span>
-              <div class="suffix-field" style="width:75px"><input type="number" step="0.1" class="save" id="e1_open_t2" placeholder="18" required><span class="suffix">°C</span></div>
+              <div class="suffix-field" style="width:92px"><input type="number" step="0.1" class="save" id="e1_open_t2" placeholder="18" required><span class="suffix">°C</span></div>
             </div>
           </div>
           <div><label style="font-size:.75rem">페트병 내부 현상</label><input class="save" id="e1_open_h" placeholder="예: 변화 없음 (투명함)" required></div>
@@ -386,9 +402,9 @@ a.submit:hover{background:#62beb3}
           <div style="margin-bottom:.5rem">
             <label style="font-size:.75rem">기온 변화 (°C)</label>
             <div style="display:flex;align-items:center;gap:6px;justify-content:center">
-              <div class="suffix-field" style="width:75px"><input type="number" step="0.1" class="save" id="e2_open_t1" placeholder="23" required><span class="suffix">°C</span></div>
+              <div class="suffix-field" style="width:92px"><input type="number" step="0.1" class="save" id="e2_open_t1" placeholder="23" required><span class="suffix">°C</span></div>
               <span style="font-weight:700">→</span>
-              <div class="suffix-field" style="width:75px"><input type="number" step="0.1" class="save" id="e2_open_t2" placeholder="17" required><span class="suffix">°C</span></div>
+              <div class="suffix-field" style="width:92px"><input type="number" step="0.1" class="save" id="e2_open_t2" placeholder="17" required><span class="suffix">°C</span></div>
             </div>
           </div>
           <div><label style="font-size:.75rem">페트병 내부 현상</label><input class="save" id="e2_open_h" placeholder="예: 뿌옇게 흐려짐 (구름 생성)" required></div>
@@ -400,7 +416,7 @@ a.submit:hover{background:#62beb3}
   <hr class="rule">
 
   <h3 style="font-size:1.05rem;margin-bottom:.3rem">실험 결과 사진</h3>
-  <p class="hint">페트병 내부의 변화 모습을 촬영하여 업로드해 주세요.</p>
+  <p class="hint">페트병 내부의 변화 모습을 촬영하여 업로드해 주세요. <span style="color:var(--faint)">(선택사항 — 안 올려도 보고서 작성에는 문제없어요)</span></p>
   <div class="two">
     <div>
       <label>실험 1 · 알코올 넣기 전</label>
@@ -442,7 +458,7 @@ a.submit:hover{background:#62beb3}
     <p style="margin-top:.8rem">2. 타이어에 공기를 주입하면 펌프의 고무관이 따뜻해진다. 이는 <input class="blank save" id="b6" placeholder="" required>으로 설명할 수 있다. (단열 팽창 / 단열 압축)</p>
     <p style="margin-top:.8rem">3. 스프레이를 뿌리고 나면 통이 차가워진다. 이는 <input class="blank save" id="b7" placeholder="" required>으로 설명할 수 있다. (단열 팽창 / 단열 압축)</p>
   </div>
-  <button class="btn solid" type="button" id="check-quiz" style="margin-top:.6rem">퀴즈 정답 확인하기</button>
+  <button class="btn solid" type="button" id="check-quiz" style="margin-top:.6rem">퀴즈 빈칸 확인하기</button>
   <div id="quiz-note" class="note"></div>
 </section>
 
@@ -505,8 +521,8 @@ a.submit:hover{background:#62beb3}
 
         <div class="r-sub" style="margin-top:1.4rem">가. 실험 결과 사진</div>
         <div class="r-ph">
-          <figure><img id="p_ph1" alt=""><figcaption>실험 1 · 알코올 넣기 전</figcaption></figure>
-          <figure><img id="p_ph2" alt=""><figcaption>실험 2 · 알코올 넣은 후</figcaption></figure>
+          <figure><img id="p_ph1" alt="" style="display:none"><div id="p_ph1_empty" class="r-ph-empty">사진 없음</div><figcaption>실험 1 · 알코올 넣기 전</figcaption></figure>
+          <figure><img id="p_ph2" alt="" style="display:none"><div id="p_ph2_empty" class="r-ph-empty">사진 없음</div><figcaption>실험 2 · 알코올 넣은 후</figcaption></figure>
         </div>
       </div>
 
@@ -580,17 +596,20 @@ let answerModalCb = null;
 const showAnswerModal = (title, hint, wrong, revealAnswer, onClose) => {
   $('answerModalTitle').textContent = title;
   $('answerModalHint').textContent = hint;
-  $('answerModalBody').innerHTML = wrong
-    .map(r => revealAnswer ? `${r.label} — 정답: ${r.answerText}` : r.label)
-    .join('<br>');
-  $('answerModal').style.display = 'flex';
+  $('answerModalBody').innerHTML = wrong.map(r =>
+    revealAnswer
+      ? `<div class="answer-row"><b>${r.label}</b><span>${r.answerText}</span></div>`
+      : `<div class="answer-row-simple">${r.label}</div>`
+  ).join('');
+  $('answerModal').classList.add('show');
   answerModalCb = onClose || null;
 };
 const closeAnswerModal = () => {
-  $('answerModal').style.display = 'none';
+  $('answerModal').classList.remove('show');
   if (answerModalCb) { const cb = answerModalCb; answerModalCb = null; cb(); }
 };
-$('closeAnswerModal').addEventListener('click', closeAnswerModal);
+$('answerModalClose').addEventListener('click', closeAnswerModal);
+$('answerModal').addEventListener('click', e => { if (e.target === $('answerModal')) closeAnswerModal(); });
 
 const norm = s => (s || '').replace(/\s+/g, '');
 const THEORY_ANSWERS = {
@@ -723,7 +742,7 @@ const stepValid = n => {
   if (n === 3) return theoryPassed;
   const el = secOf(n);
   const filled = [...el.querySelectorAll('[required]')].every(isFilled);
-  return n === 4 ? (filled && !!photos.ph1 && !!photos.ph2) : filled;
+  return filled;
 };
 const markInvalid = n => {
   let first = null;
@@ -767,8 +786,8 @@ const showChecklist = () => {
   if (incomplete.length === 0) return true;
   $('answerModalTitle').textContent = '아직 안 끝난 게 있어요';
   $('answerModalHint').textContent = '보고서를 만들기 전에 아래 항목을 마저 채워 주세요.';
-  $('answerModalBody').innerHTML = incomplete.map(m => `• ${m}`).join('<br><br>');
-  $('answerModal').style.display = 'flex';
+  $('answerModalBody').innerHTML = incomplete.map(m => `<div class="answer-row-simple">${m}</div>`).join('');
+  $('answerModal').classList.add('show');
   return false;
 };
 
@@ -812,8 +831,11 @@ const buildReport = () => {
   $('rp_e2_open_t').innerHTML = formatTemp('e2_open_t1', 'e2_open_t2', 'e2_open_h');
   $('rp_e2_open_h').style.display = 'none';
 
-  $('p_ph1').src = photos.ph1 || '';
-  $('p_ph2').src = photos.ph2 || '';
+  ['ph1', 'ph2'].forEach(s => {
+    const img = $('p_' + s), empty = $('p_' + s + '_empty');
+    if (photos[s]) { img.src = photos[s]; img.style.display = ''; empty.style.display = 'none'; }
+    else { img.style.display = 'none'; empty.style.display = 'flex'; }
+  });
   $('p_q1').textContent = v('q1') || '(작성되지 않음)';
   $('p_q2').textContent = v('q2') || '(작성되지 않음)';
   $('p_quiz').textContent = `1. 산의 정상: ${v('b5') || '(미입력)'}\n2. 타이어 주입: ${v('b6') || '(미입력)'}\n3. 스프레이: ${v('b7') || '(미입력)'}`;
