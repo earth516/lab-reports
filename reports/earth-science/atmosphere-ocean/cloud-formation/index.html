@@ -876,15 +876,8 @@ const exportPDF = async () => {
     .catch(() => { restorePadding(); btn.disabled=false; btn.textContent='PDF로 저장'; showMsg('PDF 저장에 실패했습니다. 다시 시도해 주세요.', false); });
 };
 
-document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
-  const n = +t.dataset.step;
-  if (n === TOTAL && !showChecklist()) return;
-  goTo(n);
-}));
-$('next').addEventListener('click', () => {
-  if (step + 1 === TOTAL && !showChecklist()) return;
-  goTo(step + 1);
-});
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => goTo(+t.dataset.step)));
+$('next').addEventListener('click', () => goTo(step + 1));
 $('prev').addEventListener('click', () => goTo(step - 1));
 $('reset').addEventListener('click', clearAll);
 $('pdf-btn').addEventListener('click', exportPDF);
