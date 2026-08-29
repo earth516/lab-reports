@@ -435,14 +435,6 @@ a.submit:hover{background:#62beb3}
   <button class="btn solid" type="button" id="check-theory" style="margin-top:.6rem">빈칸 확인하기</button>
   <div id="theory-note" class="note"></div>
 
-  <div class="zoom-modal" id="answerModal">
-    <div class="zoom-card" style="max-width:560px;text-align:left">
-      <button class="zoom-close" type="button" id="answerModalClose" aria-label="닫기">×</button>
-      <p class="zoom-title" id="answerModalTitle">정답 안내</p>
-      <p class="zoom-desc" id="answerModalHint" style="margin-bottom:1rem"></p>
-      <div class="answer-list" id="answerModalBody"></div>
-    </div>
-  </div>
 </section>
 
 
@@ -636,6 +628,15 @@ a.submit:hover{background:#62beb3}
   </div>
 </footer>
 
+</div>
+
+<div class="zoom-modal" id="answerModal">
+  <div class="zoom-card" style="max-width:560px;text-align:left">
+    <button class="zoom-close" type="button" id="answerModalClose" aria-label="닫기">×</button>
+    <p class="zoom-title" id="answerModalTitle">정답 안내</p>
+    <p class="zoom-desc" id="answerModalHint" style="margin-bottom:1rem"></p>
+    <div class="answer-list" id="answerModalBody"></div>
+  </div>
 </div>
 
 <script>
