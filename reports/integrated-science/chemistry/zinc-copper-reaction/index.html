@@ -306,7 +306,7 @@ table.cmp td b{color:var(--ink)}
 .loupe-mini .loupe-surface{position:absolute;bottom:0;left:0;right:0;height:34%;
   background:linear-gradient(180deg,var(--zinc),var(--zinc-dark));transition:background 1.4s ease}
 .loupe-mini .loupe-surface.coated{background:linear-gradient(180deg,#7a4a34,#2c1b14)}
-.loupe-mini .loupe-mol{position:absolute;display:flex;align-items:center;gap:1px;transition:all 2.1s ease}
+.loupe-mini .loupe-mol{position:absolute;display:flex;align-items:center;gap:1px;transition:all 2.8s ease}
 .loupe-mini .atom{width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;
   font-size:8.5px;color:#fff;font-weight:900;letter-spacing:-.02em}
 .atom.ZN2{background:#6b7178}
@@ -475,7 +475,7 @@ table.cmp td b{color:var(--ink)}
     </ul>
     <p>물질이 전자를 잃는 반응을 <input class="blank save" id="r2" placeholder="ㅅㅎ" required>라 하고, 물질이 전자를 얻는 반응을 <input class="blank save" id="r4" placeholder="ㅎㅇ" required>이라고 한다.</p>
     <div class="example-answer">
-      <button class="btn small solid" type="button" id="show-theory-a">정답 확인하기</button>
+      <button class="btn small solid" type="button" id="show-theory-a">빈칸 확인하기</button>
       <div id="theory-a-example" class="note"></div>
     </div>
   </div>
@@ -505,7 +505,7 @@ table.cmp td b{color:var(--ink)}
       이온화 경향은 2학년 화학에서 자세히 배우는 내용이라, 지금은 "아연이 구리보다 반응성이 크다"는 결과만 기억해 두면 충분해요.
     </div>
     <div class="example-answer">
-      <button class="btn small solid" type="button" id="show-theory-b">정답 확인하기</button>
+      <button class="btn small solid" type="button" id="show-theory-b">빈칸 확인하기</button>
       <div id="theory-b-example" class="note"></div>
     </div>
   </div>
@@ -520,8 +520,7 @@ table.cmp td b{color:var(--ink)}
     <button class="exp-tab active" data-sub="1"><span class="n">1</span>준비물 확인</button>
     <button class="exp-tab locked" data-sub="2"><span class="n">2</span>반응 전 모습</button>
     <button class="exp-tab locked" data-sub="3"><span class="n">3</span>수용액에 넣기</button>
-    <button class="exp-tab locked" data-sub="4"><span class="n">4</span>입자 모형 보기</button>
-    <button class="exp-tab locked" data-sub="5"><span class="n">5</span>실험 해석하기</button>
+    <button class="exp-tab locked" data-sub="4"><span class="n">4</span>실험 해석하기</button>
   </div>
 
   <!-- 1. 준비물 확인 -->
@@ -570,7 +569,7 @@ table.cmp td b{color:var(--ink)}
     </div>
     <p class="block" style="margin:1rem 0 0;">반응 전 아연판은 <input class="blank save" id="b0" placeholder="ㅇ" required> 색이고, 황산 구리(Ⅱ) 수용액은 <input class="blank save" id="s0" placeholder="ㅍㄹ" required> 색이다.</p>
     <div class="example-answer">
-      <button class="btn small solid" type="button" id="show-b0">정답 확인하기</button>
+      <button class="btn small solid" type="button" id="show-b0">빈칸 확인하기</button>
       <div id="b0-example" class="note"></div>
     </div>
     <button class="btn sub-next" type="button" id="subNext2" disabled>다음 단계 →</button>
@@ -629,7 +628,7 @@ table.cmp td b{color:var(--ink)}
       <p>아연판 표면에 <input class="blank save" id="b1" placeholder="ㅂㅇ" required> 색의 구리가 석출되었다. 이는 아연(Zn)이 전자를 잃고 <input class="blank save" id="b2" placeholder="ㅅㅎ" required>되어 아연 이온(Zn²⁺)이 되었기 때문이다. 또한 황산 구리(Ⅱ) 수용액의 푸른색은 시간이 지날수록 점점 <input class="blank save" id="b5" placeholder="ㅇㅇㅈㄷ" required>.</p>
       <div class="eq-box">Zn → Zn²⁺ + 2e⁻ &nbsp;&nbsp;(아연의 산화)</div>
       <div class="example-answer">
-        <button class="btn small solid" type="button" id="show-rx-obs">정답 확인하기</button>
+        <button class="btn small solid" type="button" id="show-rx-obs">빈칸 확인하기</button>
         <div id="rx-obs-example" class="note"></div>
       </div>
     </div>
@@ -638,36 +637,8 @@ table.cmp td b{color:var(--ink)}
     <button class="btn sub-next" type="button" id="subNext3" disabled>다음 단계 →</button>
   </div>
 
-  <!-- 4. 입자 모형으로 알아보기 -->
+  <!-- 4. 실험 해석하기 -->
   <div class="exp-pane" data-sub-pane="4">
-    <p class="hint">눈에 보이는 변화를 입자(원자·이온) 수준에서 살펴보면, 전자가 아연에서 구리 이온으로 이동하는 것을 알 수 있어요.</p>
-
-    <div class="pmodel-wrap">
-      <div class="pmodel-col">
-        <div class="pmodel-circle pm-before" id="pmBefore"></div>
-        <div class="pmodel-label">반응 전</div>
-      </div>
-      <div class="pmodel-col">
-        <div class="pmodel-circle pm-after" id="pmAfter"></div>
-        <div class="pmodel-label">반응 후</div>
-      </div>
-    </div>
-
-    <div class="block" style="margin-top:1rem;">
-      <h3>구리 이온(Cu²⁺)에서 일어난 일</h3>
-      <p>수용액 속 구리 이온(Cu²⁺)은 아연이 내놓은 전자를 <input class="blank save" id="b3" placeholder="ㅇㅇ" required>어 <input class="blank save" id="b4" placeholder="ㅎㅇ" required>되어 금속 구리(Cu)로 석출되었다.</p>
-      <div class="eq-box">Cu²⁺ + 2e⁻ → Cu &nbsp;&nbsp;(구리 이온의 환원)</div>
-      <div class="example-answer">
-        <button class="btn small solid" type="button" id="show-pm-obs">정답 확인하기</button>
-        <div id="pm-obs-example" class="note"></div>
-      </div>
-    </div>
-
-    <button class="btn sub-next" type="button" id="subNext4" disabled>다음 단계 →</button>
-  </div>
-
-  <!-- 5. 실험 해석하기 -->
-  <div class="exp-pane" data-sub-pane="5">
     <p class="hint">아연과 구리의 반응성 차이와 관련지어, 실험에서 관찰한 변화가 나타나는 까닭을 아래 순서대로 하나씩 채워가며 정리해 보세요.</p>
 
     <div class="block">
@@ -712,7 +683,7 @@ table.cmp td b{color:var(--ink)}
     <div class="eq-box">환원&nbsp;&nbsp; Cu²⁺ + 2e⁻ → Cu &nbsp;&nbsp;(구리 이온 + 전자 → 구리)</div>
     <p>이처럼 어떤 물질이 전자를 잃을 때 다른 물질은 전자를 얻으므로, 산화와 환원은 <input class="blank save wide" id="c7" placeholder="ㄷㅅㅇ" required> 일어난다.</p>
     <div class="example-answer">
-      <button class="btn small solid" type="button" id="check-conclusion">정답 확인하기</button>
+      <button class="btn small solid" type="button" id="check-conclusion">빈칸 확인하기</button>
       <div id="conclusion-note" class="note"></div>
     </div>
   </div>
@@ -780,10 +751,7 @@ table.cmp td b{color:var(--ink)}
         <p class="r-hang"><b>가.</b> 아연판 반응 관찰 (산화)</p>
         <div class="r-txt" id="rep_rx"></div>
         <div class="r-eq">Zn → Zn²⁺ + 2e⁻</div>
-        <p class="r-hang" style="margin-top:1rem"><b>나.</b> 구리 이온 반응 관찰 (환원)</p>
-        <div class="r-txt" id="rep_pm"></div>
-        <div class="r-eq">Cu²⁺ + 2e⁻ → Cu</div>
-        <p class="r-hang" style="margin-top:1rem"><b>다.</b> 까닭 설명</p>
+        <p class="r-hang" style="margin-top:1rem"><b>나.</b> 까닭 설명</p>
         <div class="r-txt" id="rep_reason"></div>
       </div>
 
@@ -867,14 +835,13 @@ const renderFixedInfo = () => {
   $('disp_materials').textContent = FIXED_MATERIALS;
 };
 
-/* 정답 확인 — 각 빈칸 그룹마다 "정답 확인하기" 버튼으로 직접 채점한다.
+/* 정답 확인 — 각 빈칸 그룹마다 "빈칸 확인하기" 버튼으로 직접 채점한다.
    1회차 오답: 몇 개 틀렸는지만 팝업으로 안내(정답 비공개), 2회차에도 틀리면 정답을 공개하고
    통과 처리한다. 통과해야만 다음(하위)단계로 넘어갈 수 있다. */
 const THEORY_GROUP_A = { ph1:'잃어', ph2:'얻어', ph3:'잃어', r2:'산화', r4:'환원' };
 const THEORY_GROUP_B = { sg1:'크다', sg2:'작다', sg3:'산화', sg4:'환원' };
-const BEFORE_ANSWERS = { b0:'은', s0:'파란' };
+const BEFORE_ANSWERS = { b0:'은', s0:'푸른' };
 const RX_ANSWERS = { b1:'붉은', b2:'산화', b5:'옅어진다' };
-const PM_ANSWERS = { b3:'얻어', b4:'환원' };
 const CONCLUSION_ANSWERS = { c1:'붉은색', c2:'잃어', c3:'산화', c4:'옅어진다', c5:'얻어', c6:'환원', c7:'동시에' };
 
 const BLANK_LABELS = {
@@ -884,7 +851,6 @@ const BLANK_LABELS = {
   sg3: '아연 · 변화', sg4: '구리 이온 · 변화',
   b0: '반응 전 아연판 색', s0: '반응 전 수용액 색',
   b1: '석출된 구리 색', b2: '아연 · 반응 종류', b5: '수용액 색 변화',
-  b3: '구리 이온 · 얻다/잃다', b4: '구리 이온 · 반응 종류',
   c1: '아연판에 석출된 구리 색', c2: '아연 · 얻다/잃다', c3: '아연 · 반응 종류',
   c4: '수용액 색 변화', c5: '구리 이온 · 얻다/잃다', c6: '구리 이온 · 반응 종류',
   c7: '산화·환원의 관계',
@@ -924,7 +890,7 @@ function wireLiveCheck(id, answer) {
   el.addEventListener('change', check);
 }
 
-/* 빈칸 그룹 하나를 "정답 확인하기" 버튼에 연결한다 — 그룹마다 반복해서 쓴다 */
+/* 빈칸 그룹 하나를 "빈칸 확인하기" 버튼에 연결한다 — 그룹마다 반복해서 쓴다 */
 function makeChecker(answers, noteId, opts) {
   opts = opts || {};
   let attempts = 0;
@@ -968,7 +934,6 @@ const theoryAChecker = makeChecker(THEORY_GROUP_A, 'theory-a-example');
 const theoryBChecker = makeChecker(THEORY_GROUP_B, 'theory-b-example');
 const beforeChecker = makeChecker(BEFORE_ANSWERS, 'b0-example', { onChange: () => refreshBefore() });
 const rxObsChecker = makeChecker(RX_ANSWERS, 'rx-obs-example', { onChange: () => refreshRxObs() });
-const pmObsChecker = makeChecker(PM_ANSWERS, 'pm-obs-example', { onChange: () => refreshPmObs() });
 const conclusionChecker = makeChecker(CONCLUSION_ANSWERS, 'conclusion-note');
 
 $('show-theory-a').addEventListener('click', theoryAChecker.check);
@@ -981,10 +946,9 @@ $('toggle-ionization-tmi').addEventListener('click', () => {
 });
 $('show-b0').addEventListener('click', beforeChecker.check);
 $('show-rx-obs').addEventListener('click', rxObsChecker.check);
-$('show-pm-obs').addEventListener('click', pmObsChecker.check);
 $('check-conclusion').addEventListener('click', conclusionChecker.check);
 
-[THEORY_GROUP_A, THEORY_GROUP_B, BEFORE_ANSWERS, RX_ANSWERS, PM_ANSWERS, CONCLUSION_ANSWERS]
+[THEORY_GROUP_A, THEORY_GROUP_B, BEFORE_ANSWERS, RX_ANSWERS, CONCLUSION_ANSWERS]
   .forEach(dict => Object.entries(dict).forEach(([id, a]) => wireLiveCheck(id, a)));
 
 /* ===== 저장/복원 ===== */
@@ -1012,9 +976,9 @@ const clearAll = () => {
 const MSG = {
   1: '일자, 학번, 이름을 모두 입력해 주세요.',
   2: '유의사항을 확인했다면 체크해 주세요.',
-  3: '빈칸을 채운 뒤 "정답 확인하기" 버튼을 눌러 확인해 주세요.',
+  3: '빈칸을 채운 뒤 "빈칸 확인하기" 버튼을 눌러 확인해 주세요.',
   4: '실험을 진행하고, 빈칸과 까닭 설명을 모두 채워 주세요.',
-  5: '빈칸을 채운 뒤 "정답 확인하기" 버튼을 눌러 확인해 주세요.',
+  5: '빈칸을 채운 뒤 "빈칸 확인하기" 버튼을 눌러 확인해 주세요.',
 };
 const secOf = n => document.querySelector(`.step[data-step="${n}"]`);
 const isFilled = i => i.type === 'checkbox' ? i.checked : i.value.trim() !== '';
@@ -1028,13 +992,12 @@ const stepValid = n => {
     return prepChecks.every(c => c.checked)
       && beforeChecker.isPassed()
       && rxDone && rxObsChecker.isPassed()
-      && pmObsChecker.isPassed()
       && ['i1', 'i2', 'i3', 'i4', 'i5', 'i6', 'reason'].every(id => isFilled($(id)));
   }
   return [...secOf(n).querySelectorAll('[required]')].every(isFilled);
 };
 const markInvalid = n => {
-  if (n === 3 || n === 5) return; // 이 단계는 "정답 확인하기" 버튼으로만 확인한다
+  if (n === 3 || n === 5) return; // 이 단계는 "빈칸 확인하기" 버튼으로만 확인한다
   let first = null;
   secOf(n).querySelectorAll('[required]').forEach(i => {
     const bad = !isFilled(i);
@@ -1101,7 +1064,6 @@ const breakLongWords = (str, maxLen = 15) =>
 
   $('rep_theory').textContent = `물질이 전자를 잃는 반응을 ${v('r2') || '(미입력)'} 반응이라 하고, 물질이 전자를 얻는 반응을 ${v('r4') || '(미입력)'} 반응이라고 한다. 아연은 구리보다 반응성이 커서 전자를 잃기 쉽고, 구리 이온은 전자를 얻기 쉽다.`;
   $('rep_rx').textContent = `반응 전 아연판은 ${v('b0') || '(미입력)'} 색, 수용액은 ${v('s0') || '(미입력)'} 색이었다. 수용액에 담그자 아연판 표면에 ${v('b1') || '(미입력)'} 색의 구리가 석출되었다. 아연이 전자를 잃는 ${v('b2') || '(미입력)'} 반응이다. 수용액의 푸른색은 점점 ${v('b5') || '(미입력)'}.`;
-  $('rep_pm').textContent = `구리 이온(Cu²⁺)은 전자를 ${v('b3') || '(미입력)'}어 ${v('b4') || '(미입력)'}되어 금속 구리로 석출되었다.`;
   $('rep_reason').textContent = v('reason') || '(작성되지 않음)';
   $('rep_conclusion').textContent =
 `Zn + Cu²⁺ → Zn²⁺ + Cu (Zn의 산화, Cu²⁺의 환원)
@@ -1136,22 +1098,15 @@ const exportPDF = () => {
 };
 
 /* ===== 이벤트: 단계 이동 ===== */
-document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
-  const n = +t.dataset.step;
-  if (n === TOTAL && !showChecklist()) return;
-  goTo(n);
-}));
-$('next').addEventListener('click', () => {
-  if (step + 1 === TOTAL && !showChecklist()) return;
-  goTo(step + 1);
-});
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => goTo(+t.dataset.step)));
+$('next').addEventListener('click', () => goTo(step + 1));
 $('prev').addEventListener('click', () => goTo(step - 1));
 $('reset').addEventListener('click', clearAll);
 $('pdf-btn').addEventListener('click', exportPDF);
 
 const ALL_GRADED_IDS = new Set([
   ...Object.keys(THEORY_GROUP_A), ...Object.keys(THEORY_GROUP_B),
-  ...Object.keys(BEFORE_ANSWERS), ...Object.keys(RX_ANSWERS), ...Object.keys(PM_ANSWERS),
+  ...Object.keys(BEFORE_ANSWERS), ...Object.keys(RX_ANSWERS),
   ...Object.keys(CONCLUSION_ANSWERS),
 ]);
 document.addEventListener('input', e => {
@@ -1204,21 +1159,17 @@ function refreshPrep() {
 prepChecks.forEach(c => c.addEventListener('change', refreshPrep));
 subNext1.addEventListener('click', () => { markSubDone(1); unlock(2); switchSub(2); });
 
-/* 2. 반응 전 모습 — "정답 확인하기"를 통과해야 다음으로 넘어갈 수 있다 */
+/* 2. 반응 전 모습 — "빈칸 확인하기"를 통과해야 다음으로 넘어갈 수 있다 */
 const b0 = $('b0'), s0 = $('s0');
 const subNext2 = $('subNext2');
 function refreshBefore() { subNext2.disabled = !beforeChecker.isPassed(); }
 subNext2.addEventListener('click', () => { markSubDone(2); unlock(3); switchSub(3); });
 
-/* 3. 아연판 담그기 → 4. 입자 모형 : 관찰 빈칸도 "정답 확인하기"로 확인한다 */
-const b1 = $('b1'), b2 = $('b2'), b3 = $('b3'), b4 = $('b4'), b5 = $('b5'), reasonEl = $('reason');
+/* 3. 아연판 담그기 → 4. 입자 모형 : 관찰 빈칸도 "빈칸 확인하기"로 확인한다 */
+const b1 = $('b1'), b2 = $('b2'), b5 = $('b5'), reasonEl = $('reason');
 const subNext3 = $('subNext3');
 function refreshRxObs() { subNext3.disabled = !(rxDone && rxObsChecker.isPassed()); }
 subNext3.addEventListener('click', () => { markSubDone(3); unlock(4); switchSub(4); });
-
-const subNext4 = $('subNext4');
-function refreshPmObs() { subNext4.disabled = !pmObsChecker.isPassed(); }
-subNext4.addEventListener('click', () => { markSubDone(4); unlock(5); switchSub(5); });
 
 /* '까닭 정리(reason)'는 정답이 정해진 빈칸이 아니라 열린 서술형이라 채점 대상이 아니다 —
    눌렀을 때 바로 예시 답안을 보여준다. */
@@ -1241,7 +1192,7 @@ function spawnLoupeMolecule(loupeEl, kind, x, y) {
   else { wrap.innerHTML = '<div class="atom CU">Cu</div>'; dy = 0; }
   loupeEl.appendChild(wrap);
   requestAnimationFrame(() => { wrap.style.top = (parseFloat(wrap.style.top) + dy) + 'px'; wrap.style.opacity = '0'; });
-  setTimeout(() => wrap.remove(), 2100);
+  setTimeout(() => wrap.remove(), 2800);
 }
 
 function reactionSequence(loupeEl, fillEl, durationMs, onComplete) {
@@ -1414,8 +1365,6 @@ function resetRxScene() {
 }
 $('retryRx').addEventListener('click', resetRxScene);
 
-b3.addEventListener('input', save);
-b4.addEventListener('input', save);
 reasonEl.addEventListener('input', save);
 
 /* ===== 입자 모형(전자 이동) 정적 일러스트 그리기 — 첨부 그림(그림 I-23) 스타일 ===== */
@@ -1503,8 +1452,6 @@ function buildParticleModel(el, phase) {
     labeled('cu2', 'Cu²⁺', 18, 82, 32, 'below');
   }
 }
-buildParticleModel($('pmBefore'), 'before');
-buildParticleModel($('pmAfter'), 'after');
 
 
 
