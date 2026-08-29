@@ -126,7 +126,7 @@ textarea{resize:vertical;line-height:1.95}
 .fixed-note b{flex:none;font-size:.82rem;font-weight:700;color:var(--sea);letter-spacing:.04em}
 .fixed-note span{color:var(--body)}
 
-.bar{display:flex;gap:.7rem;align-items:center;padding:1.6rem 2.6rem 3.2rem;
+.bar{display:flex;gap:.7rem;align-items:center;justify-content:space-between;padding:1.6rem 2.6rem 3.2rem;
   border-top:1px solid var(--line);margin-top:1.6rem;background:var(--sunk)}
 @media(max-width:700px){.bar{padding:1.2rem 1.4rem 2.4rem}}
 .btn{font-family:var(--sans);font-size:1rem;font-weight:700;padding:.72rem 1.7rem;border-radius:999px;
@@ -933,8 +933,8 @@ const render = () => {
     t.classList.toggle('done', n !== step && n < TOTAL && stepValid(n));
   });
   $('prev').disabled = step === 1;
-  $('next').disabled = step === TOTAL;
-  $('next').textContent = step === TOTAL ? '완료' : '다음';
+  $('next').style.display = step === TOTAL ? 'none' : '';
+  $('next').textContent = '다음';
   if (step === TOTAL) buildReport();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
