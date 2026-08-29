@@ -269,13 +269,27 @@ a.submit:hover{background:#62beb3}
 #report .r-ph figure{flex:1;margin:0}
 #report .r-ph img{width:100%;border:1px solid var(--line)}
 #report .r-ph figcaption{font-size:.8rem;color:var(--faint);text-align:center;margin-top:.35rem}
-.modal-overlay{position:fixed;inset:0;background:rgba(6,8,11,.72);display:flex;
-  align-items:center;justify-content:center;z-index:100;padding:1.5rem}
-.modal-box{background:var(--surface);border:1px solid var(--line);border-radius:16px;
-  padding:1.8rem;max-width:440px;width:100%;max-height:82vh;overflow-y:auto;
-  box-shadow:0 20px 50px rgba(0,0,0,.4)}
-.modal-box h3{font-size:1.15rem;font-weight:800;color:var(--sea);margin-bottom:.3rem}
-.modal-box .r-txt{white-space:pre-wrap;color:var(--body);line-height:1.9}
+.zoom-modal{position:fixed;inset:0;background:rgba(6,8,10,.72);display:none;
+  align-items:center;justify-content:center;z-index:999;padding:1.6rem}
+.zoom-modal.show{display:flex}
+.zoom-card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;
+  padding:2.4rem 2rem 2rem;max-width:380px;width:100%;text-align:center;
+  box-shadow:0 24px 60px rgba(0,0,0,.55);animation:zoomIn .22s cubic-bezier(.16,1,.3,1)}
+@keyframes zoomIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.zoom-close{position:absolute;top:.7rem;right:.7rem;width:32px;height:32px;border-radius:50%;
+  border:1px solid var(--line);background:var(--sunk);color:var(--ink);font-size:1.15rem;line-height:1;
+  cursor:pointer}
+.zoom-close:hover{background:var(--sea-soft)}
+.zoom-title{font-weight:700;font-size:1.12rem;color:var(--ink);margin:0 0 .5rem}
+.zoom-desc{color:var(--body);font-size:.92rem;line-height:1.6;margin:0}
+.answer-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.5rem;text-align:left;max-height:55vh;overflow-y:auto}
+.answer-row{display:flex;flex-direction:column;gap:.2rem;padding:.65rem .85rem;
+  background:var(--sunk);border:1px solid var(--line);border-radius:8px;font-size:.92rem;text-align:left}
+.answer-row b{font-family:var(--sans);color:var(--faint);font-weight:600;font-size:.76rem;
+  text-transform:uppercase;letter-spacing:.02em}
+.answer-row span{color:var(--ink);font-weight:700;font-size:1rem}
+.answer-row-simple{padding:.55rem .85rem;background:var(--sunk);border:1px solid var(--line);
+  border-radius:8px;font-size:.92rem;color:var(--body);text-align:left}
 @media print{nav,header.top,.bar{display:none!important}}
 </style>
 </head>
@@ -397,7 +411,7 @@ a.submit:hover{background:#62beb3}
       <div><label for="pr_b_t">b 수온 (°C)</label><input type="number" step="0.1" class="save mono" id="pr_b_t" required></div>
       <div><label for="pr_b_s">b 염분 (psu)</label><input type="number" step="0.1" class="save mono" id="pr_b_s" required></div>
     </div>
-    <button class="btn solid" type="button" id="check-practice" style="margin-top:1.1rem">정답 확인하기</button>
+    <button class="btn solid" type="button" id="check-practice" style="margin-top:1.1rem">빈칸 확인하기</button>
     <div id="practice-note" class="note"></div>
   </div>
 
@@ -418,15 +432,15 @@ a.submit:hover{background:#62beb3}
     <p>→ 이러한 심층 해수의 움직임을 <input class="blank save" id="b7" placeholder="ㅅㅊ ㅅㅎ" required>이라고 한다.</p>
   </div>
 
-  <button class="btn solid" type="button" id="check-theory" style="margin-top:.6rem">정답 확인하기</button>
+  <button class="btn solid" type="button" id="check-theory" style="margin-top:.6rem">빈칸 확인하기</button>
   <div id="theory-note" class="note"></div>
 
-  <div class="modal-overlay" id="answerModal" style="display:none">
-    <div class="modal-box">
-      <h3 id="answerModalTitle">정답 안내</h3>
-      <p class="hint" style="margin-top:-.3rem" id="answerModalHint"></p>
-      <div id="answerModalBody" class="r-txt"></div>
-      <button class="btn solid" type="button" id="closeAnswerModal" style="margin-top:1.2rem">확인했어요</button>
+  <div class="zoom-modal" id="answerModal">
+    <div class="zoom-card" style="max-width:560px;text-align:left">
+      <button class="zoom-close" type="button" id="answerModalClose" aria-label="닫기">×</button>
+      <p class="zoom-title" id="answerModalTitle">정답 안내</p>
+      <p class="zoom-desc" id="answerModalHint" style="margin-bottom:1rem"></p>
+      <div class="answer-list" id="answerModalBody"></div>
     </div>
   </div>
 </section>
@@ -689,17 +703,20 @@ let answerModalCb = null;
 const showAnswerModal = (title, hint, wrong, revealAnswer, onClose) => {
   $('answerModalTitle').textContent = title;
   $('answerModalHint').textContent = hint;
-  $('answerModalBody').innerHTML = wrong
-    .map(r => revealAnswer ? `${r.label} — 정답: ${r.answerText}` : r.label)
-    .join('<br>');
-  $('answerModal').style.display = 'flex';
+  $('answerModalBody').innerHTML = wrong.map(r =>
+    revealAnswer
+      ? `<div class="answer-row"><b>${r.label}</b><span>${r.answerText}</span></div>`
+      : `<div class="answer-row-simple">${r.label}</div>`
+  ).join('');
+  $('answerModal').classList.add('show');
   answerModalCb = onClose || null;
 };
 const closeAnswerModal = () => {
-  $('answerModal').style.display = 'none';
+  $('answerModal').classList.remove('show');
   if (answerModalCb) { const cb = answerModalCb; answerModalCb = null; cb(); }
 };
-$('closeAnswerModal').addEventListener('click', closeAnswerModal);
+$('answerModalClose').addEventListener('click', closeAnswerModal);
+$('answerModal').addEventListener('click', e => { if (e.target === $('answerModal')) closeAnswerModal(); });
 
 /* 03-1) 이론적 배경 빈칸(b1~b9) — 띄어쓰기 차이는 무시하고 채점 */
 const norm = s => (s || '').replace(/\s+/g, '');
@@ -1146,8 +1163,8 @@ const showChecklist = () => {
   if (incomplete.length === 0) return true;
   $('answerModalTitle').textContent = '아직 안 끝난 게 있어요';
   $('answerModalHint').textContent = '보고서를 만들기 전에 아래 항목을 마저 채워 주세요.';
-  $('answerModalBody').innerHTML = incomplete.map(m => `• ${m}`).join('<br><br>');
-  $('answerModal').style.display = 'flex';
+  $('answerModalBody').innerHTML = incomplete.map(m => `<div class="answer-row-simple">${m}</div>`).join('');
+  $('answerModal').classList.add('show');
   return false;
 };
 
@@ -1238,15 +1255,8 @@ const exportPDF = async () => {
 };
 
 /* 이벤트 */
-document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
-  const n = +t.dataset.step;
-  if (n === TOTAL && !showChecklist()) return;
-  goTo(n);
-}));
-$('next').addEventListener('click', () => {
-  if (step + 1 === TOTAL && !showChecklist()) return;
-  goTo(step + 1);
-});
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => goTo(+t.dataset.step)));
+$('next').addEventListener('click', () => goTo(step + 1));
 $('prev').addEventListener('click', () => goTo(step - 1));
 $('reset').addEventListener('click', clearAll);
 $('pdf-btn').addEventListener('click', exportPDF);
