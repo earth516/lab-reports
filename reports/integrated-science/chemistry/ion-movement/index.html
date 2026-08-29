@@ -299,7 +299,7 @@ a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radi
     <p>산은 수용액에서 <input class="blank save" id="t1" placeholder="ㅅㅅ" required> 이온을 내놓는 물질이고,</p>
     <p>염기는 수용액에서 <input class="blank wide save" id="t2" placeholder="ㅅㅅㅎ" required> 이온을 내놓는 물질이다.</p>
     <div class="grade-bar">
-      <button class="btn solid btn-small-solid" id="checkTheoryBtn">정답 확인하기</button>
+      <button class="btn solid btn-small-solid" id="checkTheoryBtn">빈칸 확인하기</button>
       <span class="grade-msg" id="theoryMsg"></span>
     </div>
     <div id="theory-answer-box" class="note grade-answer-box" style="display:none"></div>
@@ -466,7 +466,7 @@ a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radi
       <p style="margin-top:1rem;color:var(--body)">그렇다면 산성은 어떤 이온 때문에 나타나는 것일까?</p>
       <p>산성은 <input class="blank save" id="e_acid_ion" placeholder="ㅅㅅ"> 이온 때문에 나타나는 성질이다.</p>
       <div class="grade-bar">
-        <button class="btn solid btn-small-solid" id="checkGaObsBtn">정답 확인하기</button>
+        <button class="btn solid btn-small-solid" id="checkGaObsBtn">빈칸 확인하기</button>
         <span class="grade-msg" id="gaObsMsg"></span>
       </div>
       <div id="ga-obs-answer-box" class="note grade-answer-box" style="display:none"></div>
@@ -555,7 +555,7 @@ a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radi
       <p style="margin-top:1rem;color:var(--body)">그렇다면 염기성은 어떤 이온 때문에 나타나는 것일까?</p>
       <p>염기성은 <input class="blank save" id="e_base_ion" placeholder="ㅅㅅㅎ"> 이온 때문에 나타나는 성질이다.</p>
       <div class="grade-bar">
-        <button class="btn solid btn-small-solid" id="checkNaObsBtn">정답 확인하기</button>
+        <button class="btn solid btn-small-solid" id="checkNaObsBtn">빈칸 확인하기</button>
         <span class="grade-msg" id="naObsMsg"></span>
       </div>
       <div id="na-obs-answer-box" class="note grade-answer-box" style="display:none"></div>
@@ -568,13 +568,13 @@ a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radi
   <div class="exp-pane" data-sub-pane="5">
     <div class="block">
       <h3>실험 해석하기</h3>
-      <p style="color:var(--body);margin-bottom:1rem">빈칸을 채우고 <b style="color:var(--ink)">정답 확인하기</b>를 눌러보세요. 2회 틀리면 정답이 공개됩니다.</p>
+      <p style="color:var(--body);margin-bottom:1rem">빈칸을 채우고 <b style="color:var(--ink)">빈칸 확인하기</b>를 눌러보세요. 2회 틀리면 정답이 공개됩니다.</p>
       <p>① HCl (염산)은 수용액에서 <input class="blank save" id="i1" placeholder="ㅅㅅ" required> 이온을 내놓는다.</p>
       <p>② 수소 이온은 <input class="blank save" id="i2" placeholder="ㅇ이온" required> 이므로 전류를 흘리면 <b>(−)극</b> 쪽으로 이동하여 리트머스 종이를 <input class="blank wide save" id="i3" placeholder="ㅂㅇ" required>색으로 변화시킨다.</p>
       <p>③ 수산화 나트륨 (NaOH)은 수용액에서 <input class="blank wide save" id="i4" placeholder="ㅅㅅㅎ" required> 이온을 내놓는다.</p>
       <p>④ 수산화 이온은 <input class="blank save" id="i5" placeholder="ㅇ이온" required> 이므로 전류를 흘리면 <b>(+)극</b> 쪽으로 이동하여 리트머스 종이를 <input class="blank wide save" id="i6" placeholder="ㅍㄹ" required>색으로 변화시킨다.</p>
       <div style="margin-top:1rem;display:flex;align-items:center;gap:.8rem;flex-wrap:wrap">
-        <button class="btn solid" id="checkInterpBtn">정답 확인하기</button>
+        <button class="btn solid" id="checkInterpBtn">빈칸 확인하기</button>
         <span id="interpMsg" style="font-size:.92rem;color:var(--faint)"></span>
       </div>
       <div id="interp-answer-box" class="note" style="display:none;margin-top:.8rem"></div>
@@ -617,7 +617,7 @@ a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radi
       내놓는 물질이라고 할 수 있다.
     </p>
     <div class="grade-bar" style="margin-top:1.2rem">
-      <button class="btn solid btn-small-solid" id="checkConclBtn">정답 확인하기</button>
+      <button class="btn solid btn-small-solid" id="checkConclBtn">빈칸 확인하기</button>
       <span class="grade-msg" id="conclMsg"></span>
     </div>
     <div id="concl-answer-box" class="note grade-answer-box" style="display:none"></div>
@@ -990,16 +990,9 @@ const exportPDF = async () => {
     .catch(()=>{ restorePadding(); btn.disabled=false; btn.textContent='PDF로 저장'; });
 };
 
-document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
-  const n=+t.dataset.step;
-  if(n===TOTAL&&!showChecklist())return;
-  goTo(n);
-}));
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>goTo(+t.dataset.step)));
 const wrongAttempts={};
-$('next').addEventListener('click',()=>{
-  if(step+1===TOTAL&&!showChecklist())return;
-  goTo(step+1);
-});
+$('next').addEventListener('click',()=>goTo(step+1));
 $('prev').addEventListener('click',()=>goTo(step-1));
 $('reset').addEventListener('click',clearAll);
 $('pdf-btn').addEventListener('click',exportPDF);
@@ -1112,7 +1105,7 @@ subNext3.addEventListener('click',()=>{
     return;
   }
   if(!e1.classList.contains('correct')||!e2.classList.contains('correct')){
-    showExpNotice('채점 결과를 확인해주세요','정답 확인하기 버튼을 눌러 모든 답이 맞아야 다음 단계로 넘어갈 수 있어요.');
+    showExpNotice('채점 결과를 확인해주세요','빈칸 확인하기 버튼을 눌러 모든 답이 맞아야 다음 단계로 넘어갈 수 있어요.');
     return;
   }
   markSubDone(3);unlock(4);switchSub(4);
@@ -1132,7 +1125,7 @@ subNext4.addEventListener('click',()=>{
     return;
   }
   if(!e3.classList.contains('correct')||!e4.classList.contains('correct')){
-    showExpNotice('채점 결과를 확인해주세요','정답 확인하기 버튼을 눌러 모든 답이 맞아야 다음 단계로 넘어갈 수 있어요.');
+    showExpNotice('채점 결과를 확인해주세요','빈칸 확인하기 버튼을 눌러 모든 답이 맞아야 다음 단계로 넘어갈 수 있어요.');
     return;
   }
   markSubDone(4);unlock(5);switchSub(5);
