@@ -35,7 +35,7 @@ nav::-webkit-scrollbar{display:none}
 .tab:hover{background:rgba(255,255,255,.06);color:var(--ink)}
 .tab.active{background:var(--surface);color:var(--sea);border-bottom-color:var(--sea);font-weight:700}
 .tab.done .n::after{content:"✓";margin-left:.25rem;color:var(--sea)}
-.wrap{padding:3rem 2.6rem 1rem}.step[data-step="6"].active~* .wrap,.step[data-step="6"] .wrap{padding-top:0}
+.wrap{padding:3rem 2.6rem 1rem}
 @media(max-width:700px){.wrap{padding:1.8rem 1.4rem .5rem}}
 .step{display:none}.step.active{display:block;animation:in .3s cubic-bezier(.16,1,.3,1)}
 @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -78,7 +78,7 @@ textarea{resize:vertical;line-height:1.95}
 .fixed-note:last-of-type{margin-bottom:1.6rem}
 .fixed-note b{flex:none;font-size:.82rem;font-weight:700;color:var(--sea);letter-spacing:.04em}
 .fixed-note span{color:var(--body)}
-.bar{display:flex;gap:.7rem;align-items:center;padding:1.6rem 2.6rem 3.2rem;border-top:1px solid var(--line);margin-top:1.6rem;background:var(--sunk)}
+.bar{display:flex;gap:.7rem;align-items:center;justify-content:space-between;padding:1.6rem 2.6rem 3.2rem;border-top:1px solid var(--line);margin-top:1.6rem;background:var(--sunk)}
 @media(max-width:700px){.bar{padding:1.2rem 1.4rem 2.4rem}}
 .btn{font-family:var(--sans);font-size:1rem;font-weight:700;padding:.72rem 1.7rem;border-radius:999px;border:1.5px solid #39404b;background:var(--surface);color:var(--ink);cursor:pointer;transition:.16s}
 .btn:hover{background:var(--sea-soft)}
@@ -596,24 +596,24 @@ a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radi
     <h3>정리</h3>
     <p style="line-height:2.3;color:var(--body)">
       산의 수용액에 전류가 흐르면
-      <input class="blank wide save" id="c_acid_color" placeholder="" required>
+      <input class="blank wide save" id="c_acid_color" placeholder="ㅍㄹㅅ" required>
       리트머스 종이의 색은 (−)극 방향으로 변하였다.
       이를 통해 산이 공통적인 성질을 나타내는 것은
-      <input class="blank wide save" id="c_acid_type" placeholder="" required>,
-      즉 <input class="blank wide save" id="c1" placeholder="" required> 이온(H⁺) 때문임을
+      <input class="blank wide save" id="c_acid_type" placeholder="ㅇㅇㅇ" required>,
+      즉 <input class="blank wide save" id="c1" placeholder="ㅅㅅ" required> 이온(H⁺) 때문임을
       알 수 있다. 따라서 산은 물에 녹아
-      <input class="blank wide save" id="c_acid_release" placeholder="" required> 이온을
+      <input class="blank wide save" id="c_acid_release" placeholder="ㅅㅅ" required> 이온을
       내놓는 물질이라고 할 수 있다.
     </p>
     <p style="line-height:2.3;color:var(--body);margin-top:.8rem">
       반면, 염기의 수용액에 전류가 흐르면
-      <input class="blank wide save" id="c_base_color" placeholder="" required>
+      <input class="blank wide save" id="c_base_color" placeholder="ㅂㅇㅅ" required>
       리트머스 종이의 색은 (+)극 방향으로 변한다.
       이를 통해 염기가 공통적인 성질을 나타내는 것은
-      <input class="blank wide save" id="c_base_type" placeholder="" required>,
-      즉 <input class="blank wide save" id="c2" placeholder="" required> 이온(OH⁻) 때문임을
+      <input class="blank wide save" id="c_base_type" placeholder="ㅇㅇㅇ" required>,
+      즉 <input class="blank wide save" id="c2" placeholder="ㅅㅅㅎ" required> 이온(OH⁻) 때문임을
       알 수 있다. 따라서 염기는 물에 녹아
-      <input class="blank wide save" id="c_base_release" placeholder="" required> 이온을
+      <input class="blank wide save" id="c_base_release" placeholder="ㅅㅅㅎ" required> 이온을
       내놓는 물질이라고 할 수 있다.
     </p>
     <div class="grade-bar" style="margin-top:1.2rem">
@@ -830,7 +830,7 @@ const flash=n=>{const el=secOf(n);el.querySelectorAll('.flash').forEach(x=>x.rem
 const render=()=>{
   document.querySelectorAll('.step').forEach(el=>el.classList.toggle('active',+el.dataset.step===step));
   document.querySelectorAll('.tab').forEach(t=>{const n=+t.dataset.step;t.classList.toggle('active',n===step);t.classList.toggle('done',n!==step&&n<TOTAL&&stepValid(n));});
-  $('prev').disabled=step===1;$('next').disabled=step===TOTAL;$('next').textContent=step===TOTAL?'완료':'다음';
+  $('prev').disabled=step===1;$('next').style.display=step===TOTAL?'none':'';$('next').textContent='다음';
   if(step===TOTAL)buildReport();
   window.scrollTo({top:0,behavior:'smooth'});
 };
@@ -933,17 +933,25 @@ const breakLongWords = (str, maxLen = 15) =>
     ctx.strokeStyle = '#b8aa8a'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.roundRect(4, ly, W-8, lh, 3); ctx.stroke();
 
+    // 양 끝 전극 표시 — 왼쪽 (−)극, 오른쪽 (+)극 (실제 실험 장치와 동일한 배치)
+    // 색 띠 위쪽 여백에 배치해 리트머스 색과 안 겹치게 한다
+    ctx.fillStyle = '#5a4f38';
+    ctx.font = '700 13px Pretendard, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('−', 14, ly/2);
+    ctx.fillText('+', W-14, ly/2);
+
     target.innerHTML = '';
     target.appendChild(cvs);
   };
 
   // (가) 염산: 푸른 리트머스 → 붉게 번짐
   drawLitmusMini('rep_img_ga_before', '#5877b8', null, -1, false);
-  if(gaDone) drawLitmusMini('rep_img_ga_after', '#5877b8', '#c94a44', -1, true);
+  drawLitmusMini('rep_img_ga_after', '#5877b8', '#c94a44', -1, gaDone);
 
   // (나) NaOH: 붉은 리트머스 → 파랗게 번짐
   drawLitmusMini('rep_img_na_before', '#d99aa4', null, 1, false);
-  if(naDone) drawLitmusMini('rep_img_na_after', '#d99aa4', '#4a72cf', 1, true);
+  drawLitmusMini('rep_img_na_after', '#d99aa4', '#4a72cf', 1, naDone);
 };
 
 const waitForImages = async root => {
@@ -976,6 +984,25 @@ const exportPDF = async () => {
   reportEl.style.paddingBottom = '0';
   if(wrapEl){ wrapEl.style.paddingTop = '0'; wrapEl.style.paddingBottom = '0'; }
 
+  // 진입 애니메이션이 캡처 시점까지 덜 끝나 있으면(opacity/translateY 중간값) 상단이
+  // 비어 보이는 것처럼 캡처될 수 있다 — 캡처 직전 강제로 애니메이션을 끝난 상태로 고정한다
+  const activeStep = document.querySelector('.step.active');
+  const origAnim = activeStep ? activeStep.style.animation : '';
+  const origOpacity = activeStep ? activeStep.style.opacity : '';
+  const origTransform = activeStep ? activeStep.style.transform : '';
+  if(activeStep){
+    activeStep.style.animation = 'none';
+    activeStep.style.opacity = '1';
+    activeStep.style.transform = 'none';
+  }
+  const restoreAnim = () => {
+    if(activeStep){
+      activeStep.style.animation = origAnim;
+      activeStep.style.opacity = origOpacity;
+      activeStep.style.transform = origTransform;
+    }
+  };
+
   await waitForImages(reportEl);
 
   html2pdf().set({
@@ -986,8 +1013,8 @@ const exportPDF = async () => {
     jsPDF: {unit:'mm', format:'a4', orientation:'portrait'},
     pagebreak: {mode:['css']},
   }).from(reportEl).save()
-    .then(()=>{ restorePadding(); btn.disabled=false; btn.textContent='PDF로 저장'; })
-    .catch(()=>{ restorePadding(); btn.disabled=false; btn.textContent='PDF로 저장'; });
+    .then(()=>{ restorePadding(); restoreAnim(); btn.disabled=false; btn.textContent='PDF로 저장'; })
+    .catch(()=>{ restorePadding(); restoreAnim(); btn.disabled=false; btn.textContent='PDF로 저장'; });
 };
 
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>goTo(+t.dataset.step)));
