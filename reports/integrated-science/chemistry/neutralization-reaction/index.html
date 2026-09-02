@@ -303,19 +303,19 @@ td.empty{color:var(--faint);font-weight:400}
 }
 #report h1{font-size:20px;font-weight:700;color:#10151c;letter-spacing:-.01em;margin-bottom:2px}
 #report .r-sub{font-size:11px;color:#767c88;margin-bottom:14px}
-#report h2{font-size:14px;font-weight:700;color:#10151c;margin:20px 0 8px;padding-bottom:5px;
+#report h2{font-size:14px;font-weight:700;color:#10151c;margin:14px 0 7px;padding-bottom:5px;
   border-bottom:1px solid #178a7a;letter-spacing:0}
 #report table{width:100%;border-collapse:collapse;font-size:12px}
-#report th,#report td{border:1px solid #d8dce0;padding:6px 8px;text-align:center}
+#report th,#report td{border:1px solid #d8dce0;padding:5px 8px;text-align:center}
 #report th{background:#f2f4f5;color:#565c66;font-weight:600;white-space:nowrap}
 #report .r-left{text-align:left}
 #report .avoid{page-break-inside:avoid}
 #report .r-graph{text-align:center;margin:8px 0}
 #report .r-graph img{width:88%;max-width:560px}
 #report .r-note{font-size:11px;color:#767c88;margin-top:4px}
-#report .r-sent{margin-bottom:6px}
+#report .r-sent{margin-bottom:6px;overflow-wrap:break-word;word-break:break-all}
 #report #rep_think1{page-break-inside:avoid;break-inside:avoid}
-#report .r-ans{font-weight:700;color:#0e7d6f;border-bottom:2px solid #bfe4de;padding:0 2px}
+#report .r-ans{font-weight:700;color:#0e7d6f;border-bottom:2px solid #bfe4de;padding:0 2px;overflow-wrap:break-word;word-break:break-all}
 #report .r-chip{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:-1px;margin-right:4px;border:1px solid #99a5ba}
 .report-tools{display:flex;gap:.5rem;margin:1rem 0;flex-wrap:wrap}
 
@@ -462,7 +462,7 @@ td.empty{color:var(--faint);font-weight:400}
 <section class="step" data-step="4">
 
   <div class="card" style="padding:.55rem 1.3rem;margin-bottom:.5rem">
-    <h2 style="margin-bottom:0"><span class="step-no">1</span>실험 조작 <span class="sub">HCl·NaOH 각 1 mL씩</span></h2>
+    <h2 style="margin-bottom:0"><span class="step-no">1</span>실험 조작 <span class="sub">혼합 전 모든 수용액의 온도는 같고, HCl와 NaOH의 농도는 같다.</span></h2>
   </div>
 
   <div class="grid exp-grid">
@@ -593,8 +593,8 @@ td.empty{color:var(--faint);font-weight:400}
     <div class="card">
       <h2><span class="step-no">05</span>실험 해석 <span class="sub">왼쪽 결과를 보면서 빈칸을 채워 보세요</span></h2>
       <div class="prose">
-        <p>① 혼합 용액의 최고 온도가 가장 높은 것은
-          <input class="blank" id="i1" data-save size="3">이다.
+        <p>① 혼합 용액의 최고 온도가 가장 높을 때는 HCl과 NaOH의 비가
+          <input class="blank" id="i1" data-save size="4">일 때다.
           혼합 용액의 부피가 모두 같을 때, 중화 반응한 H⁺와 OH⁻의 수가 가장
           <input class="blank" id="i2" data-save size="4" placeholder="ㅁㄱ"> 때문이다.</p>
         <p>② 2:10은 반응 후 OH⁻가 남으므로
@@ -1532,7 +1532,7 @@ const breakLongWords = (str, maxLen = 15) =>
 
 function ansOf(id, fallback){
   const el = $(id);
-  return (el && el.value.trim()) ? esc(breakLongWords(el.value.trim())) : (fallback || "　　");
+  return (el && el.value.trim()) ? esc(el.value.trim()) : (fallback || "　　");
 }
 function reportGraphDataURL(){
   /* 보고서용 그래프를 캔버스로 직접 그림 (PDF 렌더 안정성) */
@@ -1634,14 +1634,14 @@ function buildReport(){
     </div>
 
     <h2>4. 실험 해석</h2>
-    <p class="r-sent">① 최고 온도가 가장 높은 것은 <span class="r-ans">${ansOf("i1")}</span>이다. 부피가 같을 때 중화 반응한 H⁺와 OH⁻의 수가 가장 <span class="r-ans">${ansOf("i2")}</span> 때문이다.</p>
+    <p class="r-sent">① 혼합 용액의 최고 온도가 가장 높을 때는 HCl과 NaOH의 비가 <span class="r-ans">${ansOf("i1")}</span>일 때다. 부피가 같을 때 중화 반응한 H⁺와 OH⁻의 수가 가장 <span class="r-ans">${ansOf("i2")}</span> 때문이다.</p>
     <p class="r-sent">② 2:10은 OH⁻가 남아 <span class="r-ans">${ansOf("i3")}</span>이고 BTB는 <span class="r-ans">${ansOf("i4")}</span>, 10:2는 H⁺가 남아 <span class="r-ans">${ansOf("i5")}</span>이고 BTB는 <span class="r-ans">${ansOf("i6")}</span>, 6:6은 모두 반응하여 <span class="r-ans">${ansOf("i7")}</span>이고 BTB는 <span class="r-ans">${ansOf("i8")}</span>을 띤다.</p>
 
     <h2>5. 결론</h2>
     <p class="r-sent">산의 <span class="r-ans">${ansOf("c1")}</span> 이온과 염기의 <span class="r-ans">${ansOf("c2")}</span> 이온이 1:1로 반응하여 물을 생성하는 반응을 <span class="r-ans">${ansOf("c3")}</span>이라고 하며, 이때 <span class="r-ans">${ansOf("c4")}</span>이 발생한다.</p>
 
     <h2>6. 더 생각해 보기</h2>
-    <p class="r-sent"><b>Q.</b> 가~마에서 중화 반응으로 생성된 물 분자의 수가 가장 많은 것부터 순서대로 써 보자.</p>
+    <p class="r-sent"><b>Q.</b> 다섯 조합 중 중화 반응으로 생성된 물 분자의 수가 가장 많은 것부터 순서대로 써 보자.</p>
     <p class="r-sent" id="rep_think1">${ansOf("think1", "(작성하지 않음)")}</p>
   `;
 }
