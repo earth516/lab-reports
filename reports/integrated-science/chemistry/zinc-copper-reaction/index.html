@@ -127,7 +127,7 @@ textarea{resize:vertical;line-height:1.95}
 .fixed-note b{flex:none;font-size:.82rem;font-weight:700;color:var(--sea);letter-spacing:.04em}
 .fixed-note span{color:var(--body)}
 
-.bar{display:flex;gap:.7rem;align-items:center;padding:1.6rem 2.6rem 3.2rem;
+.bar{display:flex;gap:.7rem;align-items:center;justify-content:space-between;padding:1.6rem 2.6rem 3.2rem;
   border-top:1px solid var(--line);margin-top:1.6rem;background:var(--sunk)}
 @media(max-width:700px){.bar{padding:1.2rem 1.4rem 2.4rem}}
 .btn{font-family:var(--sans);font-size:1rem;font-weight:700;padding:.72rem 1.7rem;border-radius:999px;
@@ -306,9 +306,9 @@ table.cmp td b{color:var(--ink)}
 .loupe-mini .loupe-surface{position:absolute;bottom:0;left:0;right:0;height:34%;
   background:linear-gradient(180deg,var(--zinc),var(--zinc-dark));transition:background 1.4s ease}
 .loupe-mini .loupe-surface.coated{background:linear-gradient(180deg,#7a4a34,#2c1b14)}
-.loupe-mini .loupe-mol{position:absolute;display:flex;align-items:center;gap:1px;transition:all 2.8s ease}
-.loupe-mini .atom{width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:8.5px;color:#fff;font-weight:900;letter-spacing:-.02em}
+.loupe-mini .loupe-mol{position:absolute;display:flex;align-items:center;gap:1px;transition:all 3.6s ease}
+.loupe-mini .atom{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:10.5px;color:#fff;font-weight:900;letter-spacing:-.02em}
 .atom.ZN2{background:#6b7178}
 .atom.CU2{background:var(--copper)}
 .atom.CU{background:#8a4a22}
@@ -1026,8 +1026,8 @@ const render = () => {
     t.classList.toggle('done', n !== step && n < TOTAL && stepValid(n));
   });
   $('prev').disabled = step === 1;
-  $('next').disabled = step === TOTAL;
-  $('next').textContent = step === TOTAL ? '완료' : '다음';
+  $('next').style.display = step === TOTAL ? 'none' : '';
+  $('next').textContent = '다음';
   if (step === TOTAL) buildReport();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
@@ -1192,7 +1192,7 @@ function spawnLoupeMolecule(loupeEl, kind, x, y) {
   else { wrap.innerHTML = '<div class="atom CU">Cu</div>'; dy = 0; }
   loupeEl.appendChild(wrap);
   requestAnimationFrame(() => { wrap.style.top = (parseFloat(wrap.style.top) + dy) + 'px'; wrap.style.opacity = '0'; });
-  setTimeout(() => wrap.remove(), 2800);
+  setTimeout(() => wrap.remove(), 3600);
 }
 
 function reactionSequence(loupeEl, fillEl, durationMs, onComplete) {
