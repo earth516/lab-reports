@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>심층순환 실험 · 연구노트</title>
+<title>심층 순환의 발생 원리 추론하기 · 활동 보고서</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -291,13 +291,18 @@ a.submit:hover{background:#62beb3}
 .answer-row-simple{padding:.55rem .85rem;background:var(--sunk);border:1px solid var(--line);
   border-radius:8px;font-size:.92rem;color:var(--body);text-align:left}
 @media print{nav,header.top,.bar{display:none!important}}
+
+/* 어느 탭에서도 보이는 저장 및 PDF 안내 */
+#sj-notices{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:10000;width:min(620px,calc(100% - 24px));display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow:auto;pointer-events:none}
+.sj-toast{box-sizing:border-box;display:flex;align-items:center;gap:12px;padding:14px 18px;border:1px solid var(--sea,#7dd3c8);border-radius:12px;background:#171a20;color:#e8eaee;box-shadow:0 6px 24px #0008;font-size:14px;line-height:1.6;pointer-events:auto}
+.sj-toast button{margin-left:auto;flex-shrink:0;background:transparent;border:1px solid #8b909b;border-radius:8px;color:inherit;padding:5px 9px;cursor:pointer}.sj-toast.sj-error{border-color:#e06a5b}
 </style>
 </head>
 <body>
 <div class="sheet">
 
 <header class="top">
-  <div class="kicker">지구과학 탐구활동 (해양)</div>
+  <div class="kicker">지구과학 탐구활동 (대기·해양)</div>
   <h1>심층 순환의 발생 원리 추론하기</h1>
 </header>
 
@@ -548,7 +553,7 @@ a.submit:hover{background:#62beb3}
   <div style="margin-top:2rem;border:1px solid var(--line)">
     <div id="report">
       <div class="r-head">
-        <h2>심층순환 실험 보고서</h2>
+        <h2>심층 순환의 발생 원리 추론하기 활동 보고서</h2>
         <div class="who mono"><span id="p_class"></span> · <span id="p_id"></span> <span id="p_name"></span> · <span id="p_role"></span></div>
       </div>
 
@@ -666,6 +671,184 @@ const FIXED_MATERIALS = "칸막이 장치, 컵, 물, 얼음, 소금, 색소, 막
 document.addEventListener('DOMContentLoaded', () => {
 const $ = id => document.getElementById(id);
 const KEY = 'deepcirc_';
+const sjPrefix = "deepcirc_";
+const sjTotal = () => TOTAL - 1;
+
+/* ===== 공통 저장 안내 · 진행 상태 · PDF 처리 (문서 10장) ===== */
+let sjTimer = null;
+let sjStarted = false;
+let sjPdf = false;
+let sjResetting = false;
+const sjPath = location.pathname.replace(/^.*?(?=reports\/)/, '').replace(/\/index\.html$/, '').replace(/\/$/, '');
+const sjStatusKey = 'sjstatus:' + sjPath;
+function sjNotice(id, message, error = false) {
+  let note = document.getElementById(id);
+  if (!note) {
+    note = document.createElement('div');
+    note.id = id; note.className = 'sj-toast';
+    note.setAttribute('role', error ? 'alert' : 'status');
+    let stack = document.getElementById('sj-notices');
+    if (!stack) { stack = document.createElement('div'); stack.id = 'sj-notices'; document.body.appendChild(stack); }
+    stack.appendChild(note);
+  }
+  note.replaceChildren();
+  note.classList.toggle('sj-error', error);
+  const text = document.createElement('span'); text.textContent = message;
+  const close = document.createElement('button'); close.type = 'button'; close.textContent = '닫기';
+  close.addEventListener('click', () => note.remove());
+  note.append(text, close);
+}
+function sjStorageFull() {
+  sjNotice('sj-storage-note', '기기에 저장하지 못했습니다. 저장 공간이나 브라우저 설정을 확인하고, 페이지를 닫기 전에 PDF로 저장해 주세요.', true);
+}
+function sjStorageSaved() {
+  document.getElementById('sj-storage-note')?.remove();
+  if (Object.keys(localStorage).some(key => key.startsWith(sjPrefix) && (localStorage.getItem(key) || '').startsWith('data:image'))) {
+    localStorage.removeItem(sjPrefix + 'photos_cleared');
+    document.getElementById('sj-photo-note')?.remove();
+  }
+}
+function sjWriteStatus() {
+  if (!sjStarted || sjResetting) return;
+  try {
+    const total = sjTotal();
+    let done = 0;
+    for (let n = 1; n <= total; n++) if (stepValid(n)) done++;
+    localStorage.setItem(sjStatusKey, JSON.stringify({done, total, updated:Date.now(), pdf:sjPdf}));
+  } catch { sjStorageFull(); }
+}
+function sjQueue(dirty = false) {
+  if (sjResetting) return;
+  if (dirty) { sjStarted = true; sjPdf = false; }
+  clearTimeout(sjTimer);
+  sjTimer = setTimeout(sjWriteStatus, 600);
+}
+function sjClearStatus() {
+  sjResetting = true;
+  clearTimeout(sjTimer);
+  localStorage.removeItem(sjStatusKey);
+  localStorage.removeItem(sjPrefix + 'photos_cleared');
+}
+function sjAfterPdf() {
+  clearTimeout(sjTimer);
+  sjStarted = true; sjPdf = true;
+  sjWriteStatus();
+  try {
+    const images = Object.keys(localStorage).filter(key => key.startsWith(sjPrefix) && (localStorage.getItem(key) || '').startsWith('data:image'));
+    if (images.length) {
+      // 먼저 안내 표식을 남겨, 도중에 실패해도 다시 열었을 때 알 수 있게 합니다.
+      localStorage.setItem(sjPrefix + 'photos_cleared', '1');
+      images.forEach(key => localStorage.removeItem(key));
+    }
+  } catch { sjStorageFull(); }
+}
+async function sjWaitForImages(report) {
+  await Promise.all([...report.querySelectorAll('img')].filter(img => img.getAttribute('src')).map(img => new Promise((resolve, reject) => {
+    if (img.complete) return img.naturalWidth ? resolve() : reject(new Error('사진을 불러오지 못했습니다. 사진을 다시 선택해 주세요.'));
+    const cleanup = () => { clearTimeout(timer); img.removeEventListener('load', loaded); img.removeEventListener('error', failed); };
+    const loaded = () => { cleanup(); resolve(); };
+    const failed = () => { cleanup(); reject(new Error('사진을 불러오지 못했습니다. 사진을 다시 선택해 주세요.')); };
+    const timer = setTimeout(failed, 15000);
+    img.addEventListener('load', loaded, {once:true});
+    img.addEventListener('error', failed, {once:true});
+  })));
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+async function sjExportPDF(button, options, neutral = false, animate = false) {
+  if (button.disabled || !showChecklist()) return;
+  if (typeof html2pdf !== 'function') {
+    sjNotice('sj-pdf-note', 'PDF 저장 도구를 불러오지 못했습니다. 인터넷 연결을 확인한 뒤 새로고침해 주세요.', true);
+    return;
+  }
+  const originalLabel = button.textContent;
+  const snapshots = [];
+  const imageSnapshots = [];
+  const captureGroups = [];
+  const remember = el => { if (el) snapshots.push([el, el.getAttribute('style')]); return el; };
+  button.disabled = true; button.textContent = '저장 중…';
+  document.getElementById('sj-pdf-note')?.remove();
+  try {
+    buildReport();
+    const report = document.getElementById('report');
+    if (neutral) {
+      const wrap = remember(document.getElementById('reportWrap'));
+      wrap.style.padding = '0'; wrap.style.background = '#ffffff';
+    } else {
+      remember(report);
+      report.style.paddingTop = '0'; report.style.paddingBottom = '0';
+    }
+    if (animate) {
+      const wrap = remember(report.closest('.wrap') || report.parentElement);
+      wrap.style.paddingTop = '0'; wrap.style.paddingBottom = '0';
+      const active = remember(document.querySelector('.step.active'));
+      if (active) { active.style.animation = 'none'; active.style.opacity = '1'; active.style.transform = 'none'; }
+    }
+    // 한 페이지보다 충분히 작은 제목·내용 묶음만 함께 넘겨 제목이 홀로 남지 않게 합니다.
+    report.querySelectorAll('.r-lab, .r-sub, .r-hang, h2, h3').forEach(heading => {
+      if (heading.closest('.r-head')) return;
+      const next = heading.nextElementSibling;
+      if (!next) return;
+      const height = next.getBoundingClientRect().bottom - heading.getBoundingClientRect().top;
+      if (height <= 0 || height > 360) return;
+      const group = document.createElement('div');
+      group.style.breakInside = 'avoid'; group.style.pageBreakInside = 'avoid'; group.style.display = 'flow-root';
+      const margin = getComputedStyle(heading).margin;
+      remember(heading); heading.style.margin = margin;
+      heading.before(group); group.append(heading, next); captureGroups.push(group);
+    });
+    // 비어 있는 사진 자리도 캡처 도구가 잘못 읽지 않도록 유효한 투명 이미지로 둡니다.
+    report.querySelectorAll('img').forEach(img => {
+      imageSnapshots.push([img, img.getAttribute('src')]);
+      if (!img.getAttribute('src')) img.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+    });
+    await sjWaitForImages(report);
+    // html2canvas가 object-fit을 재현하지 못해 세로 사진이 늘어나는 문제를 피합니다.
+    for (const img of report.querySelectorAll('img')) {
+      const box = img.getBoundingClientRect();
+      if (!box.width || !box.height || getComputedStyle(img).objectFit !== 'contain') continue;
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(img.clientWidth * 2));
+      canvas.height = Math.max(1, Math.round(img.clientHeight * 2));
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = getComputedStyle(img).backgroundColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const scale = Math.min(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+      const width = img.naturalWidth * scale, height = img.naturalHeight * scale;
+      ctx.drawImage(img, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
+      img.src = canvas.toDataURL('image/png');
+    }
+    await sjWaitForImages(report);
+    await html2pdf().set(options).from(report).save();
+    sjAfterPdf();
+    sjNotice('sj-pdf-note', 'PDF 저장 처리가 완료되었습니다. 내려받은 파일을 확인해 주세요.');
+  } catch (error) {
+    sjNotice('sj-pdf-note', 'PDF 저장에 실패했습니다. ' + (error?.message || '다시 시도해 주세요.'), true);
+  } finally {
+    captureGroups.reverse().forEach(group => { group.replaceWith(...group.childNodes); });
+    imageSnapshots.forEach(([img, src]) => src === null ? img.removeAttribute('src') : img.setAttribute('src', src));
+    snapshots.reverse().forEach(([el, style]) => style === null ? el.removeAttribute('style') : el.setAttribute('style', style));
+    button.disabled = false; button.textContent = originalLabel;
+  }
+}
+function sjInit() {
+  try {
+    const previous = JSON.parse(localStorage.getItem(sjStatusKey) || 'null');
+    sjStarted = !!previous; sjPdf = !!previous?.pdf;
+    if (localStorage.getItem(sjPrefix + 'photos_cleared') === '1') {
+      sjNotice('sj-photo-note', '지난 PDF 저장 후 기기에 보관하던 사진을 정리했습니다. 새 PDF에 사진을 넣으려면 다시 올려 주세요.');
+    }
+  } catch { sjStorageFull(); }
+  document.addEventListener('input', e => { if (e.target.matches('input, textarea, select')) sjQueue(true); });
+  document.addEventListener('change', e => { if (e.target.matches('input, textarea, select')) sjQueue(true); });
+  document.addEventListener('click', e => {
+    if (e.target.closest('.sj-toast')) return;
+    const editing = e.target.closest('section[data-step="4"] button');
+    sjQueue(!!editing);
+  });
+  document.addEventListener('pointerup', e => { if (e.target.closest('section[data-step="4"] svg, section[data-step="4"] canvas')) sjQueue(true); });
+  window.addEventListener('pagehide', () => { if (sjTimer !== null) { clearTimeout(sjTimer); sjWriteStatus(); } });
+}
+
 const TOTAL = 6;
 let step = 1;
 const photos = { ph1: null, ph2: null };
@@ -1057,12 +1240,12 @@ const shrink = async file => {
   let bmp;
   try { bmp = await createImageBitmap(file, { imageOrientation:'from-image' }); }
   catch { throw new Error('사진 형식을 읽을 수 없습니다. HEIC 대신 JPG로 다시 시도해 주세요.'); }
-  const MAX = 1100, k = Math.min(1, MAX / Math.max(bmp.width, bmp.height));
+  const MAX = 900, k = Math.min(1, MAX / Math.max(bmp.width, bmp.height));
   const w = Math.round(bmp.width*k), h = Math.round(bmp.height*k);
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   const x = c.getContext('2d');
   x.fillStyle = '#fff'; x.fillRect(0,0,w,h); x.drawImage(bmp,0,0,w,h); bmp.close();
-  return c.toDataURL('image/jpeg', .72);
+  return c.toDataURL('image/jpeg', .75);
 };
 const paintDrop = slot => {
   const box = $(slot === 'ph1' ? 'up1' : 'up2');
@@ -1071,7 +1254,7 @@ const paintDrop = slot => {
     : '<span>클릭하여 사진 선택</span>';
 };
 const pickPhoto = async (slot, file) => {
-  try { photos[slot] = await shrink(file); paintDrop(slot); save(); hideMsg(); }
+  try { photos[slot] = await shrink(file); paintDrop(slot); hideMsg(); save(); }
   catch (e) { showMsg(e.message, false); }
 };
 
@@ -1079,12 +1262,11 @@ const pickPhoto = async (slot, file) => {
 const savers = () => [...document.querySelectorAll('.save')];
 const save = () => {
   try {
-    savers().forEach(el => localStorage.setItem(KEY + el.id, el.type === 'checkbox' ? (el.checked ? '1' : '') : el.value));
+    savers().sort((a, b) => Number(a.value.startsWith('data:image')) - Number(b.value.startsWith('data:image'))).forEach(el => localStorage.setItem(KEY + el.id, el.type === 'checkbox' ? (el.checked ? '1' : '') : el.value));
     localStorage.setItem(KEY + 'ph1', photos.ph1 || '');
     localStorage.setItem(KEY + 'ph2', photos.ph2 || '');
-  } catch {
-    showMsg('저장 공간이 부족해 사진이 자동 저장되지 않았습니다. 작성 후 바로 PDF로 저장해 주세요.', false);
-  }
+    sjStorageSaved();
+  } catch { sjStorageFull(); }
 };
 const restore = () => {
   savers().forEach(el => {
@@ -1100,7 +1282,7 @@ const restore = () => {
   });
 };
 const clearAll = () => {
-  if (!confirm('작성한 내용을 모두 지웁니다. 계속할까요?')) return;
+  if (!confirm('작성한 내용을 모두 지웁니다. 계속할까요?')) return; sjClearStatus();
   savers().forEach(el => localStorage.removeItem(KEY + el.id));
   ['ph1','ph2'].forEach(s => localStorage.removeItem(KEY + s));
   location.reload();
@@ -1213,46 +1395,17 @@ const breakLongWords = (str, maxLen = 15) =>
 };
 
 /* PDF */
-const waitForImages = async root => {
-  const imgs = [...root.querySelectorAll('img')].filter(img => img.src);
-  await Promise.all(imgs.map(img => {
-    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
-    return img.decode ? img.decode().catch(() => {}) : new Promise(res => { img.onload = res; img.onerror = res; });
-  }));
-};
 
-const exportPDF = async () => {
-  if (!showChecklist()) return;
-  buildReport(); hideMsg();
-  const classTag = $('f_class').value || '';
-  const tag = `${classTag}_${$('f_id').value}_${$('f_name').value}`;
-  const btn = $('pdf-btn');
-  btn.disabled = true; btn.textContent = '저장 중…';
-
-  /* PDF로 캡처하는 순간에만 #report 자체 패딩을 0으로 내리고,
-     대신 html2pdf의 margin 옵션으로 페이지마다 동일한 여백을 준다.
-     화면(06 탭)에 보이는 패딩은 저장이 끝나면 즉시 원래대로 복구되므로
-     사용자가 보는 화면은 전혀 바뀌지 않는다. */
-  const reportEl = $('report');
-  const restorePadding = () => { reportEl.style.paddingTop = ''; reportEl.style.paddingBottom = ''; };
-  reportEl.style.paddingTop = '0';
-  reportEl.style.paddingBottom = '0';
-
-  /* 사진이 여러 장일 때, 캡처 시작 시점에 이미지 디코딩이 덜 끝나 있으면
-     페이지 나누기 계산이 어긋나 위쪽에 빈 공간이 생길 수 있다.
-     캡처 전에 모든 사진이 완전히 로딩됐는지 명시적으로 기다린다. */
-  await waitForImages(reportEl);
-
-  html2pdf().set({
+const exportPDF = () => {
+  const tag = [document.getElementById('f_class')?.value, $('f_date').value, $('f_id').value, $('f_name').value].filter(Boolean).join('_').replace(/[\\/:*?"<>|]/g, '');
+  return sjExportPDF($('pdf-btn'), {
     margin: [20, 0, 20, 0],
     filename: `심층순환_실험보고서_${tag}.pdf`,
     image: { type:'jpeg', quality:.95 },
     html2canvas: { scale:2, useCORS:true, backgroundColor:'#ffffff' },
     jsPDF: { unit:'mm', format:'a4', orientation:'portrait' },
     pagebreak: { mode:['css'] },
-  }).from(reportEl).save()
-    .then(() => { restorePadding(); btn.disabled=false; btn.textContent='PDF로 저장'; showMsg('PDF를 저장했습니다. 제출 링크에 올려 주세요.', true); })
-    .catch(() => { restorePadding(); btn.disabled=false; btn.textContent='PDF로 저장'; showMsg('PDF 저장에 실패했습니다. 다시 시도해 주세요.', false); });
+  }, false, false);
 };
 
 /* 이벤트 */
@@ -1297,6 +1450,7 @@ renderFixedInfo();
 drawTS();
 drawPracticeTS();
 render();
+sjInit();
 });
 </script>
 </body>

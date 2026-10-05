@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>통합과학 실험 보고서 — 산성과 염기성을 나타내는 이온의 확인</title>
+<title>산성과 염기성을 나타내는 이온의 확인 · 활동 보고서</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -216,6 +216,11 @@ a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radi
 .answer-row{display:flex;flex-direction:column;gap:.2rem;padding:.65rem .85rem;background:var(--sunk);border:1px solid var(--line);border-radius:8px;font-size:.92rem}
 .answer-row b{color:var(--faint);font-weight:600;font-size:.76rem;text-transform:uppercase;letter-spacing:.02em}
 .answer-row span{color:var(--ink);font-weight:700;font-size:1rem}
+
+/* 어느 탭에서도 보이는 저장 및 PDF 안내 */
+#sj-notices{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:10000;width:min(620px,calc(100% - 24px));display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow:auto;pointer-events:none}
+.sj-toast{box-sizing:border-box;display:flex;align-items:center;gap:12px;padding:14px 18px;border:1px solid var(--sea,#7dd3c8);border-radius:12px;background:#171a20;color:#e8eaee;box-shadow:0 6px 24px #0008;font-size:14px;line-height:1.6;pointer-events:auto}
+.sj-toast button{margin-left:auto;flex-shrink:0;background:transparent;border:1px solid #8b909b;border-radius:8px;color:inherit;padding:5px 9px;cursor:pointer}.sj-toast.sj-error{border-color:#e06a5b}
 </style>
 </head>
 <body>
@@ -241,8 +246,8 @@ a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radi
   <table class="info-form"><tbody>
     <tr>
       <td class="lbl">일자</td><td><input id="f_date" class="save" type="date" required></td>
-      <td class="lbl">학번</td><td><input id="f_id" class="save" type="text" placeholder="예: 20101" required></td>
-      <td class="lbl">이름</td><td><input id="f_name" class="save" type="text" placeholder="홍길동" required></td>
+      <td class="lbl">학번</td><td><input id="f_id" class="save" type="text" required></td>
+      <td class="lbl">이름</td><td><input id="f_name" class="save" type="text" required></td>
     </tr>
   </tbody></table>
 </section>
@@ -639,7 +644,7 @@ a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radi
   <div id="msg" class="note"></div>
   <hr class="rule">
   <div id="report">
-    <h2 style="font-size:1.25rem;font-weight:700;margin:0 0 .8rem;letter-spacing:-.02em;border-bottom:2px solid #141414;padding-bottom:.6rem">산성과 염기성을 나타내는 이온의 확인</h2>
+    <h2 style="font-size:1.25rem;font-weight:700;margin:0 0 .8rem;letter-spacing:-.02em;border-bottom:2px solid #141414;padding-bottom:.6rem">산성과 염기성을 나타내는 이온의 확인 활동 보고서</h2>
     <table class="r-info" style="margin-bottom:.8rem;width:100%;border-collapse:collapse">
       <tr>
         <td class="k" style="width:58px;white-space:nowrap">일자</td>
@@ -784,6 +789,184 @@ const FIXED_MATERIALS="리트머스 종이(푸른·붉은), 거름종이, 묽은
 document.addEventListener('DOMContentLoaded',()=>{
 const $=id=>{const el=document.getElementById(id);return el;};
 const KEY='acid_base_exp1_v2_';
+const sjPrefix = "acid_base_exp1_v2_";
+const sjTotal = () => TOTAL - 1;
+
+/* ===== 공통 저장 안내 · 진행 상태 · PDF 처리 (문서 10장) ===== */
+let sjTimer = null;
+let sjStarted = false;
+let sjPdf = false;
+let sjResetting = false;
+const sjPath = location.pathname.replace(/^.*?(?=reports\/)/, '').replace(/\/index\.html$/, '').replace(/\/$/, '');
+const sjStatusKey = 'sjstatus:' + sjPath;
+function sjNotice(id, message, error = false) {
+  let note = document.getElementById(id);
+  if (!note) {
+    note = document.createElement('div');
+    note.id = id; note.className = 'sj-toast';
+    note.setAttribute('role', error ? 'alert' : 'status');
+    let stack = document.getElementById('sj-notices');
+    if (!stack) { stack = document.createElement('div'); stack.id = 'sj-notices'; document.body.appendChild(stack); }
+    stack.appendChild(note);
+  }
+  note.replaceChildren();
+  note.classList.toggle('sj-error', error);
+  const text = document.createElement('span'); text.textContent = message;
+  const close = document.createElement('button'); close.type = 'button'; close.textContent = '닫기';
+  close.addEventListener('click', () => note.remove());
+  note.append(text, close);
+}
+function sjStorageFull() {
+  sjNotice('sj-storage-note', '기기에 저장하지 못했습니다. 저장 공간이나 브라우저 설정을 확인하고, 페이지를 닫기 전에 PDF로 저장해 주세요.', true);
+}
+function sjStorageSaved() {
+  document.getElementById('sj-storage-note')?.remove();
+  if (Object.keys(localStorage).some(key => key.startsWith(sjPrefix) && (localStorage.getItem(key) || '').startsWith('data:image'))) {
+    localStorage.removeItem(sjPrefix + 'photos_cleared');
+    document.getElementById('sj-photo-note')?.remove();
+  }
+}
+function sjWriteStatus() {
+  if (!sjStarted || sjResetting) return;
+  try {
+    const total = sjTotal();
+    let done = 0;
+    for (let n = 1; n <= total; n++) if (stepValid(n)) done++;
+    localStorage.setItem(sjStatusKey, JSON.stringify({done, total, updated:Date.now(), pdf:sjPdf}));
+  } catch { sjStorageFull(); }
+}
+function sjQueue(dirty = false) {
+  if (sjResetting) return;
+  if (dirty) { sjStarted = true; sjPdf = false; }
+  clearTimeout(sjTimer);
+  sjTimer = setTimeout(sjWriteStatus, 600);
+}
+function sjClearStatus() {
+  sjResetting = true;
+  clearTimeout(sjTimer);
+  localStorage.removeItem(sjStatusKey);
+  localStorage.removeItem(sjPrefix + 'photos_cleared');
+}
+function sjAfterPdf() {
+  clearTimeout(sjTimer);
+  sjStarted = true; sjPdf = true;
+  sjWriteStatus();
+  try {
+    const images = Object.keys(localStorage).filter(key => key.startsWith(sjPrefix) && (localStorage.getItem(key) || '').startsWith('data:image'));
+    if (images.length) {
+      // 먼저 안내 표식을 남겨, 도중에 실패해도 다시 열었을 때 알 수 있게 합니다.
+      localStorage.setItem(sjPrefix + 'photos_cleared', '1');
+      images.forEach(key => localStorage.removeItem(key));
+    }
+  } catch { sjStorageFull(); }
+}
+async function sjWaitForImages(report) {
+  await Promise.all([...report.querySelectorAll('img')].filter(img => img.getAttribute('src')).map(img => new Promise((resolve, reject) => {
+    if (img.complete) return img.naturalWidth ? resolve() : reject(new Error('사진을 불러오지 못했습니다. 사진을 다시 선택해 주세요.'));
+    const cleanup = () => { clearTimeout(timer); img.removeEventListener('load', loaded); img.removeEventListener('error', failed); };
+    const loaded = () => { cleanup(); resolve(); };
+    const failed = () => { cleanup(); reject(new Error('사진을 불러오지 못했습니다. 사진을 다시 선택해 주세요.')); };
+    const timer = setTimeout(failed, 15000);
+    img.addEventListener('load', loaded, {once:true});
+    img.addEventListener('error', failed, {once:true});
+  })));
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+async function sjExportPDF(button, options, neutral = false, animate = false) {
+  if (button.disabled || !showChecklist()) return;
+  if (typeof html2pdf !== 'function') {
+    sjNotice('sj-pdf-note', 'PDF 저장 도구를 불러오지 못했습니다. 인터넷 연결을 확인한 뒤 새로고침해 주세요.', true);
+    return;
+  }
+  const originalLabel = button.textContent;
+  const snapshots = [];
+  const imageSnapshots = [];
+  const captureGroups = [];
+  const remember = el => { if (el) snapshots.push([el, el.getAttribute('style')]); return el; };
+  button.disabled = true; button.textContent = '저장 중…';
+  document.getElementById('sj-pdf-note')?.remove();
+  try {
+    buildReport();
+    const report = document.getElementById('report');
+    if (neutral) {
+      const wrap = remember(document.getElementById('reportWrap'));
+      wrap.style.padding = '0'; wrap.style.background = '#ffffff';
+    } else {
+      remember(report);
+      report.style.paddingTop = '0'; report.style.paddingBottom = '0';
+    }
+    if (animate) {
+      const wrap = remember(report.closest('.wrap') || report.parentElement);
+      wrap.style.paddingTop = '0'; wrap.style.paddingBottom = '0';
+      const active = remember(document.querySelector('.step.active'));
+      if (active) { active.style.animation = 'none'; active.style.opacity = '1'; active.style.transform = 'none'; }
+    }
+    // 한 페이지보다 충분히 작은 제목·내용 묶음만 함께 넘겨 제목이 홀로 남지 않게 합니다.
+    report.querySelectorAll('.r-lab, .r-sub, .r-hang, h2, h3').forEach(heading => {
+      if (heading.closest('.r-head')) return;
+      const next = heading.nextElementSibling;
+      if (!next) return;
+      const height = next.getBoundingClientRect().bottom - heading.getBoundingClientRect().top;
+      if (height <= 0 || height > 360) return;
+      const group = document.createElement('div');
+      group.style.breakInside = 'avoid'; group.style.pageBreakInside = 'avoid'; group.style.display = 'flow-root';
+      const margin = getComputedStyle(heading).margin;
+      remember(heading); heading.style.margin = margin;
+      heading.before(group); group.append(heading, next); captureGroups.push(group);
+    });
+    // 비어 있는 사진 자리도 캡처 도구가 잘못 읽지 않도록 유효한 투명 이미지로 둡니다.
+    report.querySelectorAll('img').forEach(img => {
+      imageSnapshots.push([img, img.getAttribute('src')]);
+      if (!img.getAttribute('src')) img.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+    });
+    await sjWaitForImages(report);
+    // html2canvas가 object-fit을 재현하지 못해 세로 사진이 늘어나는 문제를 피합니다.
+    for (const img of report.querySelectorAll('img')) {
+      const box = img.getBoundingClientRect();
+      if (!box.width || !box.height || getComputedStyle(img).objectFit !== 'contain') continue;
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(img.clientWidth * 2));
+      canvas.height = Math.max(1, Math.round(img.clientHeight * 2));
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = getComputedStyle(img).backgroundColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const scale = Math.min(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+      const width = img.naturalWidth * scale, height = img.naturalHeight * scale;
+      ctx.drawImage(img, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
+      img.src = canvas.toDataURL('image/png');
+    }
+    await sjWaitForImages(report);
+    await html2pdf().set(options).from(report).save();
+    sjAfterPdf();
+    sjNotice('sj-pdf-note', 'PDF 저장 처리가 완료되었습니다. 내려받은 파일을 확인해 주세요.');
+  } catch (error) {
+    sjNotice('sj-pdf-note', 'PDF 저장에 실패했습니다. ' + (error?.message || '다시 시도해 주세요.'), true);
+  } finally {
+    captureGroups.reverse().forEach(group => { group.replaceWith(...group.childNodes); });
+    imageSnapshots.forEach(([img, src]) => src === null ? img.removeAttribute('src') : img.setAttribute('src', src));
+    snapshots.reverse().forEach(([el, style]) => style === null ? el.removeAttribute('style') : el.setAttribute('style', style));
+    button.disabled = false; button.textContent = originalLabel;
+  }
+}
+function sjInit() {
+  try {
+    const previous = JSON.parse(localStorage.getItem(sjStatusKey) || 'null');
+    sjStarted = !!previous; sjPdf = !!previous?.pdf;
+    if (localStorage.getItem(sjPrefix + 'photos_cleared') === '1') {
+      sjNotice('sj-photo-note', '지난 PDF 저장 후 기기에 보관하던 사진을 정리했습니다. 새 PDF에 사진을 넣으려면 다시 올려 주세요.');
+    }
+  } catch { sjStorageFull(); }
+  document.addEventListener('input', e => { if (e.target.matches('input, textarea, select')) sjQueue(true); });
+  document.addEventListener('change', e => { if (e.target.matches('input, textarea, select')) sjQueue(true); });
+  document.addEventListener('click', e => {
+    if (e.target.closest('.sj-toast')) return;
+    const editing = e.target.closest('section[data-step="4"] button');
+    sjQueue(!!editing);
+  });
+  document.addEventListener('pointerup', e => { if (e.target.closest('section[data-step="4"] svg, section[data-step="4"] canvas')) sjQueue(true); });
+  window.addEventListener('pagehide', () => { if (sjTimer !== null) { clearTimeout(sjTimer); sjWriteStatus(); } });
+}
+
 const TOTAL=6;
 let step=1;
 const norm=s=>(s||'').replace(/[\s()（）]/g,'').replace(/[-−–]/g,'−').replace(/[+＋]/g,'+');
@@ -810,9 +993,14 @@ Object.entries(ALL_GRADED).forEach(([id,a])=>{
 });
 
 const savers=()=>[...document.querySelectorAll('.save')];
-const save=()=>savers().forEach(el=>localStorage.setItem(KEY+el.id,el.type==='checkbox'?(el.checked?'1':'0'):el.value));
+const save = () => {
+  try {
+    savers().sort((a, b) => Number(a.value.startsWith('data:image')) - Number(b.value.startsWith('data:image'))).forEach(el=>localStorage.setItem(KEY+el.id,el.type==='checkbox'?(el.checked?'1':'0'):el.value));
+    sjStorageSaved();
+  } catch { sjStorageFull(); }
+};
 const restore=()=>savers().forEach(el=>{const v=localStorage.getItem(KEY+el.id);if(v===null)return;if(el.type==='checkbox')el.checked=v==='1';else if(v)el.value=el.maxLength>0?v.slice(0,el.maxLength):v;});
-const clearAll=()=>{if(!confirm('작성한 내용을 모두 지웁니다. 계속할까요?'))return;savers().forEach(el=>localStorage.removeItem(KEY+el.id));location.reload();};
+const clearAll=()=>{if(!confirm('작성한 내용을 모두 지웁니다. 계속할까요?'))return; sjClearStatus();savers().forEach(el=>localStorage.removeItem(KEY+el.id));location.reload();};
 
 const MSG={1:'일자, 학번, 이름을 모두 입력해 주세요.',2:'유의사항을 확인했다면 체크해 주세요.',3:'빈칸을 모두 채우고, 정답이 아닌 항목을 다시 확인해 주세요.',4:'실험을 진행하고 빈칸을 모두 채워 주세요.',5:'빈칸을 모두 채우고 정답이 아닌 항목을 다시 확인해 주세요.'};
 const secOf=n=>document.querySelector(`.step[data-step="${n}"]`);
@@ -954,67 +1142,17 @@ const breakLongWords = (str, maxLen = 15) =>
   drawLitmusMini('rep_img_na_after', '#d99aa4', '#4a72cf', 1, naDone);
 };
 
-const waitForImages = async root => {
-  const imgs = [...root.querySelectorAll('img,canvas')].filter(el => el.tagName==='IMG' ? el.src : true);
-  await Promise.all([...root.querySelectorAll('img')].filter(img=>img.src).map(img => {
-    if(img.complete && img.naturalWidth > 0) return Promise.resolve();
-    return img.decode ? img.decode().catch(()=>{}) : new Promise(res=>{img.onload=res;img.onerror=res;});
-  }));
-  // Canvas가 그려질 때까지 한 프레임 더 기다림
-  await new Promise(res => requestAnimationFrame(()=>requestAnimationFrame(res)));
-};
 
-const exportPDF = async () => {
-  if(!showChecklist())return;
-  buildReport();
-  const tag=`${$('f_date').value||''}_${$('f_id').value}_${$('f_name').value}`;
-  const btn=$('pdf-btn');btn.disabled=true;btn.textContent='저장 중…';
-
-  const reportEl = $('report');
-  // #report의 부모 .wrap 패딩도 임시 제거 (상단 여백 원인)
-  const wrapEl = reportEl.closest('.wrap') || reportEl.parentElement;
-  const origWrapPT = wrapEl ? wrapEl.style.paddingTop : '';
-  const origWrapPB = wrapEl ? wrapEl.style.paddingBottom : '';
-  const restorePadding = () => {
-    reportEl.style.paddingTop = '';
-    reportEl.style.paddingBottom = '';
-    if(wrapEl){ wrapEl.style.paddingTop = origWrapPT; wrapEl.style.paddingBottom = origWrapPB; }
-  };
-  reportEl.style.paddingTop = '0';
-  reportEl.style.paddingBottom = '0';
-  if(wrapEl){ wrapEl.style.paddingTop = '0'; wrapEl.style.paddingBottom = '0'; }
-
-  // 진입 애니메이션이 캡처 시점까지 덜 끝나 있으면(opacity/translateY 중간값) 상단이
-  // 비어 보이는 것처럼 캡처될 수 있다 — 캡처 직전 강제로 애니메이션을 끝난 상태로 고정한다
-  const activeStep = document.querySelector('.step.active');
-  const origAnim = activeStep ? activeStep.style.animation : '';
-  const origOpacity = activeStep ? activeStep.style.opacity : '';
-  const origTransform = activeStep ? activeStep.style.transform : '';
-  if(activeStep){
-    activeStep.style.animation = 'none';
-    activeStep.style.opacity = '1';
-    activeStep.style.transform = 'none';
-  }
-  const restoreAnim = () => {
-    if(activeStep){
-      activeStep.style.animation = origAnim;
-      activeStep.style.opacity = origOpacity;
-      activeStep.style.transform = origTransform;
-    }
-  };
-
-  await waitForImages(reportEl);
-
-  html2pdf().set({
+const exportPDF = () => {
+  const tag = [document.getElementById('f_class')?.value, $('f_date').value, $('f_id').value, $('f_name').value].filter(Boolean).join('_').replace(/[\\/:*?"<>|]/g, '');
+  return sjExportPDF($('pdf-btn'), {
     margin: [20, 0, 20, 0],
     filename: `산성과_염기성을_나타내는_이온의_확인_${tag}.pdf`,
     image: {type:'jpeg', quality:.95},
     html2canvas: {scale:2, useCORS:true, backgroundColor:'#ffffff'},
     jsPDF: {unit:'mm', format:'a4', orientation:'portrait'},
     pagebreak: {mode:['css']},
-  }).from(reportEl).save()
-    .then(()=>{ restorePadding(); restoreAnim(); btn.disabled=false; btn.textContent='PDF로 저장'; })
-    .catch(()=>{ restorePadding(); restoreAnim(); btn.disabled=false; btn.textContent='PDF로 저장'; });
+  }, false, true);
 };
 
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>goTo(+t.dataset.step)));
@@ -1795,6 +1933,7 @@ restore();
 if($('reasonCount')) $('reasonCount').textContent = $('reason').value.length;
 if($('reflectCount')) $('reflectCount').textContent = $('reflect').value.length;
 refreshPrep();refreshGaObs();refreshNaObs();render();
+sjInit();
 });
 </script>
 </body>

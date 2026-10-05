@@ -189,6 +189,7 @@
   @media (prefers-reduced-motion: reduce) {
     .card, #search { transition: none; }
   }
+.progress-badge{display:inline-block;margin-top:9px;padding:3px 9px;border-radius:999px;color:var(--cc);background:#ffffff0a;border:1px solid currentColor;font-size:12px}
 </style>
 </head>
 <body>
@@ -244,12 +245,12 @@
 const SUB_META = {
   '대기·해양': { color: '#6fb3e6', icon: '🌊' },
   '지질':      { color: '#e0913e', icon: '🌋' },
-  '우주':      { color: '#7d8cff', icon: '🪐' },
-  '융합':      { color: '#2bb6a4', icon: '🔗' },
-  '물리학':    { color: '#7d8cff', icon: '⚛️' },
-  '화학':      { color: '#ff8a65', icon: '🧪' },
-  '생명과학':  { color: '#6fcf97', icon: '🧬' },
-  '지구과학':  { color: '#e0913e', icon: '🌍' },
+  '우주':      { color: '#7dd3c8', icon: '🪐' },
+  '융합':      { color: '#7dd3c8', icon: '🔗' },
+  '물리학':    { color: '#7dd3c8', icon: '⚛️' },
+  '화학':      { color: '#7dd3c8', icon: '🧪' },
+  '생명과학':  { color: '#7dd3c8', icon: '🧬' },
+  '지구과학':  { color: '#7dd3c8', icon: '🌍' },
 };
 
 const TABS = [
@@ -345,13 +346,13 @@ const REPORTS = [
     url: 'reports/integrated-science/chemistry/ion-movement/index.html'
   },
   {
-    name: '산화 환원 - 구리판 가열 실험',
+    name: '산화·환원 실험(1) - 구리판의 변화',
     desc: '구리판을 겉불꽃·속불꽃에 넣어가며 산화와 환원이 반복되는 과정을 관찰해요',
     emoji: '🔥',
     url: 'reports/integrated-science/chemistry/copper-oxidation/index.html'
   },
   {
-    name: '산화 환원 - 아연판과 황산 구리(Ⅱ) 수용액의 반응',
+    name: '산화·환원 실험(2) - 아연판과 황산 구리(Ⅱ) 수용액의 반응',
     desc: '아연판을 황산 구리 수용액에 넣어 금속의 반응성 차이에 따른 산화·환원을 관찰해요',
     emoji: '⚙️',
     url: 'reports/integrated-science/chemistry/zinc-copper-reaction/index.html'
@@ -401,6 +402,16 @@ tabbarEl.addEventListener('click', e => {
   render();
 });
 
+function statusHTML(url) {
+  try {
+    const key = 'sjstatus:' + url.replace(/\/index\.html$/, '').replace(/\/$/, '');
+    const status = JSON.parse(localStorage.getItem(key) || 'null');
+    if (!status || !Number.isInteger(status.done) || !Number.isInteger(status.total) || status.total < 1) return '';
+    const done = Math.max(0, Math.min(status.done, status.total));
+    return '<span class="progress-badge">' + (status.pdf ? '✓ PDF 저장 완료' : '작성 중 · ' + done + '/' + status.total + '단계') + '</span>';
+  } catch { return ''; }
+}
+
 function cardHTML(r, cc) {
   return `
     <a class="card${r.soon ? ' soon' : ''}" href="${r.url}" style="--cc:${cc}" ${r.soon ? 'aria-disabled="true" tabindex="-1"' : ''}>
@@ -408,6 +419,7 @@ function cardHTML(r, cc) {
       <span class="txt">
         <h3>${r.name}</h3>
         <p>${r.desc}</p>
+        ${statusHTML(r.url)}
       </span>
     </a>`;
 }
@@ -443,6 +455,9 @@ function render() {
   emptyEl.style.display = (q && shownTotal === 0) ? 'block' : 'none';
 }
 
+window.addEventListener('storage', e => { if (!e.key || e.key.startsWith('sjstatus:')) render(); });
+window.addEventListener('pageshow', render);
+window.addEventListener('focus', render);
 searchEl.addEventListener('input', render);
 render();
 </script>

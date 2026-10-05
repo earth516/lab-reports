@@ -8,55 +8,45 @@
 /
 ├── index.html                                   ← 허브 페이지 (여기서 항목을 클릭하면 각 보고서로 이동)
 ├── README.md
+├── design-guide.md                             ← 디자인·동작 기준
 └── reports/
     ├── earth-science/                            ← 지구과학 탭
     │   ├── atmosphere-ocean/                     ← 하위분류: 대기·해양
-    │   │   ├── deep-circulation/
-    │   │   │   └── index.html                    ← 심층 순환의 발생 원리 추론하기
-    │   │   ├── argo-seawater-comparison/
-    │   │   │   └── index.html                    ← ARGO 자료로 해수의 성질 비교하기
-    │   │   └── cloud-formation/
-    │   │       └── index.html                    ← 구름 만들기 실험(단열 변화)
+    │   │   ├── deep-circulation/                 ← 심층 순환의 발생 원리 추론하기
+    │   │   ├── argo-seawater-comparison/         ← ARGO 자료로 해수의 성질 비교하기
+    │   │   └── cloud-formation/                  ← 구름 만들기 실험(단열 변화)
     │   ├── geology/                               ← 하위분류: 지질
-    │   │   ├── igneous-rocks/
-    │   │   │   └── index.html                    ← "화성암 관찰하기" 활동 보고서
-    │   │   ├── sedimentary-rocks/
-    │   │   │   └── index.html                    ← "퇴적암 관찰하기" 활동 보고서
-    │   │   └── geo-eras-expo/
-    │   │       └── index.html                    ← 지질시대 화석 박람회
+    │   │   ├── igneous-rocks/                    ← 화성암 관찰하기
+    │   │   ├── sedimentary-rocks/                ← 퇴적암 관찰하기
+    │   │   └── geo-eras-expo/                    ← 지질시대 화석 박람회 (지구과학 탭 버전, 황토색)
     │   ├── astronomy/                             ← 하위분류: 우주 (아직 없음)
     │   └── fusion/                                 ← 하위분류: 융합 (아직 없음)
     └── integrated-science/                        ← 통합과학·과학탐구실험 탭
         ├── physics/                                ← 하위분류: 물리학 (아직 없음)
         ├── chemistry/                              ← 하위분류: 화학
-        │   ├── neutralization-reaction/
-        │   │   └── index.html                    ← 중화 반응 — 이온 모형 실험
-        │   ├── ion-movement/
-        │   │   └── index.html                    ← 산성과 염기성을 나타내는 이온의 확인
-        │   ├── copper-oxidation/
-        │   │   └── index.html                    ← 구리판 가열 실험 (현재 내용은 아연·구리 반응과 같음)
-        │   └── zinc-copper-reaction/
-        │       └── index.html                    ← 아연판과 황산 구리(Ⅱ) 수용액의 반응
+        │   ├── neutralization-reaction/          ← 중화 반응 - 이온 모형 실험
+        │   ├── ion-movement/                     ← 산성과 염기성을 나타내는 이온의 확인
+        │   ├── copper-oxidation/                 ← 산화·환원 실험(1) - 구리판의 변화
+        │   └── zinc-copper-reaction/             ← 산화·환원 실험(2) - 아연판과 황산 구리(Ⅱ) 수용액의 반응
         ├── biology/                                ← 하위분류: 생명과학 (아직 없음)
         └── earth-science/                          ← 하위분류: 지구과학
-            └── geo-eras-expo/
-                └── index.html                    ← "지질시대 화석 박람회" 활동 보고서
+            └── geo-eras-expo/                    ← 지질시대 화석 박람회 (통합과학 탭 버전, 민트색)
 ```
+
+각 보고서 폴더 안에는 `index.html` 하나만 있다(트리에서는 생략).
 
 **폴더 위치가 곧 분류다.** `reports/<탭 폴더>/<하위분류 폴더>/<보고서 폴더>/index.html` — 이 3단 경로를 보고
 허브 페이지가 어느 탭·어느 하위분류에 넣을지 스스로 계산한다. 탭/하위분류 값을 어딘가에 따로 적어 둘 필요가 없다.
 
-> **폴더 이름은 한글 대신 영문·하이픈을 쓴다.** 한글 폴더명은 깃허브에서 인식이 잘 안 될 때가
-> 있다 (맥에서 만든 폴더는 유니코드가 분해형(NFD)으로 저장되는데 깃허브·브라우저는 완성형(NFC)을
-> 기대해서 링크가 깨지는 경우가 흔하다).
+> **폴더 이름은 영문·하이픈으로 통일한다.** 경로를 등록하거나 이동할 때 철자와 대소문자를 실제 폴더와 정확히 맞춘다.
 
 `reports/` 아래는 **탭 폴더 → 하위분류 폴더 → 보고서 폴더 → `index.html`** 4단 구조다.
 **어느 폴더에 두느냐가 곧 화면에 뜨는 탭·하위분류를 결정한다** — 루트 `index.html`의 `TAB_FOLDERS`·`SUB_FOLDERS`에
 "폴더명 → 화면에 뜨는 이름"이 매핑되어 있고, 보고서의 `url` 경로에서 그 폴더명을 읽어 자동으로 계산한다.
 그래서 `REPORTS` 배열에는 탭·하위분류 값을 따로 적지 않아도 된다.
 
-보고서 하나 = 폴더 하나 = `index.html` 파일 하나. 각 보고서 파일은 완전히 독립적으로 동작한다
-(다른 파일을 참조하지 않는다).
+보고서 하나 = 폴더 하나 = `index.html` 파일 하나. 각 보고서에는 화면과 동작 코드가 들어 있어 다른 보고서 파일 없이 열 수 있다.
+폰트와 PDF 저장 도구는 외부 CDN에서 불러오므로 해당 기능에는 인터넷 연결이 필요하다.
 
 ## GitHub Pages로 배포하기
 
@@ -98,15 +88,16 @@ earth-science         → 지구과학      (통합과학 탭 안 — 탭 폴더
 
 **어느 탭인지 정하는 기준** — "지구과학 선택 수업(2·3학년)에서만 다루는 심화 내용인가, 1학년 통합과학처럼 전체 학생이 배우는 내용인가"로 나누면 된다.
 - 지구과학 선택 수업 학생만 듣는 심화 실험/탐구활동 → `earth-science` 탭 폴더
-- 통합과학(1학년 공통) 수업이나 과학탐구실험 시간에 쓰는 활동 → `integrated-science` 탭 폴더 (내용이 지구과학 소재라도 여기로 — 예: 지질시대 화석 박람회는 `integrated-science/earth-science/`에 있다)
+- 통합과학(1학년 공통) 수업이나 과학탐구실험 시간에 쓰는 활동 → `integrated-science` 탭 폴더 (내용이 지구과학 소재라도 여기로 — 예: 지질시대 화석 박람회의 통합과학 버전은 `integrated-science/earth-science/`에 있다)
 
-이 판단이 애매하면 아무 쪽 폴더에나 넣어도 된다 — 나중에 **폴더째로 옮기기만 하면** 분류도 같이 옮겨진다(코드를 따로 고칠 필요 없음).
+분류를 바꾸려면 보고서 폴더를 옮기고, 루트 `index.html`의 `REPORTS`에 등록된 `url`도 새 경로로 바꾼다. 색상과 kicker도 새 분류에 맞춘다. 진행 배지는 경로별로 저장되므로 이전 경로의 배지는 자동 이전되지 않는다.
 
 **같은 실험을 두 탭에 동시에 노출하고 싶으면**(예: 통합과학 수업과 지구과학 수업 둘 다에서 쓰는 실험) — 두 가지 방법이 있다.
 
 **방법 A. 파일을 실제로 두 곳에 둔 경우** (예: `reports/earth-science/geology/geo-eras-expo/`와
 `reports/integrated-science/earth-science/geo-eras-expo/`에 각각 파일이 있음) — `REPORTS` 배열에
 **각자의 실제 경로**로 항목을 하나씩 만들면 된다. `tab`·`subcategory`는 각 url에서 알아서 계산된다.
+지금 지질시대 화석 박람회가 이 방식이다. 이때 두 파일은 **포인트 색(탭에 맞게)과 localStorage 키(`geofair_` / `geofairint_`)를 서로 다르게** 둬야 한다 — 키가 같으면 GitHub Pages에서 두 버전의 저장 내용이 섞인다.
 
 ```js
 {
@@ -157,32 +148,18 @@ const REPORTS = [
     emoji: '🌊',
     url: 'reports/earth-science/atmosphere-ocean/deep-circulation/index.html'
   },
+  /* ... 기존 항목들 ... */
   {
-    name: '화성암 관찰하기 🔎',
-    desc: '화성암의 색과 결정 크기를 관찰하고 특징에 따라 분류해요',
-    emoji: '🌋',
-    url: 'reports/earth-science/geology/igneous-rocks/index.html'
-  },
-  {
-    name: '퇴적암 관찰하기 🔎',
-    desc: '퇴적암을 기원·입자 크기·성분에 따라 관찰하고 분류해요',
-    emoji: '🪨',
-    url: 'reports/earth-science/geology/sedimentary-rocks/index.html'
-  },
-  {
-    name: '지질시대 화석 박람회',
-    desc: '지질시대의 대표 표준화석을 관찰하고 정보를 찾아 기록해요',
-    emoji: '🦴',
-    url: 'reports/integrated-science/earth-science/geo-eras-expo/index.html'
-  },
-  {
-    name: '여기에 새 실험 제목',
+    name: '여기에 새 실험 제목',      /* 보고서 파일의 <h1>과 똑같이 */
     desc: '한두 문장으로 이 실험이 뭘 다루는지 설명',
     emoji: '🧪',
     url: 'reports/integrated-science/chemistry/new-folder-name/index.html'
   }
 ].map(r => Object.assign(deriveMeta(r.url), r));
 ```
+
+> ⚠️ 마지막 줄은 반드시 `Object.assign(deriveMeta(r.url), r)` 순서여야 한다. 순서를 거꾸로(`Object.assign(r, deriveMeta(r.url))`) 쓰면
+> 폴더에서 자동 계산한 값이 직접 적은 `tab`·`subcategory`를 덮어써서, 앞의 "방법 B"가 작동하지 않는다.
 
 4. 커밋하고 푸시하면 끝. 새 카드가 폴더 위치에 맞는 탭·하위분류 아래에 자동으로 나타난다.
 
@@ -199,12 +176,12 @@ const REPORTS = [
 const SUB_META = {
   '대기·해양': { color: '#6fb3e6', icon: '🌊' },
   '지질':      { color: '#e0913e', icon: '🌋' },
-  '우주':      { color: '#7d8cff', icon: '🪐' },
-  '융합':      { color: '#2bb6a4', icon: '🔗' },
-  '물리학':    { color: '#7d8cff', icon: '⚛️' },
-  '화학':      { color: '#ff8a65', icon: '🧪' },
-  '생명과학':  { color: '#6fcf97', icon: '🧬' },
-  '지구과학':  { color: '#e0913e', icon: '🌍' },
+  '우주':      { color: '#7dd3c8', icon: '🪐' },
+  '융합':      { color: '#7dd3c8', icon: '🔗' },
+  '물리학':    { color: '#7dd3c8', icon: '⚛️' },
+  '화학':      { color: '#7dd3c8', icon: '🧪' },
+  '생명과학':  { color: '#7dd3c8', icon: '🧬' },
+  '지구과학':  { color: '#7dd3c8', icon: '🌍' },
 };
 
 const TABS = [
@@ -230,25 +207,17 @@ const SUB_FOLDERS = {
 
 새 탭/하위분류를 추가하려면 네 군데를 같이 고쳐야 한다:
 1. `TABS`에 `{ id: '고유id', label: '화면에 뜰 이름', subs: [...] }` 추가 (또는 기존 탭의 `subs`에 이름 추가)
-2. `SUB_META`에 그 하위분류의 색·아이콘 추가
+2. `SUB_META`에 그 하위분류의 색·아이콘 추가 — 색은 design-guide.md 1장 표를 따르고(지구과학 대기·해양·지질만 고유색, 나머지는 민트 `#7dd3c8`), 바꿀 때는 그 표와 보고서 파일 `:root`도 같이 고친다
 3. `TAB_FOLDERS`(새 탭인 경우) 또는 `SUB_FOLDERS`(새 하위분류인 경우)에 "폴더명 → id/이름" 매핑 추가
 4. `reports/` 아래에 그 폴더명으로 실제 폴더를 만든다
 
+- 학생 기기에서 보고서를 쓰기 시작하면 허브 카드에 "작성 중 · n/m단계" 또는 "✓ PDF 저장 완료" 배지가 뜬다. 각 보고서가 `sjstatus:<경로>` 키에 진행 상태를 남기고 허브가 그걸 읽는 방식이라 서버가 필요 없고, 학생 각자의 기기에만 보인다(자세한 내용은 design-guide.md 10장).
 - 하위분류에 아직 보고서가 없어도 점선 테두리로 "곧 추가될 실험을 위한 자리예요"가 자동으로 표시된다.
 - `SUB_FOLDERS`에 등록 안 된 폴더명을 쓰면 `융합`으로, `TAB_FOLDERS`에 없는 폴더명을 쓰면 첫 번째 탭으로 조용히 분류된다 — 에러는 안 나지만 의도한 곳에 안 나타나니 폴더명은 항상 표와 정확히 맞춰 쓸 것.
 
 ## 각 보고서 파일 자체를 재사용하는 법
 
-화석 박람회(지구과학·통합과학)와 퇴적암 보고서는 추가 관찰 행의 이름·내용·사진도 자동 저장한다.
-새로고침하면 행 목록과 사진을 복원하며, 행 삭제 및 전체 초기화도 저장 내용에 반영한다.
-추가 관찰의 글과 사진은 별도로 저장하므로 사진 저장 용량이 부족할 때에도 글을 먼저 저장한다.
-저장 공간 경고가 표시되면 페이지를 닫기 전에 PDF로 저장한다.
-
-화석 박람회의 저장 키는 지구과학판 `geofair_`, 통합과학판 `geofairint_`로 구분한다.
-분리 이전의 공유 데이터는 자동 이동하지 않으며, 기존 `geofair_` 데이터는 유지된다.
-따라서 통합과학판에서 기존 작성 내용이 비어 보일 수 있다.
-
-각 보고서(`reports/*/index.html`)는 이번에 정리해 둔 디자인(다크 배경 + 민트 포인트, Pretendard 폰트),
+각 보고서(`reports/*/index.html`)는 이번에 정리해 둔 디자인(다크 배경 + 분류별 포인트 색, Pretendard 폰트),
 표 형태 정보입력, 목표·준비물 고정 표시, 자동 저장, 빈칸+정답 확인(맞으면 초록/틀리면 빨강 표시),
 사진 업로드(카메라 촬영 또는 갤러리 선택), PDF 저장 구조를 그대로 갖고 있다. 새 실험을 만들 때는
 
@@ -259,32 +228,29 @@ const SUB_FOLDERS = {
 
 만 그 실험에 맞게 바꾸면, 나머지 구조(저장, 검증, PDF 내보내기 등)는 그대로 재사용할 수 있다.
 
-### 정답 확인 기능 추가하는 법
+### 빈칸 채점 기능
 
-빈칸(`<input class="blank save" id="b1" ...>`)에 정답 확인 기능을 넣으려면:
+빈칸 채점(실시간 표시 + **"빈칸 확인하기"** 버튼 + 2회 재시도 + 정답 공개 팝업 + 재입력 유도)은 design-guide.md 6장에 표준 코드가 있다.
+새로 짜지 말고 기존 보고서 파일의 해당 부분을 그대로 복사해서 `THEORY_ANSWERS`(정답)와 `BLANK_LABELS`(각 빈칸 설명)만 바꾸는 게 가장 안전하다.
 
-```js
-const THEORY_ANSWERS = { b1:'정답1', b2:'정답2', /* ... */ };
-const norm = s => (s || '').replace(/\s+/g, '');   // 띄어쓰기 차이는 무시하고 채점
-const checkTheory = () => {
-  const lines = Object.entries(THEORY_ANSWERS).map(([id, answer]) => {
-    const el = $(id);
-    const mine = el.value;
-    const ok = norm(mine) === norm(answer);
-    el.classList.toggle('correct', ok);   // 맞으면 초록
-    el.classList.toggle('invalid', !ok);  // 틀리면 빨강
-    return `${id.toUpperCase()} — 내 답: ${mine || '미입력'} · 정답: ${answer}${ok ? ' ✓' : ''}`;
-  });
-  $('theory-result').innerHTML = lines.join('<br>');
-  $('theory-result').className = 'note ok';
-};
-```
+> `neutralization-reaction.html`(중화 반응)은 다른 파일과 구조가 다른 예외 파일이라 베이스로 쓰지 않는다.
 
-그리고 해당 탭 안에 버튼과 결과창을 추가하면 된다.
+## 저장과 PDF 처리
 
-```html
-<button class="btn" type="button" id="check-theory">정답 확인하기</button>
-<div id="theory-result" class="note"></div>
-```
+- 화석 박람회 두 버전과 퇴적암의 추가 관찰 행은 이름·내용·사진까지 저장한다. 행 삭제와 전체 초기화도 저장 자료에 반영한다.
+- 화석 박람회 저장 키는 지구과학판 `geofair_`, 통합과학판 `geofairint_`이다. 이전 공유 데이터는 자동 이동하지 않아 통합과학판에서 기존 입력이 비어 보일 수 있다.
+- 구리판 실험은 저장소의 정상 원본(`7925a7e`)에서 복구했으며 `redox_copper_1_v5_`를 사용한다. 잘못 공유하던 아연·구리 데이터는 구리판 보고서로 옮기지 않는다.
+- 사진은 긴 변 900px 이내의 JPEG(품질 75%)로 저장한다. 저장 실패는 현재 탭과 관계없이 고정 알림으로 표시한다.
+- PDF 저장 도구의 완료 응답 후 해당 보고서의 저장된 사진만 정리한다. 글·현재 화면의 사진은 유지한다. 다시 열면 사진 재업로드 안내가 나오며, 페이지를 닫기 전 다시 수정하면 화면의 사진도 다시 저장된다.
+- ‘PDF 저장 완료’는 저장 도구가 완료 응답을 반환했다는 뜻이다. 내려받은 파일은 학생이 확인해야 한다.
+- 진행 배지는 중화 반응을 포함한 모든 보고서에 적용된다. 새 입력이나 실험 조작을 하면 ‘작성 중’으로 바뀐다. 중화 반응의 ‘새 실험’ 버튼은 실험 초기화이며 전체 보고서 삭제 버튼이 아니다.
 
-`$('check-theory').addEventListener('click', checkTheory);`로 연결하는 것도 잊지 말 것.
+## 검증 기록
+
+2026-10-06 기준으로 전체 보고서의 HTML·스크립트, 제목·경로·저장 키·초성 힌트, 저장 경고·PDF 오류 복구·사진 정리·진행 배지를 확인했다. 추가 관찰 행의 글·사진 복원, 삭제와 초기화도 확인했다.
+
+ARGO·화석·구리판·중화 반응은 실제 PDF를 생성해 사진 비율과 페이지 배치를 확인했다. 검증용 스크립트와 임시 출력 폴더는 점검 후 정리했다.
+
+PDF 캡처 시에는 사진 비율을 이미지 자체에 반영해 세로 사진이 늘어나지 않도록 한다. 빈 사진 자리는 임시 투명 이미지로 처리하고, 작은 제목·내용 묶음만 함께 넘긴다. 캡처 후 원래 화면을 복구한다.
+
+실제 PDF의 사진·줄바꿈·페이지 여백과 아이패드·갤럭시탭에서의 다운로드는 배포 전 별도로 확인한다.
