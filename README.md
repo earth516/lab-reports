@@ -11,18 +11,32 @@
 └── reports/
     ├── earth-science/                            ← 지구과학 탭
     │   ├── atmosphere-ocean/                     ← 하위분류: 대기·해양
-    │   │   └── deep-circulation/
-    │   │       └── index.html                    ← "심층 순환의 발생 원리 추론하기" 실험 보고서
+    │   │   ├── deep-circulation/
+    │   │   │   └── index.html                    ← 심층 순환의 발생 원리 추론하기
+    │   │   ├── argo-seawater-comparison/
+    │   │   │   └── index.html                    ← ARGO 자료로 해수의 성질 비교하기
+    │   │   └── cloud-formation/
+    │   │       └── index.html                    ← 구름 만들기 실험(단열 변화)
     │   ├── geology/                               ← 하위분류: 지질
     │   │   ├── igneous-rocks/
     │   │   │   └── index.html                    ← "화성암 관찰하기" 활동 보고서
-    │   │   └── sedimentary-rocks/
-    │   │       └── index.html                    ← "퇴적암 관찰하기" 활동 보고서
+    │   │   ├── sedimentary-rocks/
+    │   │   │   └── index.html                    ← "퇴적암 관찰하기" 활동 보고서
+    │   │   └── geo-eras-expo/
+    │   │       └── index.html                    ← 지질시대 화석 박람회
     │   ├── astronomy/                             ← 하위분류: 우주 (아직 없음)
     │   └── fusion/                                 ← 하위분류: 융합 (아직 없음)
     └── integrated-science/                        ← 통합과학·과학탐구실험 탭
         ├── physics/                                ← 하위분류: 물리학 (아직 없음)
-        ├── chemistry/                              ← 하위분류: 화학 (아직 없음)
+        ├── chemistry/                              ← 하위분류: 화학
+        │   ├── neutralization-reaction/
+        │   │   └── index.html                    ← 중화 반응 — 이온 모형 실험
+        │   ├── ion-movement/
+        │   │   └── index.html                    ← 산성과 염기성을 나타내는 이온의 확인
+        │   ├── copper-oxidation/
+        │   │   └── index.html                    ← 구리판 가열 실험 (현재 내용은 아연·구리 반응과 같음)
+        │   └── zinc-copper-reaction/
+        │       └── index.html                    ← 아연판과 황산 구리(Ⅱ) 수용액의 반응
         ├── biology/                                ← 하위분류: 생명과학 (아직 없음)
         └── earth-science/                          ← 하위분류: 지구과학
             └── geo-eras-expo/
@@ -167,7 +181,7 @@ const REPORTS = [
     emoji: '🧪',
     url: 'reports/integrated-science/chemistry/new-folder-name/index.html'
   }
-].map(r => Object.assign(r, deriveMeta(r.url)));
+].map(r => Object.assign(deriveMeta(r.url), r));
 ```
 
 4. 커밋하고 푸시하면 끝. 새 카드가 폴더 위치에 맞는 탭·하위분류 아래에 자동으로 나타난다.
@@ -224,6 +238,15 @@ const SUB_FOLDERS = {
 - `SUB_FOLDERS`에 등록 안 된 폴더명을 쓰면 `융합`으로, `TAB_FOLDERS`에 없는 폴더명을 쓰면 첫 번째 탭으로 조용히 분류된다 — 에러는 안 나지만 의도한 곳에 안 나타나니 폴더명은 항상 표와 정확히 맞춰 쓸 것.
 
 ## 각 보고서 파일 자체를 재사용하는 법
+
+화석 박람회(지구과학·통합과학)와 퇴적암 보고서는 추가 관찰 행의 이름·내용·사진도 자동 저장한다.
+새로고침하면 행 목록과 사진을 복원하며, 행 삭제 및 전체 초기화도 저장 내용에 반영한다.
+추가 관찰의 글과 사진은 별도로 저장하므로 사진 저장 용량이 부족할 때에도 글을 먼저 저장한다.
+저장 공간 경고가 표시되면 페이지를 닫기 전에 PDF로 저장한다.
+
+화석 박람회의 저장 키는 지구과학판 `geofair_`, 통합과학판 `geofairint_`로 구분한다.
+분리 이전의 공유 데이터는 자동 이동하지 않으며, 기존 `geofair_` 데이터는 유지된다.
+따라서 통합과학판에서 기존 작성 내용이 비어 보일 수 있다.
 
 각 보고서(`reports/*/index.html`)는 이번에 정리해 둔 디자인(다크 배경 + 민트 포인트, Pretendard 폰트),
 표 형태 정보입력, 목표·준비물 고정 표시, 자동 저장, 빈칸+정답 확인(맞으면 초록/틀리면 빨강 표시),

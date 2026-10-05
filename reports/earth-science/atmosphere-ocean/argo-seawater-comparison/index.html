@@ -1004,7 +1004,18 @@ const breakLongWords = (str, maxLen = 15) =>
 };
 
 /* ===== PDF ===== */
-const exportPDF = () => {
+const waitForImages = async root => {
+  const imgs = [...root.querySelectorAll('img')].filter(img => img.getAttribute('src'));
+  await Promise.all(imgs.map(img => {
+    if (img.complete) return Promise.resolve();
+    return img.decode ? img.decode().catch(() => {}) : new Promise(resolve => {
+      img.addEventListener('load', resolve, { once: true });
+      img.addEventListener('error', resolve, { once: true });
+    });
+  }));
+};
+
+const exportPDF = async () => {
   if (!showChecklist()) return;
   buildReport(); hideMsg();
   const tag = `${$('f_date').value || ''}_${$('f_id').value}_${$('f_name').value}`;
@@ -1016,16 +1027,22 @@ const exportPDF = () => {
   reportEl.style.paddingTop = '0';
   reportEl.style.paddingBottom = '0';
 
-  html2pdf().set({
+  try {
+    await waitForImages(reportEl);
+    await html2pdf().set({
     margin: [20, 0, 20, 0],
     filename: `ARGO_해수의성질비교하기_${tag}.pdf`,
     image: { type: 'jpeg', quality: .95 },
     html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
     pagebreak: { mode: ['css'] },
-  }).from(reportEl).save()
-    .then(() => { restorePadding(); btn.disabled = false; btn.textContent = 'PDF로 저장'; showMsg('PDF를 저장했습니다. 제출 링크에 올려 주세요.', true); })
-    .catch(() => { restorePadding(); btn.disabled = false; btn.textContent = 'PDF로 저장'; showMsg('PDF 저장에 실패했습니다. 다시 시도해 주세요.', false); });
+    }).from(reportEl).save();
+    showMsg('PDF를 저장했습니다. 제출 링크에 올려 주세요.', true);
+  } catch {
+    showMsg('PDF 저장에 실패했습니다. 다시 시도해 주세요.', false);
+  } finally {
+    restorePadding(); btn.disabled = false; btn.textContent = 'PDF로 저장';
+  }
 };
 
 /* ===== 이벤트: 단계 이동 ===== */
