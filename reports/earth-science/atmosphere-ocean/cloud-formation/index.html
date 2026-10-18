@@ -576,6 +576,96 @@ const FIXED_MATERIALS = "페트병, 간이 가압 장치(압축 마개), 알코�
 document.addEventListener('DOMContentLoaded', () => {
 const $ = id => document.getElementById(id);
 const KEY = 'cloudmaking_';
+
+/* 공통 채점: 버튼 확인 → 2회 오답 안내 → 직접 재입력 → 재채점 */
+const sjGradeGroups = [];
+const stepValid = n => sjGradeStep(n) && legacyStepValid(n);
+function sjNormalize(value) {
+  const s = String(value ?? '').normalize('NFKC').toLowerCase().replace(/\s+/g, '');
+  const colors = [['붉은','붉은색','빨간','빨간색','빨강'], ['푸른','푸른색','파란','파란색','파랑'], ['검은','검은색','검정','검정색'], ['초록','초록색','녹색'], ['노란','노란색','노랑']];
+  return colors.find(group => group.includes(s))?.[0] || s;
+}
+function sjGradeSaved() {
+  if (typeof saveState === 'function') saveState();
+  else if (typeof save === 'function') save();
+}
+function sjGraded(id) {
+  const group = sjGradeGroups.find(g => id in g.answers);
+  return !!group && group.passed && Object.entries(group.snapshot).every(([key,value]) => $(key).value === value);
+}
+function sjGradeStep(n) {
+  return sjGradeGroups.every(g => !Object.keys(g.answers).some(id => Number($(id).closest('[data-step]')?.dataset.step) === Number(n)) || sjGraded(Object.keys(g.answers)[0]));
+}
+function sjMakeGrade(answers, noteId, opts = {}) {
+  const group = {answers, passed:false, attempts:0, snapshot:{}};
+  sjGradeGroups.push(group);
+  const note = $(noteId);
+  if (note) note.setAttribute('aria-live', 'polite');
+  const message = (text, ok = false) => {
+    if (!note) return;
+    note.textContent = text; note.className = ok ? 'note ok grade-msg good' : 'note err grade-msg bad'; note.style.display = 'block';
+  };
+  const changed = () => { if (opts.onChange) opts.onChange(group.passed); };
+  group.invalidate = () => { group.passed = false; message('답을 입력하거나 수정했어요. 빈칸 확인하기를 눌러 주세요.'); changed(); };
+  function check() {
+    const wrong = [];
+    for (const [id,answer] of Object.entries(answers)) {
+      const el = $(id), value = el.value;
+      const ok = answer && typeof answer === 'object' && answer.test ? answer.test(value)
+        : (Array.isArray(answer) ? answer : [answer]).some(a => sjNormalize(value) !== '' && sjNormalize(value) === sjNormalize(a));
+      el.readOnly = false;
+      el.classList.toggle('correct',ok); el.classList.toggle('invalid',!ok); el.classList.toggle('wrong',!ok);
+      el.setAttribute('aria-invalid',String(!ok));
+      if (!ok) wrong.push({id,answer});
+    }
+    group.passed = wrong.length === 0;
+    group.snapshot = Object.fromEntries(Object.keys(answers).map(id => [id,$(id).value]));
+    if (group.passed) {
+      group.attempts = 0; message('모두 정답이에요! 다음 단계로 진행할 수 있어요.',true);
+      changed(); if (opts.onSuccess) opts.onSuccess(); sjGradeSaved(); return;
+    }
+    changed();
+    if (wrong.some(r => !$(r.id).value.trim())) { message('빈칸을 모두 채운 뒤 다시 확인해 주세요.'); return; }
+    group.attempts++;
+    if (group.attempts < 2) { message('틀린 칸을 다시 확인해 주세요. (1/2회)'); return; }
+    group.attempts = 0;
+    message('정답을 확인한 뒤 틀린 칸에 직접 다시 입력하고 채점해 주세요.');
+    const dialog = document.createElement('dialog');
+    dialog.style.cssText = 'max-width:520px;width:calc(100% - 40px);max-height:80vh;overflow:auto;padding:24px;border:1px solid #aaa;border-radius:16px;background:#fff;color:#18232d';
+    dialog.setAttribute('aria-label','정답 안내');
+    const title = document.createElement('h3'); title.textContent = '정답 안내'; dialog.append(title);
+    const hint = document.createElement('p'); hint.textContent = '닫으면 틀린 칸이 비워집니다. 직접 다시 입력하고 빈칸 확인하기를 눌러 주세요.'; dialog.append(hint);
+    for (const {id,answer} of wrong) {
+      const row = document.createElement('p');
+      const label = (typeof BLANK_LABELS !== 'undefined' && BLANK_LABELS[id]) || (typeof ANSWER_LABELS !== 'undefined' && ANSWER_LABELS[id]) || $(id).getAttribute('aria-label') || $(id).placeholder || '빈칸';
+      const correct = answer && typeof answer === 'object' && answer.display ? answer.display() : Array.isArray(answer) ? answer[0] : answer;
+      row.textContent = `${label} · 내가 쓴 답: ${$(id).value} → ${correct}`; dialog.append(row);
+    }
+    const close = document.createElement('button'); close.type = 'button'; close.className = 'btn'; close.textContent = '닫고 다시 입력하기';
+    close.style.cssText = 'background:#18232d;color:white;padding:10px 16px'; close.onclick = () => dialog.close(); dialog.append(close);
+    dialog.addEventListener('close', () => {
+      wrong.forEach(({id}) => { $(id).value = ''; $(id).classList.remove('correct'); });
+      group.passed = false; changed(); sjGradeSaved(); dialog.remove(); $(wrong[0].id).focus();
+    }, {once:true});
+    document.body.append(dialog); dialog.showModal();
+  }
+  return {check, isPassed: () => sjGraded(Object.keys(answers)[0])};
+}
+function sjBindGrade(btnId, noteId, answers, onSuccess, onChange) {
+  const checker = sjMakeGrade(answers,noteId,{onSuccess,onChange});
+  $(btnId).addEventListener('click',checker.check);
+  return checker;
+}
+for (const eventName of ['input','change']) document.addEventListener(eventName,e => {
+  const group = sjGradeGroups.find(g => e.target.id in g.answers);
+  if (!group) return;
+  group.passed = false;
+  queueMicrotask(() => {
+    e.target.readOnly = false; e.target.classList.remove('correct','invalid','wrong'); e.target.removeAttribute('aria-invalid');
+    group.invalidate(); sjGradeSaved();
+  });
+},true);
+
 const sjPrefix = "cloudmaking_";
 const sjTotal = () => TOTAL - 1;
 
@@ -794,7 +884,7 @@ const closeAnswerModal = () => {
 $('answerModalClose').addEventListener('click', closeAnswerModal);
 $('answerModal').addEventListener('click', e => { if (e.target === $('answerModal')) closeAnswerModal(); });
 
-const norm = s => (s || '').replace(/\s+/g, '');
+const norm = sjNormalize;
 const THEORY_ANSWERS = {
   b1:'낮아진다', b2:'단열변화', b3:'낮아지고', b4:'응결',
 };
@@ -804,60 +894,13 @@ const BLANK_LABELS = {
   b3:'단열 팽창 시 기온이 (  )진다',
   b4:'기온이 낮아지며 수증기가 물방울이 되는 현상',
 };
-let theoryAttempts = 0;
 let theoryPassed = false;
-const checkTheory = () => {
-  const results = Object.entries(THEORY_ANSWERS).map(([id, answer]) => {
-    const el = $(id);
-    const mine = el.value;
-    const ok = norm(mine) === norm(answer);
-    el.classList.toggle('correct', ok);
-    el.classList.toggle('invalid', !ok);
-    return { id, answer, ok, label: BLANK_LABELS[id] || `${id.toUpperCase()}번 칸`, answerText: answer };
-  });
-  const wrong = results.filter(r => !r.ok);
-
-  if (wrong.length === 0) {
-    theoryPassed = true;
-    const note = $('theory-note');
-    note.textContent = '모두 정답이에요! 다음 단계로 진행할 수 있어요.';
-    note.className = 'note ok';
-    return;
-  }
-  $('theory-note').className = 'note';
-  theoryAttempts++;
-  if (theoryAttempts >= 2) {
-    theoryPassed = true;
-    showAnswerModal(
-      '정답 안내',
-      '틀린 칸의 정답이에요. 팝업을 닫으면 틀린 칸이 비워지니, 직접 다시 입력해 보세요.',
-      wrong, true,
-      () => { wrong.forEach(r => { $(r.id).classList.remove('invalid', 'correct'); $(r.id).value = ''; }); $(wrong[0].id).focus(); save(); }
-    );
-  } else {
-    showAnswerModal('다시 확인해 보세요', `빨갛게 표시된 칸 중 ${wrong.length}개가 틀렸어요. 다시 한번 확인해 보세요. (${theoryAttempts}/2회)`, wrong, false);
-  }
-};
+const theoryChecker = sjMakeGrade(THEORY_ANSWERS,'theory-note',{onChange: passed => { theoryPassed = passed; }});
+const checkTheory = theoryChecker.check;
 
 const QUIZ_ANSWERS = { b5:'단열팽창', b6:'단열압축', b7:'단열팽창' };
-const checkQuiz = () => {
-  let allOk = true;
-  ['b5','b6','b7'].forEach(id => {
-    const el = $(id);
-    const ok = norm(el.value) === norm(QUIZ_ANSWERS[id]);
-    el.classList.toggle('correct', ok);
-    el.classList.toggle('invalid', !ok);
-    if (!ok) allOk = false;
-  });
-  const n = $('quiz-note');
-  if (allOk) {
-    n.textContent = '개념 퀴즈 정답입니다!';
-    n.className = 'note ok';
-  } else {
-    n.textContent = '틀린 문항이 있습니다. 다시 확인해 보세요.';
-    n.className = 'note err';
-  }
-};
+const quizChecker = sjMakeGrade(QUIZ_ANSWERS,'quiz-note');
+const checkQuiz = quizChecker.check;
 $('check-quiz').addEventListener('click', checkQuiz);
 
 const shrink = async file => {
@@ -920,7 +963,7 @@ const MSG = {
 };
 const secOf = n => document.querySelector(`.step[data-step="${n}"]`);
 const isFilled = i => i.type === 'checkbox' ? i.checked : i.value.trim() !== '';
-const stepValid = n => {
+const legacyStepValid = n => {
   if (n === 3) return theoryPassed;
   const el = secOf(n);
   const filled = [...el.querySelectorAll('[required]')].every(isFilled);
@@ -1050,14 +1093,6 @@ $('ph2').addEventListener('change', e => e.target.files[0] && pickPhoto('ph2', e
 document.addEventListener('input', e => {
   e.target.classList.remove('invalid');
   e.target.classList.remove('correct');
-  if (THEORY_ANSWERS[e.target.id] !== undefined) {
-    const val = e.target.value.trim();
-    if (val) {
-      const ok = norm(val) === norm(THEORY_ANSWERS[e.target.id]);
-      e.target.classList.toggle('correct', ok);
-      e.target.classList.toggle('invalid', !ok);
-    }
-  }
   if (e.target.classList.contains('save')) save();
   const c = document.querySelector(`[data-count="${e.target.id}"]`);
   if (c) c.textContent = e.target.value.length;

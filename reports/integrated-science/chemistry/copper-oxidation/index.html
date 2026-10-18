@@ -839,6 +839,96 @@ const FIXED_MATERIALS = "구리판, 알코올램프, 도가니 집게, 보안경
 document.addEventListener('DOMContentLoaded', () => {
 const $ = id => document.getElementById(id);
 const KEY = 'redox_copper_1_v5_';
+
+/* 공통 채점: 버튼 확인 → 2회 오답 안내 → 직접 재입력 → 재채점 */
+const sjGradeGroups = [];
+const stepValid = n => sjGradeStep(n) && legacyStepValid(n);
+function sjNormalize(value) {
+  const s = String(value ?? '').normalize('NFKC').toLowerCase().replace(/\s+/g, '');
+  const colors = [['붉은','붉은색','빨간','빨간색','빨강'], ['푸른','푸른색','파란','파란색','파랑'], ['검은','검은색','검정','검정색'], ['초록','초록색','녹색'], ['노란','노란색','노랑']];
+  return colors.find(group => group.includes(s))?.[0] || s;
+}
+function sjGradeSaved() {
+  if (typeof saveState === 'function') saveState();
+  else if (typeof save === 'function') save();
+}
+function sjGraded(id) {
+  const group = sjGradeGroups.find(g => id in g.answers);
+  return !!group && group.passed && Object.entries(group.snapshot).every(([key,value]) => $(key).value === value);
+}
+function sjGradeStep(n) {
+  return sjGradeGroups.every(g => !Object.keys(g.answers).some(id => Number($(id).closest('[data-step]')?.dataset.step) === Number(n)) || sjGraded(Object.keys(g.answers)[0]));
+}
+function sjMakeGrade(answers, noteId, opts = {}) {
+  const group = {answers, passed:false, attempts:0, snapshot:{}};
+  sjGradeGroups.push(group);
+  const note = $(noteId);
+  if (note) note.setAttribute('aria-live', 'polite');
+  const message = (text, ok = false) => {
+    if (!note) return;
+    note.textContent = text; note.className = ok ? 'note ok grade-msg good' : 'note err grade-msg bad'; note.style.display = 'block';
+  };
+  const changed = () => { if (opts.onChange) opts.onChange(group.passed); };
+  group.invalidate = () => { group.passed = false; message('답을 입력하거나 수정했어요. 빈칸 확인하기를 눌러 주세요.'); changed(); };
+  function check() {
+    const wrong = [];
+    for (const [id,answer] of Object.entries(answers)) {
+      const el = $(id), value = el.value;
+      const ok = answer && typeof answer === 'object' && answer.test ? answer.test(value)
+        : (Array.isArray(answer) ? answer : [answer]).some(a => sjNormalize(value) !== '' && sjNormalize(value) === sjNormalize(a));
+      el.readOnly = false;
+      el.classList.toggle('correct',ok); el.classList.toggle('invalid',!ok); el.classList.toggle('wrong',!ok);
+      el.setAttribute('aria-invalid',String(!ok));
+      if (!ok) wrong.push({id,answer});
+    }
+    group.passed = wrong.length === 0;
+    group.snapshot = Object.fromEntries(Object.keys(answers).map(id => [id,$(id).value]));
+    if (group.passed) {
+      group.attempts = 0; message('모두 정답이에요! 다음 단계로 진행할 수 있어요.',true);
+      changed(); if (opts.onSuccess) opts.onSuccess(); sjGradeSaved(); return;
+    }
+    changed();
+    if (wrong.some(r => !$(r.id).value.trim())) { message('빈칸을 모두 채운 뒤 다시 확인해 주세요.'); return; }
+    group.attempts++;
+    if (group.attempts < 2) { message('틀린 칸을 다시 확인해 주세요. (1/2회)'); return; }
+    group.attempts = 0;
+    message('정답을 확인한 뒤 틀린 칸에 직접 다시 입력하고 채점해 주세요.');
+    const dialog = document.createElement('dialog');
+    dialog.style.cssText = 'max-width:520px;width:calc(100% - 40px);max-height:80vh;overflow:auto;padding:24px;border:1px solid #aaa;border-radius:16px;background:#fff;color:#18232d';
+    dialog.setAttribute('aria-label','정답 안내');
+    const title = document.createElement('h3'); title.textContent = '정답 안내'; dialog.append(title);
+    const hint = document.createElement('p'); hint.textContent = '닫으면 틀린 칸이 비워집니다. 직접 다시 입력하고 빈칸 확인하기를 눌러 주세요.'; dialog.append(hint);
+    for (const {id,answer} of wrong) {
+      const row = document.createElement('p');
+      const label = (typeof BLANK_LABELS !== 'undefined' && BLANK_LABELS[id]) || (typeof ANSWER_LABELS !== 'undefined' && ANSWER_LABELS[id]) || $(id).getAttribute('aria-label') || $(id).placeholder || '빈칸';
+      const correct = answer && typeof answer === 'object' && answer.display ? answer.display() : Array.isArray(answer) ? answer[0] : answer;
+      row.textContent = `${label} · 내가 쓴 답: ${$(id).value} → ${correct}`; dialog.append(row);
+    }
+    const close = document.createElement('button'); close.type = 'button'; close.className = 'btn'; close.textContent = '닫고 다시 입력하기';
+    close.style.cssText = 'background:#18232d;color:white;padding:10px 16px'; close.onclick = () => dialog.close(); dialog.append(close);
+    dialog.addEventListener('close', () => {
+      wrong.forEach(({id}) => { $(id).value = ''; $(id).classList.remove('correct'); });
+      group.passed = false; changed(); sjGradeSaved(); dialog.remove(); $(wrong[0].id).focus();
+    }, {once:true});
+    document.body.append(dialog); dialog.showModal();
+  }
+  return {check, isPassed: () => sjGraded(Object.keys(answers)[0])};
+}
+function sjBindGrade(btnId, noteId, answers, onSuccess, onChange) {
+  const checker = sjMakeGrade(answers,noteId,{onSuccess,onChange});
+  $(btnId).addEventListener('click',checker.check);
+  return checker;
+}
+for (const eventName of ['input','change']) document.addEventListener(eventName,e => {
+  const group = sjGradeGroups.find(g => e.target.id in g.answers);
+  if (!group) return;
+  group.passed = false;
+  queueMicrotask(() => {
+    e.target.readOnly = false; e.target.classList.remove('correct','invalid','wrong'); e.target.removeAttribute('aria-invalid');
+    group.invalidate(); sjGradeSaved();
+  });
+},true);
+
 const sjPrefix = "redox_copper_1_v5_";
 const sjTotal = () => TOTAL - 1;
 
@@ -1019,7 +1109,7 @@ function sjInit() {
 
 const TOTAL = 6;
 let step = 1;
-const norm = s => (s || '').replace(/\s+/g, '');
+const norm = sjNormalize;
 
 /* 제출 링크 */
 const submitUrl = () => {
@@ -1090,15 +1180,7 @@ const wrongAttempts = {};
 
 /* 빈칸 하나하나마다, 입력할 때 바로 맞았는지/틀렸는지 표시한다 */
 function wireLiveCheck(id, answer) {
-  const el = $(id);
-  const check = () => {
-    el.classList.remove('correct', 'invalid');
-    const val = el.value.trim();
-    if (!val) return;
-    el.classList.add(norm(val) === norm(answer) ? 'correct' : 'invalid');
-  };
-  el.addEventListener('input', check);
-  el.addEventListener('change', check);
+  // 채점 표시는 공통 확인 버튼에서만 갱신한다.
 }
 Object.entries(THEORY_ANSWERS).forEach(([id, a]) => wireLiveCheck(id, a));
 Object.entries(CONCLUSION_ANSWERS).forEach(([id, a]) => wireLiveCheck(id, a));
@@ -1137,7 +1219,7 @@ const MSG = {
 };
 const secOf = n => document.querySelector(`.step[data-step="${n}"]`);
 const isFilled = i => i.type === 'checkbox' ? i.checked : i.value.trim() !== '';
-const stepValid = n => {
+const legacyStepValid = n => {
   const baseOk = [...secOf(n).querySelectorAll('[required]')].every(isFilled);
   const answers = gradedAnswersFor(n);
   if (answers) return baseOk && Object.entries(answers).every(([id, a]) => isCorrect(id, a));
@@ -1326,39 +1408,11 @@ subNext1.addEventListener('click', () => { markSubDone(1); unlock(2); switchSub(
 const b0 = $('b0');
 const subNext2 = $('subNext2');
 const B0_ANSWER = '붉은';
-let b0Attempts = 0;
-const isB0Correct = () => norm(b0.value.trim()) === norm(B0_ANSWER);
+const isB0Correct = () => sjGraded('b0') && norm(b0.value.trim()) === norm(B0_ANSWER);
 function refreshBefore() { subNext2.disabled = !isB0Correct(); }
 b0.addEventListener('input', () => { b0.classList.remove('invalid', 'correct'); refreshBefore(); });
 subNext2.addEventListener('click', () => { markSubDone(2); unlock(3); switchSub(3); });
-$('check-b0').addEventListener('click', () => {
-  const box = $('b0-example');
-  if (!b0.value.trim()) {
-    box.textContent = '빈칸을 먼저 채워 주세요.';
-    box.className = 'note err';
-    return;
-  }
-  if (isB0Correct()) {
-    b0.classList.remove('invalid'); b0.classList.add('correct');
-    box.textContent = '정답이에요! 다음 단계로 넘어가 보세요.';
-    box.className = 'note ok';
-    b0Attempts = 0;
-  } else {
-    b0.classList.remove('correct'); b0.classList.add('invalid');
-    b0Attempts++;
-    if (b0Attempts >= 2) {
-      box.textContent = '2회 시도해서 정답을 팝업으로 보여드려요. 확인하고 다시 입력해 보세요.';
-      box.className = 'note err';
-      b0Attempts = 0;
-      showAnswerModal({ b0: B0_ANSWER });
-    } else {
-      box.textContent = '아직 정답이 아니에요. 다시 한번 생각해서 적어 보세요.';
-      box.className = 'note err';
-      showAnswerModal({ b0: B0_ANSWER }, false);
-    }
-  }
-  refreshBefore();
-});
+sjBindGrade('check-b0','b0-example',{b0:B0_ANSWER},refreshBefore,refreshBefore);
 /* '예시 답안 보기'는 3번 눌러야 보여준다 — 바로 보이면 그대로 베껴 쓰기 쉬워서 */
 const thinkModal = $('thinkModal'), thinkModalDesc = $('thinkModalDesc');
 function showThinkModal(remaining) {
@@ -1393,94 +1447,19 @@ function wireExampleReveal(btnId, boxId, answerText) {
 }
 
 /**
- * 이미 실시간 채점(wireLiveCheck)이 붙어 있는 구간(이론적 배경, 결론 및 고찰)에 쓰는
+ * 이론적 배경, 결론 및 고찰에 쓰는
  * '빈칸 확인하기' 버튼 — 입력마다 지우는 리스너는 따로 달지 않고(중복 방지), 버튼 클릭 시
  * 전체를 다시 채점해서 몇 번째 시도인지 세고, 2번째 실패면 정답을 전부 보여준다.
  */
-function wireAnswerCheckButton(btnId, boxId, answers, onAllCorrect) {
-  let attempts = 0;
-  const ids = Object.keys(answers);
-  $(btnId).addEventListener('click', () => {
-    const box = $(boxId);
-    let allOk = true;
-    ids.forEach(id => {
-      const el = $(id);
-      const val = el.value.trim();
-      if (!val) { allOk = false; el.classList.remove('correct', 'invalid'); return; }
-      const ok = norm(val) === norm(answers[id]);
-      el.classList.toggle('correct', ok);
-      el.classList.toggle('invalid', !ok);
-      if (!ok) allOk = false;
-    });
-    if (allOk) {
-      attempts = 0;
-      box.textContent = '모두 정답이에요!';
-      box.className = 'note ok';
-      if (onAllCorrect) onAllCorrect();
-    } else {
-      attempts++;
-      if (attempts >= 2) {
-        const wrong = {};
-        ids.forEach(id => { if (norm($(id).value) !== norm(answers[id])) wrong[id] = answers[id]; });
-        box.textContent = '2회 시도해서 정답을 팝업으로 보여드려요. 확인하고 다시 입력해 보세요.';
-        box.className = 'note err';
-        attempts = 0;
-        showAnswerModal(wrong);
-      } else {
-        const wrong = {};
-        ids.forEach(id => { if (norm($(id).value) !== norm(answers[id])) wrong[id] = answers[id]; });
-        box.textContent = '아직 틀린 칸이 있어요(빨간 칸). 다시 한번 확인해서 적어 보세요.';
-        box.className = 'note err';
-        showAnswerModal(wrong, false);
-      }
-    }
-  });
+function wireAnswerCheckButton(btnId,boxId,answers,onAllCorrect) {
+  return sjBindGrade(btnId,boxId,answers,onAllCorrect,() => { refreshBefore(); refreshGaObs(); refreshNaObs(); });
 }
 wireAnswerCheckButton('check-theory-a', 'theory-a-example', THEORY_GROUP_A);
 wireAnswerCheckButton('check-theory-b', 'theory-b-example', THEORY_GROUP_B);
 wireAnswerCheckButton('check-conclusion-a', 'conclusion-a-result', CONCLUSION_GROUP_A);
 wireAnswerCheckButton('check-conclusion-b', 'conclusion-b-result', CONCLUSION_GROUP_B);
-function wireAnswerCheck(btnId, boxId, answers, onAllCorrect) {
-  let attempts = 0;
-  const ids = Object.keys(answers);
-  ids.forEach(id => {
-    $(id).addEventListener('input', () => $(id).classList.remove('invalid', 'correct'));
-  });
-  $(btnId).addEventListener('click', () => {
-    const box = $(boxId);
-    let allOk = true;
-    ids.forEach(id => {
-      const el = $(id);
-      const val = el.value.trim();
-      if (!val) { allOk = false; el.classList.remove('correct', 'invalid'); return; }
-      const ok = norm(val) === norm(answers[id]);
-      el.classList.toggle('correct', ok);
-      el.classList.toggle('invalid', !ok);
-      if (!ok) allOk = false;
-    });
-    if (allOk) {
-      attempts = 0;
-      box.textContent = '모두 정답이에요! 다음으로 넘어가 보세요.';
-      box.className = 'note ok';
-      if (onAllCorrect) onAllCorrect();
-    } else {
-      attempts++;
-      if (attempts >= 2) {
-        const wrong = {};
-        ids.forEach(id => { if (norm($(id).value) !== norm(answers[id])) wrong[id] = answers[id]; });
-        box.textContent = '2회 시도해서 정답을 팝업으로 보여드려요. 확인하고 다시 입력해 보세요.';
-        box.className = 'note err';
-        attempts = 0;
-        showAnswerModal(wrong);
-      } else {
-        const wrong = {};
-        ids.forEach(id => { if (norm($(id).value) !== norm(answers[id])) wrong[id] = answers[id]; });
-        box.textContent = '아직 틀린 칸이 있어요(빨간 칸). 다시 한번 확인해서 적어 보세요.';
-        box.className = 'note err';
-        showAnswerModal(wrong, false);
-      }
-    }
-  });
+function wireAnswerCheck(btnId,boxId,answers,onAllCorrect) {
+  return sjBindGrade(btnId,boxId,answers,onAllCorrect,() => { refreshBefore(); refreshGaObs(); refreshNaObs(); });
 }
 
 /* 3. 겉불꽃 → 4. 속불꽃 : 관찰 빈칸 표시 (이제 처음부터 항상 보임) */
@@ -1488,8 +1467,8 @@ const b1 = $('b1'), b2 = $('b2'), b3 = $('b3'), b4 = $('b4'), reasonEl = $('reas
 const subNext3 = $('subNext3');
 const GA_OBS_ANSWERS = { b1: '검은', b2: '산화' };
 const NA_OBS_ANSWERS = { b3: '붉은', b4: '환원' };
-const isGaObsCorrect = () => norm(b1.value) === norm(GA_OBS_ANSWERS.b1) && norm(b2.value) === norm(GA_OBS_ANSWERS.b2);
-const isNaObsCorrect = () => norm(b3.value) === norm(NA_OBS_ANSWERS.b3) && norm(b4.value) === norm(NA_OBS_ANSWERS.b4);
+const isGaObsCorrect = () => sjGraded('b1') && norm(b1.value) === norm(GA_OBS_ANSWERS.b1) && norm(b2.value) === norm(GA_OBS_ANSWERS.b2);
+const isNaObsCorrect = () => sjGraded('b3') && norm(b3.value) === norm(NA_OBS_ANSWERS.b3) && norm(b4.value) === norm(NA_OBS_ANSWERS.b4);
 function refreshGaObs() { subNext3.disabled = !(gaDone && isGaObsCorrect()); }
 b1.addEventListener('input', refreshGaObs);
 b2.addEventListener('input', refreshGaObs);

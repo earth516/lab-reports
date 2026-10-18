@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>자석과 코일의 전자기 유도 · 활동 보고서</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root{color-scheme:dark;
+  --paper:#0c0e12; --surface:#171a20; --sunk:#1e222b;
+  --ink:#e8eaee; --body:#b4b9c4; --faint:#8b909b;
+  --line:#2a2e37; --line-soft:#22262b;
+  --sea:#7dd3c8; --sea-deep:#7dd3c8; --sea-soft:rgba(125,211,200,.14);
+  --coral:#e06a5b;
+
+  --sans:'Pretendard','Pretendard Variable',-apple-system,system-ui,sans-serif;
+  --mono:var(--sans);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);
+  font-size:17px;line-height:1.75;letter-spacing:-.01em;word-break:keep-all;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3{margin:0;letter-spacing:-.025em;line-height:1.4}
+.mono{font-family:var(--mono)}
+
+.sheet{max-width:1060px;margin:0 auto;background:var(--surface);
+  border-left:1px solid var(--line);border-right:1px solid var(--line);min-height:100vh}
+@media(max-width:820px){.sheet{border:0}}
+
+header.top{background:#101216;color:#e8eaee;padding:1.5rem 2.6rem;border-bottom:1px solid var(--line)}
+header.top .kicker{font-family:var(--sans);font-size:.9rem;font-weight:600;
+  color:var(--sea);letter-spacing:-.01em;margin-bottom:.15rem}
+header.top h1{font-family:var(--sans);font-size:1.4rem;font-weight:700;color:#fff;letter-spacing:-.03em}
+@media(max-width:700px){header.top{padding:1.2rem 1.4rem}header.top h1{font-size:1.2rem}}
+
+nav{display:flex;background:var(--sunk);border-bottom:1px solid var(--line);
+  overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:20}
+nav::-webkit-scrollbar{display:none}
+.tab{flex:1 0 auto;padding:1rem 1.2rem;background:none;border:0;border-bottom:2px solid transparent;
+  font-family:var(--sans);font-size:.95rem;font-weight:600;color:var(--body);cursor:pointer;
+  white-space:nowrap;display:flex;gap:.6rem;align-items:baseline;transition:.16s;letter-spacing:-.01em}
+.tab .n{font-family:var(--mono);font-size:.78rem;color:var(--ink);font-weight:500;letter-spacing:0}
+.tab:hover{background:rgba(255,255,255,.6);color:var(--ink)}
+.tab.active{background:var(--surface);color:var(--sea);border-bottom-color:var(--sea);font-weight:700}
+.tab.done .n::after{content:"✓";margin-left:.25rem;color:var(--ink)}
+
+.wrap{padding:3rem 2.6rem 1rem}
+@media(max-width:700px){.wrap{padding:1.8rem 1.4rem .5rem}}
+.step{display:none}
+.step.active{display:block;animation:in .3s cubic-bezier(.16,1,.3,1)}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+h2.head{font-size:1.55rem;font-weight:700;margin-bottom:.4rem;
+  display:flex;align-items:baseline;gap:.75rem;letter-spacing:-.03em}
+h2.head .n{font-family:var(--mono);font-size:.8rem;color:var(--ink);font-weight:500;
+  letter-spacing:.06em;background:none;padding:0}
+.lead{color:var(--body);font-size:1.02rem;margin:0 0 2.6rem;padding-bottom:1.3rem;
+  border-bottom:1px solid var(--line)}
+
+.block{margin-bottom:2.4rem}
+.block h3{font-size:1.15rem;font-weight:700;margin-bottom:.5rem;color:var(--sea)}
+.block p{margin:0 0 .5rem;color:var(--body)}
+.block p:last-child{margin-bottom:0}
+.block b{color:var(--ink);font-weight:600}
+.rule{border:0;border-top:1px solid var(--line-soft);margin:2.6rem 0}
+.rules{margin:0;padding-left:1.3rem;color:var(--body)}
+.rules li{margin-bottom:.4rem}
+.rules li:last-child{margin-bottom:0}
+.check-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  padding:.9rem 1.1rem;border:1.5px solid var(--line);border-radius:10px;background:var(--sunk);
+  margin-top:1.2rem;font-size:1rem;color:var(--ink);transition:.14s}
+.check-toggle{display:flex;align-items:center;gap:.55rem;cursor:pointer;white-space:nowrap;font-weight:600}
+.check-toggle input[type="checkbox"]{width:18px;height:18px;flex:0 0 auto;accent-color:var(--ink);cursor:pointer}
+.check-row:has(input.invalid){border-color:var(--coral);background:rgba(224,106,91,.08)}
+
+.panel{background:var(--sunk);border:1px solid var(--line);border-radius:14px;padding:1.8rem}
+label{display:block;font-size:.85rem;color:var(--faint);margin-bottom:.5rem;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase}
+input,select,textarea{width:100%;padding:.65rem .8rem;border:1.5px solid var(--line);border-radius:12px;
+  background:var(--paper);font-family:var(--sans);font-size:1.03rem;color:var(--ink);
+  letter-spacing:-.01em;transition:.14s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--sea);
+  box-shadow:0 0 0 3px var(--sea-soft)}
+input::placeholder,textarea::placeholder{color:#bcc5c9}
+textarea{resize:vertical;line-height:1.95}
+.invalid{border-color:var(--coral)!important;background:rgba(224,106,91,.1)}
+.blank{display:inline-block;width:6.6rem;padding:.05rem .4rem;border:0;
+  border-bottom:2px solid var(--ink);border-radius:4px 4px 0 0;text-align:center;font-weight:600;
+  color:var(--ink);font-size:1.02rem;background:var(--paper);letter-spacing:-.01em}
+.blank::placeholder{color:#6f747f;font-weight:400;font-size:.85em;letter-spacing:0}
+.blank:focus{outline:none;box-shadow:none;background:var(--surface);border-bottom-color:var(--sea)}
+.blank.invalid{border-bottom-color:var(--coral)!important;background:rgba(224,106,91,.1)}
+.blank.correct{border-bottom-color:#4ade80!important;background:rgba(74,222,128,.1)}
+.correct{border-color:#4ade80!important;background:rgba(74,222,128,.1)}
+.suffix-field{display:flex;align-items:stretch;border:1.5px solid var(--line);border-radius:12px;
+  background:var(--paper);overflow:hidden;transition:.14s}
+.suffix-field:focus-within{border-color:var(--sea);box-shadow:0 0 0 3px var(--sea-soft)}
+.suffix-field input{flex:1;min-width:0;border:0;border-radius:0;box-shadow:none!important}
+.suffix-field .suffix{display:flex;align-items:center;padding:0 .85rem;font-size:1.03rem;
+  color:var(--body);background:var(--sunk);border-left:1px solid var(--line);white-space:nowrap}
+.suffix-field:has(input.invalid){border-color:var(--coral)!important}
+.counter{text-align:right;font-family:var(--mono);font-size:.8rem;color:var(--faint);margin-top:.4rem}
+.hint{font-size:.92rem;color:var(--faint);margin:-.1rem 0 .75rem;letter-spacing:-.005em}
+
+.info-form{width:100%;border-collapse:collapse;background:var(--surface);
+  border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.info-form td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);
+  padding:0;vertical-align:middle}
+.info-form tr:last-child td{border-bottom:0}
+.info-form td:last-child{border-right:0}
+.info-form td.lbl{width:1%;padding:0 1rem;font-size:.85rem;font-weight:700;color:var(--sea);
+  letter-spacing:.03em;background:var(--sunk);white-space:nowrap}
+.info-form input{width:100%;border:0;border-radius:0;background:transparent;
+  padding:.85rem 1rem;font-family:var(--sans);font-size:1.02rem;color:var(--ink);letter-spacing:-.01em}
+.info-form input:focus{outline:none;box-shadow:none;background:var(--sea-soft)}
+.info-form input.invalid{background:rgba(224,106,91,.1)}
+@media(max-width:700px){
+  .info-form, .info-form tbody, .info-form tr, .info-form td{display:block;width:100%}
+  .info-form td{border-right:0}
+  .info-form td.lbl{border-bottom:0;padding:.6rem 1rem .2rem}
+  .info-form td:not(.lbl){padding-bottom:.2rem}
+}
+.fixed-note{display:flex;gap:.8rem;align-items:baseline;padding:.75rem 1.05rem;
+  background:var(--sunk);border:1px solid var(--line);border-radius:10px;margin-bottom:.8rem}
+.fixed-note:last-of-type{margin-bottom:1.6rem}
+.fixed-note b{flex:none;font-size:.82rem;font-weight:700;color:var(--sea);letter-spacing:.04em}
+.fixed-note span{color:var(--body)}
+.group-label{color:var(--faint);font-size:.85rem;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;margin-bottom:1rem}
+.rock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-top:1rem}
+@media(max-width:820px){.rock-grid{grid-template-columns:1fr}}
+.rock-col{display:flex;flex-direction:column;gap:.6rem}
+.rock-name{font-size:1.1rem;font-weight:800;color:var(--sea)}
+.rock-col .drop{min-height:150px}
+.rock-col textarea{flex:1;resize:none;min-height:100px}
+
+.drop{border:1px dashed var(--line);border-radius:10px;min-height:140px;display:flex;
+  align-items:center;justify-content:center;cursor:pointer;color:var(--faint);font-size:.95rem;
+  position:relative;overflow:hidden;background:var(--sunk);transition:.16s}
+.drop:hover{border-color:var(--sea);background:var(--sea-soft);color:var(--sea)}
+.drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--sunk)}
+.drop .ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(10,61,71,.62);color:#fff;font-size:.9rem;font-weight:500}
+
+.extra-card{border:1px solid var(--line);border-radius:12px;padding:1.4rem;background:var(--sunk);
+  margin-bottom:1.2rem}
+.extra-card:last-child{margin-bottom:0}
+
+.bar{display:flex;gap:.7rem;align-items:center;justify-content:space-between;padding:1.6rem 2.6rem 3.2rem;
+  border-top:1px solid var(--line);margin-top:1.6rem;background:var(--sunk)}
+@media(max-width:700px){.bar{padding:1.2rem 1.4rem 2.4rem}}
+.site-footer{padding:1.4rem 2.6rem 1.8rem;background:var(--paper);border-top:1px solid var(--line)}
+.site-footer-top{position:relative;display:flex;align-items:center;justify-content:flex-end;
+  min-height:2.4rem}
+.site-footer-copy{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  margin:0;font-size:12px;color:var(--faint);line-height:1.5;text-align:center;white-space:nowrap}
+.site-footer-links{display:flex;align-items:center;gap:.6rem}
+@media(max-width:640px){
+  .site-footer-top{position:static;flex-direction:column-reverse;align-items:center;gap:.8rem}
+  .site-footer-copy{position:static;transform:none;white-space:normal}
+}
+.yt-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem .5rem .7rem;
+  background:var(--surface);border:1.5px solid var(--line);border-radius:999px;
+  color:var(--ink);text-decoration:none;font-weight:700;font-size:.8rem;
+  transition:border-color .15s,transform .1s}
+.yt-badge:hover{border-color:var(--sea);transform:translateY(-1px)}
+.yt-badge .play{display:inline-flex;align-items:center;justify-content:center;
+  width:18px;height:18px;border-radius:5px;background:var(--sea);flex:none}
+.yt-badge .play::before{content:"";width:0;height:0;margin-left:2px;
+  border-style:solid;border-width:4px 0 4px 7px;border-color:transparent transparent transparent #0c0e12}
+.yt-badge .badge-icon{font-size:.85rem;line-height:1}
+@media(max-width:700px){.site-footer{padding:1.2rem 1.4rem 1.6rem}}
+.btn{font-family:var(--sans);font-size:1rem;font-weight:700;padding:.72rem 1.7rem;border-radius:999px;
+  border:1.5px solid #39404b;background:var(--surface);color:var(--ink);cursor:pointer;
+  transition:.16s;letter-spacing:-.01em}
+.btn:hover{background:var(--sea-soft)}
+.btn:disabled{opacity:.3;cursor:not-allowed;background:var(--surface)}
+.btn.solid{background:var(--sea);color:#0c0e12;border-color:var(--sea)}
+.btn.solid:hover{background:#62beb3;border-color:#62beb3}
+.btn.quiet{border-color:transparent;color:var(--faint);background:transparent;padding:.5rem 1rem}
+.btn.quiet:hover{color:var(--body);background:transparent}
+.btn.small{font-size:.85rem;padding:.45rem 1rem}
+.grow{flex:1}
+
+.note{padding:.9rem 1.15rem;font-size:.95rem;border-radius:8px;margin-top:1.2rem;display:none}
+.note.err{display:block;background:rgba(224,106,91,.12);color:#f0a99e;border-left:3px solid var(--coral)}
+.note.ok{display:block;background:var(--sea-soft);color:var(--ink);border-left:3px solid var(--sea)}
+
+a.submit{display:inline-block;margin-top:1.3rem;padding:.8rem 1.7rem;border-radius:999px;
+  background:var(--sea);color:#0c0e12;text-decoration:none;font-size:1rem;font-weight:700;
+  letter-spacing:-.01em;transition:.14s}
+a.submit:hover{background:#62beb3}
+
+#report{background:#fff;padding:20mm 16mm;color:#141414;font-size:15px;line-height:1.85;overflow-wrap:break-word;word-break:break-word;
+  font-family:var(--sans);
+  --ink:#141414;--body:#4a4a4a;--faint:#9a9a9a;--line:#e0e0e0;--line-soft:#ececec;
+  --sea:#141414;--sea-deep:#000000;--sea-soft:#ececec}
+#report .r-head{border-bottom:2px solid var(--sea);padding-bottom:.8rem;margin-bottom:.5rem;
+  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem}
+#report .r-head h2{font-size:1.3rem;font-weight:700;color:var(--sea-deep)}
+#report .r-head .who{display:block;font-family:var(--mono);font-size:.82rem;color:var(--body)}
+#report .r-sec{margin-top:1.8rem}
+#report .r-lab{font-family:var(--sans);font-size:1.05rem;font-weight:700;letter-spacing:.02em;
+  color:var(--sea);border-bottom:1px solid var(--line);padding-bottom:.3rem;margin-bottom:.7rem;
+  display:block;background:none;page-break-after:avoid}
+#report .r-sub{font-family:var(--sans);font-size:.95rem;font-weight:700;color:var(--ink);
+  margin:1.1rem 0 .5rem;page-break-after:avoid}
+#report .r-sub:first-of-type{margin-top:0}
+#report .r-txt{white-space:pre-wrap;color:#38484f;orphans:3;widows:3;overflow-wrap:break-word;word-break:break-all}
+/* 각 암석 관찰 특징은 200자로 제한돼 한 페이지 안에 들어가는 게 보장되므로 개별적으로 avoid를 건다. */
+#report #rep_basalt,#report #rep_andesite,#report #rep_rhyolite,
+#report #rep_gabbro,#report #rep_diorite,#report #rep_granite{page-break-inside:avoid;break-inside:avoid}
+#report .r-rock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;
+  page-break-inside:avoid;margin-bottom:1.4rem}
+#report .r-rock-grid:last-child{margin-bottom:0}
+#report .r-rock-name{font-weight:700;color:var(--sea);margin-bottom:.4rem}
+#report .r-rock-photo{width:100%;height:100px;object-fit:contain;background:#fff;
+  border:1px solid var(--line);display:block;margin-bottom:.4rem}
+#report table.r-info{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:.92rem;
+  table-layout:fixed}
+#report table.r-info td{border:1px solid var(--line);text-align:left;padding:.6rem .85rem;
+  color:#38484f;vertical-align:top}
+#report table.r-info td.k{background:#f5f5f5;font-weight:700;color:#141414;
+  width:19%;white-space:nowrap}
+.zoom-modal{position:fixed;inset:0;background:rgba(6,8,10,.72);display:none;
+  align-items:center;justify-content:center;z-index:999;padding:1.6rem}
+.zoom-modal.show{display:flex}
+.zoom-card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;
+  padding:2.4rem 2rem 2rem;max-width:380px;width:100%;text-align:center;
+  box-shadow:0 24px 60px rgba(0,0,0,.55);animation:zoomIn .22s cubic-bezier(.16,1,.3,1)}
+@keyframes zoomIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.zoom-close{position:absolute;top:.7rem;right:.7rem;width:32px;height:32px;border-radius:50%;
+  border:1px solid var(--line);background:var(--sunk);color:var(--ink);font-size:1.15rem;line-height:1;
+  cursor:pointer}
+.zoom-close:hover{background:var(--sea-soft)}
+.zoom-title{font-weight:700;font-size:1.12rem;color:var(--ink);margin:0 0 .5rem}
+.zoom-desc{color:var(--body);font-size:.92rem;line-height:1.6;margin:0}
+.answer-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.5rem;text-align:left;max-height:55vh;overflow-y:auto}
+.answer-row{display:flex;flex-direction:column;gap:.2rem;padding:.65rem .85rem;
+  background:var(--sunk);border:1px solid var(--line);border-radius:8px;font-size:.92rem;text-align:left}
+.answer-row b{font-family:var(--sans);color:var(--faint);font-weight:600;font-size:.76rem;
+  text-transform:uppercase;letter-spacing:.02em}
+.answer-row span{color:var(--ink);font-weight:700;font-size:1rem}
+.answer-row-simple{padding:.55rem .85rem;background:var(--sunk);border:1px solid var(--line);
+  border-radius:8px;font-size:.92rem;color:var(--body);text-align:left}
+@media print{nav,header.top,.bar{display:none!important}}
+
+/* 어느 탭에서도 보이는 저장 및 PDF 안내 */
+#sj-notices{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:10000;width:min(620px,calc(100% - 24px));display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow:auto;pointer-events:none}
+.sj-toast{box-sizing:border-box;display:flex;align-items:center;gap:12px;padding:14px 18px;border:1px solid var(--sea,#7dd3c8);border-radius:12px;background:#171a20;color:#e8eaee;box-shadow:0 6px 24px #0008;font-size:14px;line-height:1.6;pointer-events:auto}
+.sj-toast button{margin-left:auto;flex-shrink:0;background:transparent;border:1px solid #8b909b;border-radius:8px;color:inherit;padding:5px 9px;cursor:pointer}.sj-toast.sj-error{border-color:#e06a5b}
+
+/* 전자기 유도 실험: 활동지의 세 비교를 한 실험대에 모음 */
+.info-form label{margin:0;color:inherit;letter-spacing:0}
+.step[data-step="4"]>.lead{margin-bottom:1.2rem;padding-bottom:.9rem;font-size:.95rem}
+.lab-top{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.65rem 1rem;background:#1c242b;border:1px solid #303942;border-bottom:0;border-radius:12px 12px 0 0;font-size:.8rem}.eyebrow{font-weight:650;color:var(--sea)}#lab-state{color:#bdcbd2;font-size:.78rem}
+.lab-workbench{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(285px,1fr);border:1px solid #303942;border-radius:0 0 12px 12px;overflow:hidden;background:#11171d}.lab-main,.lab-sidebar{min-width:0}.lab-main{padding:12px 16px}.lab-sidebar{padding:18px;background:#1a2027;border-left:1px solid #303942}
+.lab-scene{max-width:510px;margin:auto;background:linear-gradient(#151d25,#11171d)}#apparatus{display:block;width:100%;height:auto;max-height:263px;user-select:none}#drag-handle{touch-action:none}
+.phase-strip{display:flex;gap:5px;margin:7px 0 0}.phase-strip span{flex:1;text-align:center;padding:5px 3px;border:1px solid #303d46;border-radius:5px;color:#93a6b1;font-size:.72rem}.phase-strip span.active{color:#a4e4dc;background:#7dd3c817;border-color:#5faca2}
+.meter-readout{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #28333d;flex-wrap:wrap}.current-number>span{display:block;color:#a7b7c2;font-size:.72rem;white-space:nowrap}.current-number small{font-size:.64rem;color:#81939f;margin-left:3px}.current-number b{display:block;color:var(--sea);font-size:1.65rem;font-weight:650;line-height:1.2;font-variant-numeric:tabular-nums;min-width:4.1ch}.current-label strong{font-size:.78rem;display:block;color:#d4dfe4}.current-label span{display:block;color:#81939f;font-size:.68rem}#motion-label{margin-left:auto;color:#a9bec9;font-size:.73rem}
+.lab-sidebar>.control-label{font-size:.79rem;letter-spacing:0;color:#c3d1d9;margin:17px 0 7px}.lab-sidebar .hint{font-size:.77rem;line-height:1.6;color:#9cabb6;margin:7px 0 0}#connect-circuit{width:100%;text-align:left}#connect-circuit:disabled{opacity:.8}
+.case-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.case-btn{font:inherit;text-align:center;padding:9px 2px;border:1px solid #45535e;border-radius:7px;background:#131b22;color:#b9c9d2;cursor:pointer}.case-btn b{display:block;font-size:.77rem;font-weight:600}.case-btn span{display:block;font-size:.65rem;white-space:nowrap;margin-top:2px}.case-btn.active{color:#a6e5dc;border-color:#70b5aa;background:#7dd3c811}.case-btn:disabled{cursor:default;opacity:.6}.case-btn:focus-visible,summary:focus-visible{outline:2px solid var(--sea);outline-offset:3px}#trial-description{min-height:3.2em}
+.actions{display:flex;gap:.6rem;flex-wrap:wrap;margin:1rem 0}.lab-sidebar .actions{display:grid;grid-template-columns:1fr auto;gap:7px;margin:14px 0 10px}.lab-sidebar .btn{font-size:.83rem;border-radius:8px;padding:.58rem .7rem;min-height:42px}#record-trial{grid-column:1 / -1}.lab-sidebar #trial-note{padding:9px 10px;margin:0;font-size:.77rem;line-height:1.6;border-radius:6px}.lab-sidebar #trial-note:empty{display:none}
+.live-graph{margin:9px 0 0}.live-graph summary{font-size:.76rem;color:#9db2bd;cursor:pointer}.live-graph canvas{display:block;width:100%;height:142px;margin-top:9px}.live-graph .hint{font-size:.7rem;line-height:1.5;margin:2px 0 0;color:#8b9daa}
+.explore{border:0;border-top:1px solid #303d46;padding:.65rem 0 0;margin:.9rem 0 0}.explore summary{cursor:pointer;color:#9db2bd;font-size:.78rem}.explore label{font-size:.75rem;margin-top:12px}.explore input[type=range]{width:100%;padding:0;accent-color:var(--sea);min-height:36px}.explore .btn{font-size:.76rem;margin:8px 0 0;padding:.4rem .7rem}
+.record-panel{border:1px solid var(--line);border-radius:10px;margin:.7rem 0 1.4rem;padding:0 14px}.record-panel summary{cursor:pointer;padding:12px 0;color:#cad8de;font-size:.88rem;font-weight:600}.record-panel summary::marker{color:var(--sea)}#record-count{float:right;color:var(--sea);font-weight:500;font-size:.79rem}.record-panel>.hint{font-size:.75rem;margin:8px 0 14px;line-height:1.6}.table-scroll{overflow-x:auto}.lab-table{width:100%;border-collapse:collapse;font-size:.8rem;min-width:600px}.lab-table th,.lab-table td{padding:.45rem .5rem;border:1px solid var(--line);text-align:left}.lab-table th{background:var(--sunk);color:var(--sea)}.lab-table .btn{padding:.15rem .4rem;font-size:.72rem}.lab-table td:first-child{font-weight:500}
+.theory-lines p{margin-bottom:1.4rem}.blank{width:8rem}#t1,#t2{width:10rem}.result-question{padding:0 0 1.1rem;margin-bottom:1rem;border-bottom:1px solid var(--line)}.result-question h3{font-size:.94rem;font-weight:600;color:var(--ink);margin:0 0 .5rem}.result-question p{line-height:2.25;margin:0}.conclusion-block{margin-top:2rem}.conclusion-block label{letter-spacing:0;color:var(--body);line-height:1.8;margin-top:1rem}.self-review{border:1px solid var(--line);border-radius:9px;padding:12px 15px;margin-top:1.5rem}.self-review summary{font-size:.9rem;cursor:pointer;color:var(--sea)}.self-review label{display:flex;gap:10px;align-items:center;letter-spacing:0;font-size:.85rem;margin:12px 0 0;line-height:1.6}.self-review input{flex:none}
+dialog{max-width:520px;width:calc(100% - 32px);max-height:80vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:1.5rem}dialog::backdrop{background:rgba(0,0,0,.65)}
+.report-scroll{overflow-x:auto;margin-top:1.5rem}#report{min-width:700px;font-size:13px;line-height:1.65}#report .r-head h2{font-size:20px}#report .r-lab{font-size:15px;margin:18px 0 8px}#report .r-text{white-space:pre-wrap;word-break:break-all;color:#141414}#report .r-info{font-size:12px}#report .r-info td{padding:6px 8px}#report .r-results{border-collapse:collapse;width:100%;font-size:12px}#report .r-results th,#report .r-results td{border:1px solid #d9d9d9;padding:6px 7px;text-align:left}#report .r-results th{background:#f3f3f3}#report .r-caption{font-size:10px;color:#555;margin:7px 0}#report .r-question{font-weight:700;margin:12px 0 4px}#p_chart{width:100%;height:auto;object-fit:contain}#report .r-answer{break-inside:avoid}
+@media(max-width:760px){.lab-workbench{grid-template-columns:1fr}.lab-sidebar{border-left:0;border-top:1px solid #303942;padding:14px}.lab-sidebar .actions{grid-template-columns:1fr auto 1fr;margin:12px 0 8px}#record-trial{grid-column:auto}.lab-main{padding:10px 14px}.lab-scene{max-width:510px}.case-btn span{font-size:.74rem}.wrap{padding-top:1.5rem}.bar{padding:1rem 1.2rem 2rem}}
+@media(max-width:480px){.lab-top{padding:.6rem .8rem}.lab-main{padding:8px 10px}.meter-readout{gap:8px}.current-number b{font-size:1.45rem}.current-label strong{font-size:.7rem}.current-label span{font-size:.62rem}#motion-label{font-size:.67rem}.lab-sidebar .actions{grid-template-columns:1fr auto}#record-trial{grid-column:1 / -1}.table-scroll::before{content:'표를 좌우로 밀어 결과를 확인하세요.';display:block;color:var(--faint);font-size:.72rem;margin-bottom:6px}}
+@media(prefers-reduced-motion:reduce){.step.active{animation:none}*{scroll-behavior:auto!important}}
+
+</style>
+</head>
+<body>
+<div class="sheet">
+<header class="top"><div class="kicker">통합과학 탐구활동 (물리학)</div><h1>자석과 코일의 전자기 유도</h1></header>
+<nav aria-label="활동 단계">
+<button class="tab active" data-step="1"><span class="n">01</span>정보입력</button><button class="tab" data-step="2"><span class="n">02</span>활동안내</button><button class="tab" data-step="3"><span class="n">03</span>이론적 배경</button><button class="tab" data-step="4"><span class="n">04</span>실험하기</button><button class="tab" data-step="5"><span class="n">05</span>결과 및 정리</button><button class="tab" data-step="6"><span class="n">06</span>보고서</button>
+</nav>
+<main class="wrap">
+<section class="step active" data-step="1"><h2 class="head"><span class="n">01</span>정보입력</h2><p class="lead">자석을 코일 속에서 움직이며 전류가 만들어지는 조건을 알아봅시다.</p>
+<table class="info-form"><tbody><tr><td class="lbl"><label for="f_class">반</label></td><td><input class="save" id="f_class" maxlength="20" required></td><td class="lbl"><label for="f_id">학번</label></td><td><input class="save" id="f_id" maxlength="20" required></td><td class="lbl"><label for="f_name">이름</label></td><td><input class="save" id="f_name" maxlength="30" required></td></tr><tr><td class="lbl"><label for="f_date">일자</label></td><td><input class="save" id="f_date" type="date" required></td><td class="lbl"><label for="f_place">장소</label></td><td colspan="3"><input class="save" id="f_place" maxlength="60" required></td></tr></tbody></table>
+<p class="hint" style="margin-top:1rem">작성한 글과 실험 기록은 이 브라우저에 자동 저장됩니다.</p></section>
+<section class="step" data-step="2"><h2 class="head"><span class="n">02</span>활동안내</h2><p class="lead">코일 속에서 자석이 움직일 때 전류가 만들어지는 원리는 무엇일까요?</p>
+<div class="fixed-note"><b>목표</b><span id="disp_goal"></span></div><div class="fixed-note"><b>준비물</b><span id="disp_materials"></span></div>
+<div class="block"><h3>실험 과정</h3><ol class="rules"><li>코일과 검류계를 집게 달린 전선으로 연결합니다.</li><li>막대자석을 코일에 가까이 넣을 때, 코일 속에 정지했을 때, 코일에서 뺄 때 검류계 바늘을 관찰합니다.</li><li>막대자석 2개를 같은 극끼리 겹쳐 같은 동작을 반복합니다.</li><li>자석을 1개로 되돌리고, 움직이는 빠르기만 바꾸어 비교합니다.</li></ol></div>
+<div class="panel"><b>공정하게 비교하기</b><p>①과 ②에서는 자석의 개수만, ①과 ③에서는 빠르기만 달라집니다. 코일·이동 거리·전선 연결은 같습니다. 두 자석은 같은 성질이며 N극끼리, S극끼리 겹칩니다.</p><p class="hint">검류계의 ＋·−는 화면의 전선 연결을 기준으로 한 방향입니다. 수치는 전류의 변화를 비교하기 위한 상대값이며 실제 암페어 측정값이 아닙니다.</p></div>
+<label class="check-row"><span>과정과 비교 조건을 확인했습니다.</span><input id="chk_intro" class="save" type="checkbox" required></label></section>
+<section class="step" data-step="3"><h2 class="head"><span class="n">03</span>이론적 배경</h2><p class="lead">초성 힌트를 참고해 빈칸을 채우고 확인 버튼을 눌러 보세요.</p>
+<div class="block theory-lines"><p>가. 코일을 통과하는 자기장이 변화하여 전류가 흐르는 현상을 <input class="blank save" id="t1" placeholder="ㅈㅈㄱ ㅇㄷ" aria-label="현상의 이름" maxlength="20" required>라고 합니다.</p><p>나. 이때 흐르는 전류를 <input class="blank save" id="t2" placeholder="ㅇㄷ ㅈㄹ" aria-label="이때 흐르는 전류의 이름" maxlength="20" required>라고 합니다.</p><p>다. 자석이 코일 근처에 있어도 코일을 통과하는 자기장의 <input class="blank save" id="t3" placeholder="ㅂㅎ" aria-label="전류가 흐르기 위해 필요한 자기장의 조건" maxlength="12" required>가 없으면 전류가 흐르지 않습니다.</p><p>라. 이 과정에서 <input class="blank save" id="t4" placeholder="ㅇㄷ" aria-label="전환 전 에너지" maxlength="12" required> 에너지가 <input class="blank save" id="t5" placeholder="ㅈㄱ" aria-label="전환 후 에너지" maxlength="12" required> 에너지로 전환됩니다.</p></div>
+<button class="btn solid" id="check-theory">빈칸 확인하기</button><div class="note" id="theory-note"></div></section>
+<section class="step" data-step="4"><h2 class="head"><span class="n">04</span>실험하기</h2><p class="lead">회로를 연결한 뒤, 넣기·정지·빼기에서 바늘의 방향과 움직이는 정도를 관찰하세요.</p>
+<div class="lab-top"><span class="eyebrow">자석으로 전류 만들기</span><span id="lab-state" role="status">회로 연결 전</span></div>
+<div class="lab-workbench"><div class="lab-main"><div class="lab-scene">
+<svg id="apparatus" viewBox="0 0 640 330" aria-labelledby="scene-title scene-desc" role="img"><title id="scene-title">수직 코일과 검류계</title><desc id="scene-desc">오른쪽 자석을 코일 속으로 내리거나 올립니다. 왼쪽 검류계의 바늘이 전류의 방향과 세기를 나타냅니다. 자유 조작 슬라이더로도 자석을 움직일 수 있습니다.</desc>
+<defs>
+<linearGradient id="coil-copper"><stop stop-color="#4c281e"/><stop offset=".26" stop-color="#8b4b30"/><stop offset=".52" stop-color="#d79c69"/><stop offset=".7" stop-color="#a66542"/><stop offset="1" stop-color="#4d281e"/></linearGradient>
+<linearGradient id="metal"><stop stop-color="#637079"/><stop offset=".45" stop-color="#d9d9c9"/><stop offset="1" stop-color="#818e91"/></linearGradient>
+<linearGradient id="case-orange" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#c98550"/><stop offset="1" stop-color="#74442b"/></linearGradient>
+<linearGradient id="bar-blue" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#335774"/><stop offset=".55" stop-color="#719dc0"/><stop offset="1" stop-color="#3b6382"/></linearGradient>
+<linearGradient id="bar-red" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#8d3d40"/><stop offset=".55" stop-color="#d87976"/><stop offset="1" stop-color="#a44849"/></linearGradient>
+<pattern id="winding-lines" width="120" height="4" patternUnits="userSpaceOnUse"><path d="M0 1 Q60 6 120 1" fill="none" stroke="#f0b17f" stroke-opacity=".4" stroke-width="1"/><path d="M0 3 Q60 8 120 3" fill="none" stroke="#341911" stroke-opacity=".5" stroke-width="1"/></pattern>
+<clipPath id="magnet-window"><rect x="390" y="0" width="90" height="173"/></clipPath>
+</defs>
+<ellipse cx="154" cy="300" rx="119" ry="8" fill="#070b10" opacity=".65"/><ellipse cx="430" cy="303" rx="86" ry="8" fill="#070b10" opacity=".65"/>
+<path id="wire-a" d="M192 282 C247 309 331 315 378 280" fill="none" stroke="#515a60" stroke-width="4" stroke-dasharray="6 5"/><path id="wire-b" d="M115 282 C187 331 377 324 483 287" fill="none" stroke="#515a60" stroke-width="4" stroke-dasharray="6 5"/>
+<g id="galvanometer"><path d="M58 154 L240 154 L260 290 L39 290 Z" fill="url(#case-orange)" stroke="#c28e67" stroke-width="2"/><path d="M67 164 H231 L243 263 H55 Z" fill="#e7e6d7" stroke="#666960" stroke-width="2"/>
+<text x="151" y="185" text-anchor="middle" fill="#424b4d" font-size="13" font-weight="600">GALVANOMETER</text>
+<g transform="translate(151 230)"><path d="M-69 14 Q0 -57 69 14" fill="none" stroke="#79847e" stroke-width="1.5"/><path d="M0 -22 V-14 M-41 -5 L-36 1 M41 -5 L36 1 M-63 9 L-58 13 M63 9 L58 13" stroke="#77837e"/><text x="-76" y="26" fill="#465452" font-size="17">−</text><text x="0" y="-26" fill="#465452" font-size="14" text-anchor="middle">0</text><text x="64" y="26" fill="#465452" font-size="17">＋</text><path id="needle" d="M0 26 L0 -16" stroke="#a64135" stroke-width="2.5"/><circle cx="0" cy="26" r="4" fill="#3e4948"/></g>
+<circle cx="115" cy="282" r="7" fill="#20252a" stroke="#747f83"/><circle cx="192" cy="282" r="7" fill="#ae443e" stroke="#e28c75"/><text x="151" y="134" text-anchor="middle" fill="#b7c8d0" font-size="17">검류계</text></g>
+<g id="coil-back"><rect x="373" y="168" width="114" height="117" fill="url(#coil-copper)"/><ellipse cx="430" cy="168" rx="62" ry="17" fill="url(#metal)"/><ellipse cx="430" cy="168" rx="29" ry="10" fill="#111921"/><ellipse cx="430" cy="291" rx="69" ry="13" fill="url(#metal)"/></g>
+<g clip-path="url(#magnet-window)"><g id="magnet" style="cursor:ns-resize">
+<g id="second-magnet" transform="translate(17 -3)" opacity=".9"><rect x="-15" y="-50" width="30" height="50" rx="2" fill="url(#bar-blue)"/><rect x="-15" y="0" width="30" height="50" rx="2" fill="url(#bar-red)"/><text x="0" y="-28" fill="#fff" font-size="17" text-anchor="middle">S</text><text x="0" y="33" fill="#fff" font-size="17" text-anchor="middle">N</text></g>
+<rect x="-15" y="-50" width="30" height="50" rx="2" fill="url(#bar-blue)"/><rect x="-15" y="0" width="30" height="50" rx="2" fill="url(#bar-red)"/><path d="M-11 -47 V47" stroke="#fff" stroke-opacity=".3"/><text x="0" y="-28" fill="#fff" font-size="17" text-anchor="middle" font-weight="600">S</text><text x="0" y="33" fill="#fff" font-size="17" text-anchor="middle" font-weight="600">N</text>
+</g></g>
+<g id="coil-front"><rect x="373" y="173" width="114" height="112" fill="url(#coil-copper)"/><rect x="373" y="173" width="114" height="112" fill="url(#winding-lines)"/><path d="M368 168 C368 191 492 191 492 168 L484 168 C484 180 376 180 376 168 Z" fill="url(#metal)"/><path d="M373 282 Q430 300 487 282" fill="none" stroke="#75462f" stroke-width="3"/>
+<circle cx="378" cy="280" r="5" fill="#b6bcc0"/><circle cx="483" cy="287" r="5" fill="#b6bcc0"/></g>
+<path d="M522 89 V155 M522 89 L516 98 M522 89 L528 98 M522 155 L516 146 M522 155 L528 146" fill="none" stroke="#6d999b" stroke-width="2"/>
+<text x="553" y="123" text-anchor="middle" fill="#8fb6b7" font-size="15">위·아래</text><text x="523" y="233" fill="#b7c8d0" font-size="16">코일</text><text id="magnet-label" x="341" y="49" text-anchor="end" fill="#b7c8d0" font-size="15">막대자석 1개</text>
+<rect id="drag-handle" x="394" y="8" width="67" height="284" fill="transparent" style="cursor:ns-resize"/>
+</svg></div>
+<div class="phase-strip" aria-label="실험 진행"><span data-phase="in">넣기</span><span data-phase="hold">코일 속 정지</span><span data-phase="out">빼기</span></div>
+<div class="meter-readout"><div class="current-number"><span>현재 전류 <small>상대값</small></span><b id="current-value">0.00</b></div><div class="current-label"><strong id="current-direction">바늘 중앙</strong><span>− 왼쪽 · ＋ 오른쪽</span></div><span id="motion-label">코일 밖 대기</span></div>
+<details class="live-graph" id="graph-panel"><summary>전류 변화 그래프</summary><canvas id="trace-chart" width="560" height="142" role="img" aria-label="넣기, 정지, 빼기 과정의 전류 변화"></canvas><p class="hint" id="trace-caption">실험을 실행하면 그래프가 기록됩니다.</p></details>
+</div><aside class="lab-sidebar" aria-label="실험 조작"><button class="btn" id="connect-circuit">① 집게선으로 회로 연결</button><p id="circuit-status" class="hint" role="status">회로를 먼저 연결하세요.</p>
+<p class="control-label" id="case-label">② 비교할 조건</p><div class="case-tabs" role="group" aria-labelledby="case-label"><button class="case-btn active" data-case="one" aria-pressed="true"><b>기본</b><span>1개 · 느리게</span></button><button class="case-btn" data-case="two" aria-pressed="false"><b>자석 개수</b><span>2개 · 느리게</span></button><button class="case-btn" data-case="fast" aria-pressed="false"><b>빠르기</b><span>1개 · 빠르게</span></button></div><p class="hint" id="trial-description"></p>
+<div class="actions"><button class="btn solid" id="run-trial" disabled>실험 시작</button><button class="btn" id="stop-trial" disabled>중지</button><button class="btn" id="record-trial" disabled>관찰 결과 기록</button></div><div class="note" id="trial-note" role="status"></div>
+<details class="explore"><summary>자석을 직접 움직여 보기</summary><label for="magnet-position">코일 밖 ↔ 코일 속</label><input id="magnet-position" type="range" min="0" max="100" value="0"><p class="hint">그림의 자석을 위아래로 드래그하거나 슬라이더의 방향키로 움직이세요. 손을 멈추면 바늘은 중앙으로 돌아옵니다.</p><button class="btn" id="reset-apparatus">자석 처음 위치</button></details></aside></div>
+<details class="record-panel"><summary><span>관찰 기록 보기</span><span id="record-count">0 / 3 실험</span></summary><div class="table-scroll"><table class="lab-table"><thead><tr><th>비교 조건</th><th>넣기</th><th>코일 속 정지</th><th>빼기</th><th>최대 크기*</th><th>기록</th></tr></thead><tbody id="records"></tbody></table></div><p class="hint">* 바늘이 움직이는 정도를 비교하기 위한 전류의 최대 상대값입니다. 같은 조건을 다시 기록하면 기존 기록을 바꿉니다.</p></details></section>
+<section class="step" data-step="5"><h2 class="head"><span class="n">05</span>결과 및 정리</h2><p class="lead">세 실험의 기록을 비교하고, 활동지의 질문에 답해 보세요.</p>
+<div class="result-question"><h3>1. 움직일 때와 정지할 때</h3><p>막대자석이 코일 속에서 움직일 때 바늘은 <input class="blank save" id="r_move" placeholder="ㅇㅈㅇㄷ" aria-label="움직일 때 바늘" maxlength="20" required>. 자석이 코일 속에 정지하면 바늘은 <input class="blank save" id="r_stop" placeholder="ㅈㅇ" aria-label="정지할 때 바늘 위치" maxlength="20" required>으로 돌아온다.</p></div>
+<div class="result-question"><h3>2. 가까이할 때와 멀리할 때</h3><p>같은 극을 코일에 가까이할 때와 코일에서 멀리할 때 바늘이 움직이는 방향은 서로 <input class="blank save" id="r_direction" placeholder="ㅂㄷ" aria-label="접근과 멀어짐의 방향 관계" maxlength="20" required>이다.</p></div>
+<div class="result-question"><h3>3. 자석 1개와 2개</h3><p>같은 빠르기로 움직일 때, 같은 극끼리 겹친 자석 2개의 바늘 움직임은 1개일 때보다 <input class="blank save" id="r_count" placeholder="ㅋㄷ" aria-label="자석 두 개의 바늘 움직임 크기" maxlength="20" required>.</p></div>
+<div class="result-question"><h3>4. 느리게와 빠르게</h3><p>자석 개수가 같을 때, 빠르게 움직이면 느리게 움직일 때보다 바늘 움직임이 <input class="blank save" id="r_speed" placeholder="ㅋㄷ" aria-label="빠른 자석의 바늘 움직임 크기" maxlength="20" required>.</p></div>
+<button class="btn solid" id="check-results">빈칸 확인하기</button><div class="note" id="results-note"></div>
+<div class="block conclusion-block"><h3>결론</h3><label for="conclusion_principle">1. 코일 속에서 자석이 움직일 때 전류가 유도되는 원리를 설명해 보세요.</label><textarea class="save" id="conclusion_principle" rows="4" maxlength="350" required></textarea><div class="counter" id="conclusion_principle-count">0 / 350</div>
+<label for="conclusion_comparison">2. 검류계 바늘의 방향과 움직이는 정도가 달라지는 까닭을 자석과 코일의 상대 운동, 자석 개수와 관련지어 설명해 보세요.</label><textarea class="save" id="conclusion_comparison" rows="4" maxlength="350" required></textarea><div class="counter" id="conclusion_comparison-count">0 / 350</div></div>
+<details class="self-review"><summary>스스로 평가하기</summary><label><input class="save" id="self_knowledge" type="checkbox"> 바늘의 방향과 움직이는 정도를 설명할 수 있다.</label><label><input class="save" id="self_process" type="checkbox"> 자석의 개수와 빠르기를 바꾸어 정확하게 비교했다.</label><label><input class="save" id="self_value" type="checkbox"> 직접 전류를 유도하며 과학의 유용성을 느꼈다.</label></details></section>
+<section class="step" data-step="6"><h2 class="head"><span class="n">06</span>보고서</h2><p class="lead">미리보기를 확인한 뒤 PDF로 저장하세요.</p><div class="actions"><button class="btn solid" id="pdf-btn">PDF로 저장</button></div><div id="link-area"></div><div class="report-scroll"><article id="report"><div class="r-head"><h2>자석과 코일의 전자기 유도 활동 보고서</h2></div>
+<table class="r-info"><tbody><tr><td class="k">반 · 학번 · 이름</td><td id="p_student"></td></tr><tr><td class="k">일자 · 장소</td><td id="p_date"></td></tr><tr><td class="k">목표</td><td id="p_goal"></td></tr><tr><td class="k">준비물</td><td id="p_materials"></td></tr></tbody></table>
+<p class="r-question">문제 인식 · 코일 속에서 자석이 움직일 때 전류가 만들어지는 원리는 무엇일까?</p>
+<h3 class="r-lab">1. 이론적 배경</h3><div class="r-text" id="p_theory"></div>
+<h3 class="r-lab">2. 실험 과정과 관찰</h3><p class="r-text">코일과 검류계를 연결하고, 자석을 넣기 → 코일 속 정지 → 빼기 순서로 움직였다. 같은 극끼리 겹친 자석 2개로 반복한 뒤, 자석을 1개로 되돌리고 빠르기를 바꾸었다.</p>
+<table class="r-results"><thead><tr><th>비교 조건</th><th>넣기</th><th>코일 속 정지</th><th>빼기</th><th>최대 크기</th></tr></thead><tbody id="p_records"></tbody></table><p class="r-caption">＋·−는 화면의 전선 연결에 따른 방향입니다. 전류는 비교용 상대값이며 실제 암페어 측정값이 아닙니다.</p>
+<img id="p_chart" alt="자석 1개·2개 및 느리게·빠르게 움직일 때의 전류 변화 비교" width="900" height="300"><p class="r-caption">①·②는 자석 개수만, ①·③은 빠르기만 다릅니다. 각 실험에서 코일 속에 정지하는 시간은 같습니다.</p>
+<h3 class="r-lab">3. 결과 및 정리</h3><div id="p_results" class="r-text"></div>
+<h3 class="r-lab">4. 결론</h3><p class="r-question">1. 코일 속에서 자석이 움직일 때 전류가 유도되는 원리</p><div class="r-text r-answer" id="p_principle"></div><p class="r-question">2. 자석과 코일의 상대 운동 및 자석 개수에 따른 바늘의 방향과 움직이는 정도</p><div class="r-text r-answer" id="p_comparison"></div>
+<p class="r-caption">스스로 평가하기 · <span id="p_self"></span></p></article></div></section>
+</main><div class="bar"><button class="btn" id="prev">이전</button><button class="btn" id="reset">전체 초기화</button><button class="btn solid" id="next">다음</button></div>
+<footer class="site-footer">
+  <div class="site-footer-top">
+    <p class="site-footer-copy">© 교사 이상준. All rights reserved.<br>오류제보/문의: cepheid@kakao.com</p>
+    <div class="site-footer-links">
+      <a class="yt-badge" href="https://www.youtube.com/@science_earth" target="_blank" rel="noopener">
+        <span class="play"></span> 유튜브
+      </a>
+      <a class="yt-badge" href="https://linktr.ee/earth_sj" target="_blank" rel="noopener">
+        <span class="badge-icon">🌍</span> Linktree
+      </a>
+    </div>
+  </div>
+</footer>
+</div>
+<dialog id="checklist" aria-labelledby="checklist-title"><h3 id="checklist-title">PDF 저장 전에 확인해 주세요</h3><ul id="checklist-items"></ul><form method="dialog"><button class="btn solid">닫기</button></form></dialog>
+
+<script>
+const DEFAULT_SUBMIT_URL = '';
+const FIXED_GOAL = '자석과 코일의 상대 운동으로 전류가 유도됨을 설명하고, 자석의 개수와 빠르기에 따른 검류계의 변화를 비교할 수 있다.';
+const FIXED_MATERIALS = '막대자석, 코일, 검류계, 집게 달린 전선 (화면에서 조작하는 가상 장치)';
+document.addEventListener('DOMContentLoaded', () => {
+const $ = id => document.getElementById(id);
+const KEY = 'induction_v2_';
+/* 공통 채점: 버튼 확인 → 2회 오답 안내 → 직접 재입력 → 재채점 */
+const sjGradeGroups = [];
+const stepValid = n => sjGradeStep(n) && legacyStepValid(n);
+function sjNormalize(value) {
+  const s = String(value ?? '').normalize('NFKC').toLowerCase().replace(/\s+/g, '');
+  const colors = [['붉은','붉은색','빨간','빨간색','빨강'], ['푸른','푸른색','파란','파란색','파랑'], ['검은','검은색','검정','검정색'], ['초록','초록색','녹색'], ['노란','노란색','노랑']];
+  return colors.find(group => group.includes(s))?.[0] || s;
+}
+function sjGradeSaved() {
+  if (typeof saveState === 'function') saveState();
+  else if (typeof save === 'function') save();
+}
+function sjGraded(id) {
+  const group = sjGradeGroups.find(g => id in g.answers);
+  return !!group && group.passed && Object.entries(group.snapshot).every(([key,value]) => $(key).value === value);
+}
+function sjGradeStep(n) {
+  return sjGradeGroups.every(g => !Object.keys(g.answers).some(id => Number($(id).closest('[data-step]')?.dataset.step) === Number(n)) || sjGraded(Object.keys(g.answers)[0]));
+}
+function sjMakeGrade(answers, noteId, opts = {}) {
+  const group = {answers, passed:false, attempts:0, snapshot:{}};
+  sjGradeGroups.push(group);
+  const note = $(noteId);
+  if (note) note.setAttribute('aria-live', 'polite');
+  const message = (text, ok = false) => {
+    if (!note) return;
+    note.textContent = text; note.className = ok ? 'note ok grade-msg good' : 'note err grade-msg bad'; note.style.display = 'block';
+  };
+  const changed = () => { if (opts.onChange) opts.onChange(group.passed); };
+  group.invalidate = () => { group.passed = false; message('답을 입력하거나 수정했어요. 빈칸 확인하기를 눌러 주세요.'); changed(); };
+  function check() {
+    const wrong = [];
+    for (const [id,answer] of Object.entries(answers)) {
+      const el = $(id), value = el.value;
+      const ok = answer && typeof answer === 'object' && answer.test ? answer.test(value)
+        : (Array.isArray(answer) ? answer : [answer]).some(a => sjNormalize(value) !== '' && sjNormalize(value) === sjNormalize(a));
+      el.readOnly = false;
+      el.classList.toggle('correct',ok); el.classList.toggle('invalid',!ok); el.classList.toggle('wrong',!ok);
+      el.setAttribute('aria-invalid',String(!ok));
+      if (!ok) wrong.push({id,answer});
+    }
+    group.passed = wrong.length === 0;
+    group.snapshot = Object.fromEntries(Object.keys(answers).map(id => [id,$(id).value]));
+    if (group.passed) {
+      group.attempts = 0; message('모두 정답이에요! 다음 단계로 진행할 수 있어요.',true);
+      changed(); if (opts.onSuccess) opts.onSuccess(); sjGradeSaved(); return;
+    }
+    changed();
+    if (wrong.some(r => !$(r.id).value.trim())) { message('빈칸을 모두 채운 뒤 다시 확인해 주세요.'); return; }
+    group.attempts++;
+    if (group.attempts < 2) { message('틀린 칸을 다시 확인해 주세요. (1/2회)'); return; }
+    group.attempts = 0;
+    message('정답을 확인한 뒤 틀린 칸에 직접 다시 입력하고 채점해 주세요.');
+    const dialog = document.createElement('dialog');
+    dialog.style.cssText = 'max-width:520px;width:calc(100% - 40px);max-height:80vh;overflow:auto;padding:24px;border:1px solid #aaa;border-radius:16px;background:#fff;color:#18232d';
+    dialog.setAttribute('aria-label','정답 안내');
+    const title = document.createElement('h3'); title.textContent = '정답 안내'; dialog.append(title);
+    const hint = document.createElement('p'); hint.textContent = '닫으면 틀린 칸이 비워집니다. 직접 다시 입력하고 빈칸 확인하기를 눌러 주세요.'; dialog.append(hint);
+    for (const {id,answer} of wrong) {
+      const row = document.createElement('p');
+      const label = (typeof BLANK_LABELS !== 'undefined' && BLANK_LABELS[id]) || (typeof ANSWER_LABELS !== 'undefined' && ANSWER_LABELS[id]) || $(id).getAttribute('aria-label') || $(id).placeholder || '빈칸';
+      const correct = answer && typeof answer === 'object' && answer.display ? answer.display() : Array.isArray(answer) ? answer[0] : answer;
+      row.textContent = `${label} · 내가 쓴 답: ${$(id).value} → ${correct}`; dialog.append(row);
+    }
+    const close = document.createElement('button'); close.type = 'button'; close.className = 'btn'; close.textContent = '닫고 다시 입력하기';
+    close.style.cssText = 'background:#18232d;color:white;padding:10px 16px'; close.onclick = () => dialog.close(); dialog.append(close);
+    dialog.addEventListener('close', () => {
+      wrong.forEach(({id}) => { $(id).value = ''; $(id).classList.remove('correct'); });
+      group.passed = false; changed(); sjGradeSaved(); dialog.remove(); $(wrong[0].id).focus();
+    }, {once:true});
+    document.body.append(dialog); dialog.showModal();
+  }
+  return {check, isPassed: () => sjGraded(Object.keys(answers)[0])};
+}
+function sjBindGrade(btnId, noteId, answers, onSuccess, onChange) {
+  const checker = sjMakeGrade(answers,noteId,{onSuccess,onChange});
+  $(btnId).addEventListener('click',checker.check);
+  return checker;
+}
+for (const eventName of ['input','change']) document.addEventListener(eventName,e => {
+  const group = sjGradeGroups.find(g => e.target.id in g.answers);
+  if (!group) return;
+  group.passed = false;
+  queueMicrotask(() => {
+    e.target.readOnly = false; e.target.classList.remove('correct','invalid','wrong'); e.target.removeAttribute('aria-invalid');
+    group.invalidate(); sjGradeSaved();
+  });
+},true);
+
+const sjPrefix = "induction_v2_";
+const sjTotal = () => TOTAL - 1;
+
+/* ===== 공통 저장 안내 · 진행 상태 · PDF 처리 (문서 10장) ===== */
+let sjTimer = null;
+let sjStarted = false;
+let sjPdf = false;
+let sjResetting = false;
+const sjPath = location.pathname.replace(/^.*?(?=reports\/)/, '').replace(/\/index\.html$/, '').replace(/\/$/, '');
+const sjStatusKey = 'sjstatus:' + sjPath;
+function sjNotice(id, message, error = false) {
+  let note = document.getElementById(id);
+  if (!note) {
+    note = document.createElement('div');
+    note.id = id; note.className = 'sj-toast';
+    note.setAttribute('role', error ? 'alert' : 'status');
+    let stack = document.getElementById('sj-notices');
+    if (!stack) { stack = document.createElement('div'); stack.id = 'sj-notices'; document.body.appendChild(stack); }
+    stack.appendChild(note);
+  }
+  note.replaceChildren();
+  note.classList.toggle('sj-error', error);
+  const text = document.createElement('span'); text.textContent = message;
+  const close = document.createElement('button'); close.type = 'button'; close.textContent = '닫기';
+  close.addEventListener('click', () => note.remove());
+  note.append(text, close);
+}
+function sjStorageFull() {
+  sjNotice('sj-storage-note', '기기에 저장하지 못했습니다. 저장 공간이나 브라우저 설정을 확인하고, 페이지를 닫기 전에 PDF로 저장해 주세요.', true);
+}
+function sjStorageSaved() {
+  document.getElementById('sj-storage-note')?.remove();
+  if (Object.keys(localStorage).some(key => key.startsWith(sjPrefix) && (localStorage.getItem(key) || '').startsWith('data:image'))) {
+    localStorage.removeItem(sjPrefix + 'photos_cleared');
+    document.getElementById('sj-photo-note')?.remove();
+  }
+}
+function sjWriteStatus() {
+  if (!sjStarted || sjResetting) return;
+  try {
+    const total = sjTotal();
+    let done = 0;
+    for (let n = 1; n <= total; n++) if (stepValid(n)) done++;
+    localStorage.setItem(sjStatusKey, JSON.stringify({done, total, updated:Date.now(), pdf:sjPdf}));
+  } catch { sjStorageFull(); }
+}
+function sjQueue(dirty = false) {
+  if (sjResetting) return;
+  if (dirty) { sjStarted = true; sjPdf = false; }
+  clearTimeout(sjTimer);
+  sjTimer = setTimeout(sjWriteStatus, 600);
+}
+function sjClearStatus() {
+  sjResetting = true;
+  clearTimeout(sjTimer);
+  localStorage.removeItem(sjStatusKey);
+  localStorage.removeItem(sjPrefix + 'photos_cleared');
+}
+function sjAfterPdf() {
+  clearTimeout(sjTimer);
+  sjStarted = true; sjPdf = true;
+  sjWriteStatus();
+  try {
+    const images = Object.keys(localStorage).filter(key => key.startsWith(sjPrefix) && (localStorage.getItem(key) || '').startsWith('data:image'));
+    if (images.length) {
+      // 먼저 안내 표식을 남겨, 도중에 실패해도 다시 열었을 때 알 수 있게 합니다.
+      localStorage.setItem(sjPrefix + 'photos_cleared', '1');
+      images.forEach(key => localStorage.removeItem(key));
+    }
+  } catch { sjStorageFull(); }
+}
+async function sjWaitForImages(report) {
+  await Promise.all([...report.querySelectorAll('img')].filter(img => img.getAttribute('src')).map(img => new Promise((resolve, reject) => {
+    if (img.complete) return img.naturalWidth ? resolve() : reject(new Error('사진을 불러오지 못했습니다. 사진을 다시 선택해 주세요.'));
+    const cleanup = () => { clearTimeout(timer); img.removeEventListener('load', loaded); img.removeEventListener('error', failed); };
+    const loaded = () => { cleanup(); resolve(); };
+    const failed = () => { cleanup(); reject(new Error('사진을 불러오지 못했습니다. 사진을 다시 선택해 주세요.')); };
+    const timer = setTimeout(failed, 15000);
+    img.addEventListener('load', loaded, {once:true});
+    img.addEventListener('error', failed, {once:true});
+  })));
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+async function sjExportPDF(button, options, neutral = false, animate = false) {
+  if (button.disabled || !showChecklist()) return;
+  if (typeof html2pdf !== 'function') {
+    sjNotice('sj-pdf-note', 'PDF 저장 도구를 불러오지 못했습니다. 인터넷 연결을 확인한 뒤 새로고침해 주세요.', true);
+    return;
+  }
+  const originalLabel = button.textContent;
+  const snapshots = [];
+  const imageSnapshots = [];
+  const captureGroups = [];
+  const remember = el => { if (el) snapshots.push([el, el.getAttribute('style')]); return el; };
+  button.disabled = true; button.textContent = '저장 중…';
+  document.getElementById('sj-pdf-note')?.remove();
+  try {
+    buildReport();
+    const report = document.getElementById('report');
+    if (neutral) {
+      const wrap = remember(document.getElementById('reportWrap'));
+      wrap.style.padding = '0'; wrap.style.background = '#ffffff';
+    } else {
+      remember(report);
+      report.style.paddingTop = '0'; report.style.paddingBottom = '0';
+    }
+    if (animate) {
+      const wrap = remember(report.closest('.wrap') || report.parentElement);
+      wrap.style.paddingTop = '0'; wrap.style.paddingBottom = '0';
+      const active = remember(document.querySelector('.step.active'));
+      if (active) { active.style.animation = 'none'; active.style.opacity = '1'; active.style.transform = 'none'; }
+    }
+    // 한 페이지보다 충분히 작은 제목·내용 묶음만 함께 넘겨 제목이 홀로 남지 않게 합니다.
+    report.querySelectorAll('.r-lab, .r-sub, .r-hang, h2, h3').forEach(heading => {
+      if (heading.closest('.r-head')) return;
+      const next = heading.nextElementSibling;
+      if (!next) return;
+      const height = next.getBoundingClientRect().bottom - heading.getBoundingClientRect().top;
+      if (height <= 0 || height > 360) return;
+      const group = document.createElement('div');
+      group.style.breakInside = 'avoid'; group.style.pageBreakInside = 'avoid'; group.style.display = 'flow-root';
+      const margin = getComputedStyle(heading).margin;
+      remember(heading); heading.style.margin = margin;
+      heading.before(group); group.append(heading, next); captureGroups.push(group);
+    });
+    // 비어 있는 사진 자리도 캡처 도구가 잘못 읽지 않도록 유효한 투명 이미지로 둡니다.
+    report.querySelectorAll('img').forEach(img => {
+      imageSnapshots.push([img, img.getAttribute('src')]);
+      if (!img.getAttribute('src')) img.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+    });
+    await sjWaitForImages(report);
+    // html2canvas가 object-fit을 재현하지 못해 세로 사진이 늘어나는 문제를 피합니다.
+    for (const img of report.querySelectorAll('img')) {
+      const box = img.getBoundingClientRect();
+      if (!box.width || !box.height || getComputedStyle(img).objectFit !== 'contain') continue;
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(img.clientWidth * 2));
+      canvas.height = Math.max(1, Math.round(img.clientHeight * 2));
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = getComputedStyle(img).backgroundColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const scale = Math.min(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+      const width = img.naturalWidth * scale, height = img.naturalHeight * scale;
+      ctx.drawImage(img, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
+      img.src = canvas.toDataURL('image/png');
+    }
+    await sjWaitForImages(report);
+    await html2pdf().set(options).from(report).save();
+    sjAfterPdf();
+    sjNotice('sj-pdf-note', 'PDF 저장 처리가 완료되었습니다. 내려받은 파일을 확인해 주세요.');
+  } catch (error) {
+    sjNotice('sj-pdf-note', 'PDF 저장에 실패했습니다. ' + (error?.message || '다시 시도해 주세요.'), true);
+  } finally {
+    captureGroups.reverse().forEach(group => { group.replaceWith(...group.childNodes); });
+    imageSnapshots.forEach(([img, src]) => src === null ? img.removeAttribute('src') : img.setAttribute('src', src));
+    snapshots.reverse().forEach(([el, style]) => style === null ? el.removeAttribute('style') : el.setAttribute('style', style));
+    button.disabled = false; button.textContent = originalLabel;
+  }
+}
+function sjInit() {
+  try {
+    const previous = JSON.parse(localStorage.getItem(sjStatusKey) || 'null');
+    sjStarted = !!previous; sjPdf = !!previous?.pdf;
+    if (localStorage.getItem(sjPrefix + 'photos_cleared') === '1') {
+      sjNotice('sj-photo-note', '지난 PDF 저장 후 기기에 보관하던 사진을 정리했습니다. 새 PDF에 사진을 넣으려면 다시 올려 주세요.');
+    }
+  } catch { sjStorageFull(); }
+  document.addEventListener('input', e => { if (e.target.matches('input, textarea, select')) sjQueue(true); });
+  document.addEventListener('change', e => { if (e.target.matches('input, textarea, select')) sjQueue(true); });
+  document.addEventListener('click', e => {
+    if (e.target.closest('.sj-toast')) return;
+    const editing = e.target.closest('section[data-step="4"] button');
+    sjQueue(!!editing);
+  });
+  document.addEventListener('pointerup', e => { if (e.target.closest('section[data-step="4"] svg, section[data-step="4"] canvas')) sjQueue(true); });
+  window.addEventListener('pagehide', () => { if (sjTimer !== null) { clearTimeout(sjTimer); sjWriteStatus(); } });
+}
+
+
+const TOTAL = 6;
+let step=1,records={},activeRun=null,completed=null,frame=0,idleTimer=0;
+let connected=false,position=0,caseId='one',lastMove=performance.now();
+const CASES=[
+ {id:'one',name:'① 1개 · 느리게',count:1,move:1.6,description:'기본 실험입니다. 1개를 넣고, 코일 속에서 멈춘 뒤, 다시 뺍니다.'},
+ {id:'two',name:'② 2개 · 느리게',count:2,move:1.6,description:'같은 극끼리 겹친 자석 2개를 사용합니다. ①과 빠르기·이동 거리는 같습니다.'},
+ {id:'fast',name:'③ 1개 · 빠르게',count:1,move:.7,description:'자석은 다시 1개입니다. ①과 같은 거리를 더 빠르게 움직입니다.'}
+];
+const selected=()=>CASES.find(c=>c.id===caseId);
+const THEORY_ANSWERS={t1:'전자기 유도',t2:'유도 전류',t3:'변화',t4:'운동',t5:'전기'};
+const RESULT_ANSWERS={r_move:['움직인다','움직임'],r_stop:['중앙','가운데','0','영점'],r_direction:'반대',r_count:['크다','더 크다','커진다'],r_speed:['크다','더 크다','커진다']};
+const BLANK_LABELS={t1:'현상의 이름',t2:'유도되는 전류',t3:'전류가 흐르는 조건',t4:'전환 전 에너지',t5:'전환 후 에너지',r_move:'움직일 때 바늘',r_stop:'정지할 때 바늘',r_direction:'넣기와 빼기의 방향',r_count:'자석 2개와 1개',r_speed:'빠르게와 느리게'};
+sjBindGrade('check-theory','theory-note',THEORY_ANSWERS);
+sjBindGrade('check-results','results-note',RESULT_ANSWERS);
+const WRITING=['conclusion_principle','conclusion_comparison'];
+const textFields=()=>[...document.querySelectorAll('.save')];
+function save(){try{textFields().forEach(el=>localStorage.setItem(KEY+el.id,el.type==='checkbox'?String(el.checked):el.value));localStorage.setItem(KEY+'records',JSON.stringify(records));sjStorageSaved();}catch{sjStorageFull();}}
+function restore(){try{
+ if(!localStorage.getItem(KEY+'schema')){
+  ['f_class','f_id','f_name','f_date','f_place',...Object.keys(THEORY_ANSWERS)].forEach(id=>{const value=localStorage.getItem('induction_v1_'+id);if(value!==null&&localStorage.getItem(KEY+id)===null)localStorage.setItem(KEY+id,value);});
+  localStorage.removeItem(sjStatusKey);localStorage.setItem(KEY+'schema','2');
+ }
+ textFields().forEach(el=>{const value=localStorage.getItem(KEY+el.id);if(value===null)return;if(el.type==='checkbox')el.checked=value==='true';else el.value=el.maxLength>0?value.slice(0,el.maxLength):value;});
+ const data=JSON.parse(localStorage.getItem(KEY+'records')||'{}');
+ CASES.forEach(c=>{const r=data[c.id];if(r&&r.model===2&&r.count===c.count&&r.move===c.move&&Number.isFinite(r.peak)&&r.peak>=0&&r.inDirection==='-'&&r.outDirection==='+'&&r.hold===0)records[c.id]={model:2,count:c.count,move:c.move,peak:r.peak,inDirection:'-',outDirection:'+',hold:0};});
+ }catch{sjNotice('sj-storage-note','이전 입력을 읽지 못했습니다. 현재 활동은 계속할 수 있습니다.',true);}}
+const MSG={1:'정보입력의 다섯 항목을 채워 주세요.',2:'실험 과정 확인에 체크해 주세요.',3:'이론적 배경을 채점해 모두 맞혀 주세요.',4:'기본·자석 개수·빠르기 실험을 완료하고 각각 기록해 주세요.',5:'결과 정리를 채점하고 결론 두 문항을 작성해 주세요.'};
+const legacyStepValid=n=>n===4?CASES.every(c=>records[c.id]):[...document.querySelectorAll(`section[data-step="${n}"] [required]`)].every(el=>el.type==='checkbox'?el.checked:el.value.trim());
+function render(){document.querySelectorAll('.step').forEach(el=>el.classList.toggle('active',Number(el.dataset.step)===step));document.querySelectorAll('.tab').forEach(el=>{const n=Number(el.dataset.step);el.classList.toggle('active',n===step);el.classList.toggle('done',n<TOTAL&&stepValid(n));el.setAttribute('aria-current',n===step?'step':'false');});$('prev').disabled=step===1;$('next').hidden=step===TOTAL;if(step===TOTAL)buildReport();if(step===4)drawLiveChart();}
+function goTo(n){if(activeRun)stopRun('실험을 중지했습니다. 다시 시작해 주세요.');clearTimeout(idleTimer);drawApparatus(0);step=Math.max(1,Math.min(TOTAL,n));render();window.scrollTo({top:0,behavior:'smooth'});}
+function showChecklist(){const missing=Object.keys(MSG).filter(n=>!stepValid(Number(n)));if(!missing.length)return true;$('checklist-items').replaceChildren(...missing.map(n=>{const li=document.createElement('li');li.textContent=MSG[n];return li;}));$('checklist').showModal();return false;}
+const note=message=>{$('trial-note').textContent=message;$('trial-note').className='note ok';};
+const signText=s=>s==='0'?'중앙':s==='+'?'오른쪽 (+)':'왼쪽 (−)';
+// Concept model: one-dimensional insertion, fixed circuit resistance.
+// Identical aligned bars strengthen the flux. Values are relative, not amperes.
+const flux=(p,count)=>count/Math.pow(1+(170*(1-p)/70)**2,1.5);
+function inducedCurrent(p,velocity,count){const k=170/70;const derivative=3*count*k*k*(1-p)*Math.pow(1+k*k*(1-p)**2,-2.5);return -.5*derivative*velocity;}
+const duration=c=>.6+2*c.move+1;
+function trialState(c,t){
+ const u=t-.3;
+ if(u<0)return {position:0,current:0,phase:'ready'};
+ if(u<c.move){const p=u/c.move;return {position:p,current:inducedCurrent(p,1/c.move,c.count),phase:'in'};}
+ if(u<c.move+1)return {position:1,current:0,phase:'hold'};
+ if(u<2*c.move+1){const p=1-(u-c.move-1)/c.move;return {position:p,current:inducedCurrent(p,-1/c.move,c.count),phase:'out'};}
+ return {position:0,current:0,phase:'done'};
+}
+const traceFor=c=>Array.from({length:241},(_,i)=>{const t=duration(c)*i/240;return [t,trialState(c,t).current];});
+function measurements(c){const peak=Math.max(...traceFor(c).map(p=>Math.abs(p[1])));return {model:2,count:c.count,move:c.move,peak,inDirection:'-',outDirection:'+',hold:0};}
+function drawApparatus(current=0,phase='ready'){
+ $('magnet').setAttribute('transform',`translate(430 ${62+168*position})`);$('second-magnet').style.display=selected().count===2?'':'none';$('magnet-label').textContent=selected().count===2?'같은 극끼리 2개':'막대자석 1개';
+ $('wire-a').setAttribute('stroke',connected?'#d77a6c':'#515a60');$('wire-b').setAttribute('stroke',connected?'#788995':'#515a60');['wire-a','wire-b'].forEach(id=>$(id).setAttribute('stroke-dasharray',connected?'none':'6 5'));
+ const value=connected&&Math.abs(current)>=.005?current:0;$('needle').setAttribute('transform',`rotate(${Math.max(-1,Math.min(1,value/2))*62} 0 26)`);$('current-value').textContent=(value>0?'+':'')+value.toFixed(2);$('current-direction').textContent=value===0?'바늘 중앙':value>0?'오른쪽으로 움직임':'왼쪽으로 움직임';
+ $('magnet-position').value=position*100;document.querySelectorAll('[data-phase]').forEach(el=>el.classList.toggle('active',el.dataset.phase===phase));$('motion-label').textContent=({in:'코일 속으로 넣는 중',hold:'코일 속에 정지',out:'코일 밖으로 빼는 중',done:'관찰 완료',ready:position>.98?'코일 속에 정지':position>.01?'자석 정지':'코일 밖 대기',manual:'직접 조작 중'})[phase];
+}
+let chartSeries=[];
+function drawChart(canvas,series,white=false){
+ const x=canvas.getContext('2d');let w=canvas.width,h=canvas.height;
+ if(!white){w=Math.max(260,Math.round(canvas.getBoundingClientRect().width||520));h=142;const ratio=Math.min(2,window.devicePixelRatio||1);canvas.width=w*ratio;canvas.height=h*ratio;x.setTransform(ratio,0,0,ratio,0,0);}
+ const left=white?62:34,right=white?22:12,top=white?40:12,bottom=white?45:29,maxT=5,limit=2;
+ x.fillStyle=white?'#fff':'#11171d';x.fillRect(0,0,w,h);x.font=white?'16px sans-serif':'11px sans-serif';const px=t=>left+t/maxT*(w-left-right),py=v=>top+(limit-v)/(2*limit)*(h-top-bottom);
+ for(const v of [-2,-1,0,1,2]){x.strokeStyle=white?'#ddd':'#2a3742';x.lineWidth=1;x.beginPath();x.moveTo(left,py(v));x.lineTo(w-right,py(v));x.stroke();x.fillStyle=white?'#34404a':'#b1c0cb';if(white||v%2===0)x.fillText(String(v),10,py(v)+4);}
+ for(let t=0;t<=5;t++){x.fillStyle=white?'#34404a':'#b1c0cb';x.fillText(String(t),px(t)-4,h-14);}x.fillText(white?'시간 (초)':'초',w-(white?95:18),h-1);if(white)x.fillText('전류 상대값',left,22);
+ series.forEach((s,i)=>{x.strokeStyle=s.color;x.lineWidth=white?3:2;x.beginPath();s.points.forEach(([t,v],j)=>j?x.lineTo(px(t),py(v)):x.moveTo(px(t),py(v)));x.stroke();if(white){x.fillStyle=s.color;x.fillText(s.label,left+140+i*185,22);}});
+}
+function drawLiveChart(){drawChart($('trace-chart'),chartSeries);}
+function setBusy(busy){$('run-trial').disabled=busy||!connected;$('stop-trial').disabled=!busy;$('connect-circuit').disabled=busy||connected;document.querySelectorAll('[data-case]').forEach(b=>b.disabled=busy);$('lab-state').textContent=busy?'관찰 중':connected?'회로 연결 완료':'회로 연결 전';}
+function stopRun(message){cancelAnimationFrame(frame);activeRun=null;completed=null;setBusy(false);$('record-trial').disabled=true;drawApparatus(0);if(message)note(message);}
+function prepare(id=caseId){clearTimeout(idleTimer);stopRun();caseId=id;position=0;completed=null;chartSeries=[];document.querySelectorAll('[data-case]').forEach(b=>{b.classList.toggle('active',b.dataset.case===id);b.setAttribute('aria-pressed',String(b.dataset.case===id));});$('trial-description').textContent=selected().description;drawApparatus();drawLiveChart();$('trial-note').textContent='';$('trace-caption').textContent='넣기 → 코일 속 정지 → 빼기 순서로 관찰합니다.';}
+function runTrial(){
+ if(!connected){note('집게선으로 회로를 먼저 연결하세요.');return;}
+ clearTimeout(idleTimer);completed=null;$('record-trial').disabled=true;setBusy(true);position=0;drawApparatus();note('넣기·정지·빼기에서 바늘의 움직임을 비교하세요.');const run={c:selected(),start:performance.now()};activeRun=run;
+ function tick(now){if(activeRun!==run)return;const elapsed=(now-run.start)/1000,state=trialState(run.c,elapsed);position=state.position;drawApparatus(state.current,state.phase);chartSeries=[{points:traceFor(run.c).filter(p=>p[0]<=elapsed),color:'#7dd3c8',label:run.c.name}];if($('graph-panel').open)drawLiveChart();if(elapsed<duration(run.c)){frame=requestAnimationFrame(tick);return;}
+  completed={id:run.c.id,...measurements(run.c)};activeRun=null;setBusy(false);drawApparatus(0,'done');chartSeries=[{points:traceFor(run.c),color:'#7dd3c8',label:run.c.name}];drawLiveChart();$('record-trial').disabled=false;$('lab-state').textContent='실험 완료';$('trace-caption').textContent=`${run.c.name} · 최대 크기 ${completed.peak.toFixed(2)} · 정지 중 0`;note('관찰을 마쳤습니다. 결과를 기록하고 다음 비교 조건을 선택하세요.');}
+ frame=requestAnimationFrame(tick);
+}
+function renderRecords(){
+ $('records').replaceChildren(...CASES.map(c=>{const tr=document.createElement('tr'),r=records[c.id];[c.name,r?signText(r.inDirection):'—',r?'중앙 (0)':'—',r?signText(r.outDirection):'—',r?r.peak.toFixed(2):'—'].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td);});const cell=document.createElement('td');if(r){const b=document.createElement('button');b.className='btn small';b.textContent='삭제';b.setAttribute('aria-label',c.name+' 기록 삭제');b.onclick=()=>{delete records[c.id];save();renderRecords();sjQueue(true);};cell.append(b);}else cell.textContent='미기록';tr.append(cell);return tr;}));$('record-count').textContent=`${Object.keys(records).length} / 3 실험`;
+}
+function freeMove(value){if(activeRun)stopRun('직접 조작으로 전환했습니다. 비교 기록은 실험 시작으로 다시 남겨 주세요.');completed=null;$('record-trial').disabled=true;const before=flux(position,selected().count),now=performance.now(),dt=Math.max(.016,(now-lastMove)/1000);position=Math.max(0,Math.min(1,value));lastMove=now;const current=-.5*(flux(position,selected().count)-before)/dt;drawApparatus(current,'manual');chartSeries=[];if($('graph-panel').open)drawLiveChart();$('trace-caption').textContent='직접 조작은 그래프에 기록하지 않습니다. 비교 그래프는 실험 시작으로 확인하세요.';$('lab-state').textContent=connected?'직접 조작':'회로 연결 전';clearTimeout(idleTimer);idleTimer=setTimeout(()=>drawApparatus(0,position>.98?'hold':'ready'),120);}
+const handle=$('drag-handle');let dragging=false,offset=0;
+handle.addEventListener('pointerdown',e=>{if(activeRun)stopRun('직접 조작으로 전환했습니다.');const p=new DOMPoint(e.clientX,e.clientY).matrixTransform($('apparatus').getScreenCTM().inverse());offset=(p.y-62)/168-position;lastMove=performance.now();dragging=true;handle.setPointerCapture(e.pointerId);e.preventDefault();});
+handle.addEventListener('pointermove',e=>{if(!dragging)return;const p=new DOMPoint(e.clientX,e.clientY).matrixTransform($('apparatus').getScreenCTM().inverse());freeMove((p.y-62)/168-offset);});
+const release=()=>{dragging=false;clearTimeout(idleTimer);drawApparatus(0,position>.98?'hold':'ready');};['pointerup','pointercancel','lostpointercapture'].forEach(event=>handle.addEventListener(event,release));$('magnet-position').addEventListener('input',e=>freeMove(Number(e.target.value)/100));
+$('connect-circuit').onclick=()=>{connected=true;setBusy(false);$('connect-circuit').textContent='✓ 집게선 연결 완료';$('circuit-status').textContent='코일과 검류계가 닫힌 회로로 연결되었습니다.';drawApparatus();};
+document.querySelectorAll('[data-case]').forEach(b=>b.onclick=()=>prepare(b.dataset.case));$('run-trial').onclick=runTrial;$('stop-trial').onclick=()=>stopRun('중지했습니다. 중간 실험은 기록되지 않습니다.');$('reset-apparatus').onclick=()=>prepare();
+$('record-trial').onclick=()=>{if(!completed)return;const {id,...data}=completed;records[id]=data;save();renderRecords();sjQueue(true);$('record-trial').disabled=true;note('기록했습니다. 세 비교를 마치면 결과 및 정리 문항에 답하세요.');};
+$('graph-panel').addEventListener('toggle',()=>{if($('graph-panel').open)drawLiveChart();});document.addEventListener('visibilitychange',()=>{if(document.hidden){if(activeRun)stopRun('화면을 벗어나 실험을 중지했습니다.');release();}});
+function buildReport(){
+ const val=id=>($(id).value.trim()||'(미입력)').replace(/([^\s]{15})/g,'$1\u200b');$('p_student').textContent=`${val('f_class')}반 · ${val('f_id')} · ${val('f_name')}`;$('p_date').textContent=`${val('f_date')} · ${val('f_place')}`;$('p_goal').textContent=FIXED_GOAL;$('p_materials').textContent=FIXED_MATERIALS;
+ $('p_theory').textContent=`가. 현상의 이름: ${val('t1')} / 발생하는 전류: ${val('t2')}\n나. 전류가 흐르는 자기장의 조건: ${val('t3')}\n다. 에너지 전환: ${val('t4')} 에너지 → ${val('t5')} 에너지`;
+ $('p_records').replaceChildren(...CASES.map(c=>{const r=records[c.id],tr=document.createElement('tr');[c.name,r?signText(r.inDirection):'(미기록)',r?'중앙 (0)':'(미기록)',r?signText(r.outDirection):'(미기록)',r?r.peak.toFixed(2):'—'].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td);});return tr;}));
+ const canvas=document.createElement('canvas');canvas.width=900;canvas.height=300;const colors=['#167b70','#9e582d','#515fb0'];drawChart(canvas,CASES.filter(c=>records[c.id]).map(c=>({points:traceFor(c),color:colors[CASES.indexOf(c)],label:c.name})),true);$('p_chart').src=canvas.toDataURL('image/png');
+ $('p_results').textContent=`1. 움직임과 정지: 움직일 때 바늘은 ${val('r_move')}. 정지하면 ${val('r_stop')}으로 돌아온다.\n2. 가까이할 때와 멀리할 때의 방향: ${val('r_direction')}\n3. 같은 극으로 겹친 자석 2개의 바늘 움직임은 1개보다 ${val('r_count')}.\n4. 빠르게 움직일 때의 바늘 움직임은 느릴 때보다 ${val('r_speed')}.`;
+ $('p_principle').textContent=val('conclusion_principle');$('p_comparison').textContent=val('conclusion_comparison');$('p_self').textContent=['지식·이해','과정·기능','가치·태도'].map((v,i)=>`${v}: ${$(['self_knowledge','self_process','self_value'][i]).checked?'확인':'미선택'}`).join(' / ');
+}
+const exportPDF=()=>sjExportPDF($('pdf-btn'),{margin:[20,0,20,0],filename:`전자기유도_${$('f_id').value}_${$('f_name').value}.pdf`,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff'},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['css','legacy'],avoid:['tr','.r-answer','#p_chart']}});
+function updateCounters(){WRITING.forEach(id=>$(id+'-count').textContent=`${$(id).value.length} / 350`);}
+document.addEventListener('input',e=>{if(e.target.classList.contains('save')){save();updateCounters();}});document.addEventListener('change',e=>{if(e.target.classList.contains('save'))save();});
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>goTo(Number(t.dataset.step)));$('prev').onclick=()=>goTo(step-1);$('next').onclick=()=>goTo(step+1);$('pdf-btn').onclick=exportPDF;
+$('reset').onclick=()=>{if(!confirm('이 활동지의 입력과 실험 기록을 모두 지울까요?'))return;try{sjClearStatus();Object.keys(localStorage).filter(k=>k.startsWith(KEY)).forEach(k=>localStorage.removeItem(k));localStorage.setItem(KEY+'schema','2');location.reload();}catch{sjStorageFull();}};
+$('disp_goal').textContent=FIXED_GOAL;$('disp_materials').textContent=FIXED_MATERIALS;restore();if(!$('f_date').value){const d=new Date();$('f_date').value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+const raw=new URLSearchParams(location.search).get('link')||DEFAULT_SUBMIT_URL;try{if(raw){const u=new URL(raw);if(/^https?:$/.test(u.protocol)){const a=document.createElement('a');a.href=u.href;a.target='_blank';a.rel='noopener';a.className='submit';a.textContent='저장한 PDF 제출하러 가기 →';$('link-area').append(a);}}}catch{}
+window.addEventListener('resize',()=>{if(step===4&&$('graph-panel').open)drawLiveChart();});prepare();renderRecords();updateCounters();render();sjInit();
+});
+
+</script>
+</body>
+</html>

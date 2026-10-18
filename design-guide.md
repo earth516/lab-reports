@@ -151,125 +151,25 @@ const FIXED_MATERIALS = "...";
 - "명칭을 써봐요"처럼 힌트 없는 안내 문구나 빈 placeholder는 쓰지 않는다.
 - 숫자 자체를 빈칸으로 만들지 않는다(암기 포인트가 아닌 단순 숫자는 그대로 텍스트로 둔다). 대신 개념어(용어)를 빈칸으로 만든다.
 
-### 채점 시스템 (모든 보고서 공통)
+### 채점 시스템 (모든 보고서 공통, 2026-10-06)
 
-1. **실시간 표시** — 입력하는 즉시(input 이벤트) 정답과 비교해서 맞으면 초록(`.correct`), 틀리면 빨강(`.invalid`)으로 바로 표시한다. 띄어쓰기 차이는 무시하고 채점(`norm()` 함수로 공백 제거 후 비교).
-2. **"빈칸 확인하기" 버튼** — 버튼 글자는 항상 "빈칸 확인하기"다("채점하기", "정답 확인하기"로 쓰지 않는다). 전체를 한 번에 채점. 다 맞으면 **그 탭 안에 보이는 전용 안내창**에 "모두 정답이에요!" 표시(⚠️ 06 탭에 있는 `#msg`를 재사용하면 다른 탭에서는 안 보인다 — 반드시 해당 탭 전용 note 요소를 따로 둘 것, id 예: `theory-note`).
-3. **오답 시 2회까지 재시도** — 1회차는 "OO개 틀렸어요, 다시 확인해 보세요"만 팝업으로 안내(정답 비공개). 2회차에도 틀리면 **정답을 팝업으로 공개**하고 통과 처리한다(`theoryPassed = true`). 통과한 단계는 PDF 저장 시 체크리스트(7장)에서 완료로 인정된다.
-4. **팝업에는 틀린 것만** — 전체 문항을 다 나열하지 않는다. 또한 `id.toUpperCase()`(예: "B12") 같은 내부 코드를 그대로 보여주지 말고, **그 빈칸이 뭘 묻는지 짧은 설명**으로 바꿔서 보여준다 (`BLANK_LABELS` 매핑 객체 사용).
-5. **정답 공개 후 재입력 유도(콜백)** — 2회차 팝업을 닫는 **순간**, 틀렸던 칸을 비우고 빨간 테두리도 지운다. 학생이 정답을 눈으로 본 뒤 손으로 다시 입력하게 만드는 게 목적(그냥 읽고 넘어가는 것보다 기억에 남는다). 이미 통과 처리는 됐으므로 다시 안 채워도 PDF 저장은 막히지 않는다 — 강제가 아니라 유도.
-6. **`stepValid()`는 "채워졌는지"가 아니라 "통과했는지"만 본다** — `stepValid()`는 PDF 저장 시 `showChecklist()`(7장)가 단계별 완료 여부를 판단할 때 쓴다. 정답 공개 후 칸을 비우면 `required` 조건 때문에 오히려 저장이 막히는 버그가 생기므로, 이론적 배경 단계는 `theoryPassed` 플래그 하나로만 판단한다.
-   ```js
-   const stepValid = n => {
-     if (n === 3) return theoryPassed;   // 이론적 배경 단계
-     return [...secOf(n).querySelectorAll('[required]')].every(isFilled);
-   };
-   ```
+1. **버튼으로 채점** — 입력 중에는 정오답을 표시하지 않는다. “빈칸 확인하기”를 누르면 맞은 칸은 초록, 틀린 칸은 빨강으로 표시한다.
+2. **재시도와 정답 안내** — 빈칸이 남아 있으면 입력 안내만 표시하며 오답 횟수를 늘리지 않는다. 모두 입력한 답이 틀리면 첫 번째에는 재시도 안내, 두 번째에는 틀린 칸의 정답만 팝업으로 보여준다.
+3. **직접 재입력 후 재채점** — 정답 공개는 통과가 아니다. 팝업을 닫으면 틀린 칸만 비우고, 직접 입력한 뒤 버튼을 눌러 모두 맞혀야 통과한다.
+4. **수정 가능** — 맞힌 칸도 수정할 수 있다. 입력이 바뀌면 해당 묶음의 통과 상태를 취소하며 다시 확인해야 한다. 페이지를 다시 열어도 저장된 글은 복원하지만 채점은 다시 확인한다.
+5. **표현과 수치** — 띄어쓰기·영문 대소문자·전각 표기 차이를 정리한다. 색 이름의 동의어와 문항에 등록된 대체 답을 인정한다. 수치형 문항은 기존 허용 오차로 판정한다. 자유 서술형은 정답을 하나로 정해 채점하지 않는다.
+6. **완료 판정** — `stepValid()`는 기존 실험 조건과 해당 단계의 모든 채점 묶음 통과 여부를 함께 확인한다. 정답 공개만 했거나 통과 후 답을 수정한 경우 PDF 완료로 인정하지 않는다. 탐색용 탭 이동 방식은 기존대로 유지한다.
 
-### 재사용 가능한 표준 코드
+각 파일의 공통 `sjMakeGrade()`·`sjBindGrade()`가 채점과 정답 안내를 처리한다. 새 보고서는 해당 블록을 복사하고 정답표·안내 영역·확인 버튼을 연결한다. 추가 관찰과 자유 서술형을 채점 정답표에 넣지 않는다.
 
-**HTML** — 채점 버튼 + 탭 전용 안내창 + 모달(파일마다 1개만 두면 됨, 여러 채점 구간이 있어도 공유 가능):
-```html
-<button class="btn" type="button" id="check-theory" style="margin-top:.6rem">빈칸 확인하기</button>
-<div id="theory-note" class="note"></div>
-
-<div class="modal-overlay" id="answerModal" style="display:none">
-  <div class="modal-box">
-    <h3 id="answerModalTitle">정답 안내</h3>
-    <p class="hint" style="margin-top:-.3rem" id="answerModalHint"></p>
-    <div id="answerModalBody" class="r-txt"></div>
-    <button class="btn solid" type="button" id="closeAnswerModal" style="margin-top:1.2rem">확인했어요</button>
-  </div>
-</div>
-```
-
-**CSS**:
-```css
-.modal-overlay{position:fixed;inset:0;background:rgba(6,8,11,.72);
-  display:flex;align-items:center;justify-content:center;z-index:100;padding:1.5rem}
-.modal-box{background:var(--surface);border:1px solid var(--line);border-radius:16px;
-  padding:1.8rem;max-width:440px;width:100%;max-height:82vh;overflow-y:auto;
-  box-shadow:0 20px 50px rgba(0,0,0,.4)}
-.modal-box h3{font-size:1.15rem;font-weight:800;color:var(--sea);margin-bottom:.3rem}
-.modal-box .r-txt{white-space:pre-wrap;color:var(--body);line-height:1.9}
-```
-
-**JS** — `showAnswerModal(title, hint, wrong, revealAnswer, onClose)`는 파일 안에 여러 채점 구간이 있어도(예: 심층순환의 이론적 배경 + T-S도 연습) **하나만 만들어 공유**한다:
 ```js
-const norm = s => (s || '').replace(/\s+/g, '');
-const THEORY_ANSWERS = { b1:'정답1', b2:'정답2', /* ... */ };
-const BLANK_LABELS = { b1:'이 빈칸이 뭘 묻는지 한 줄 설명', b2:'...' };
-let theoryAttempts = 0;
-let theoryPassed = false;
-let answerModalCb = null;
-
-const showAnswerModal = (title, hint, wrong, revealAnswer, onClose) => {
-  $('answerModalTitle').textContent = title;
-  $('answerModalHint').textContent = hint;
-  $('answerModalBody').innerHTML = wrong
-    .map(r => {
-      const label = BLANK_LABELS[r.id] || `${r.id.toUpperCase()}번 칸`;
-      return revealAnswer ? `${label} — 정답: ${r.answer}` : label;
-    })
-    .join('<br>');
-  $('answerModal').style.display = 'flex';
-  answerModalCb = onClose || null;
-};
-const closeAnswerModal = () => {
-  $('answerModal').style.display = 'none';
-  if (answerModalCb) { const cb = answerModalCb; answerModalCb = null; cb(); }
-};
-$('closeAnswerModal').addEventListener('click', closeAnswerModal);
-
-const checkTheory = () => {
-  const results = Object.entries(THEORY_ANSWERS).map(([id, answer]) => {
-    const el = $(id);
-    const ok = norm(el.value) === norm(answer);
-    el.classList.toggle('correct', ok);
-    el.classList.toggle('invalid', !ok);
-    return { id, answer, ok };
-  });
-  const wrong = results.filter(r => !r.ok);
-
-  if (wrong.length === 0) {
-    theoryPassed = true;
-    const note = $('theory-note');
-    note.textContent = '모두 정답이에요!';
-    note.className = 'note ok';
-    return;
-  }
-  $('theory-note').className = 'note';
-  theoryAttempts++;
-  if (theoryAttempts >= 2) {
-    theoryPassed = true;
-    showAnswerModal(
-      '정답 안내',
-      '틀린 칸의 정답이에요. 팝업을 닫으면 틀린 칸이 비워지니, 직접 다시 입력해 보세요.',
-      wrong, true,
-      () => { wrong.forEach(r => { $(r.id).classList.remove('invalid', 'correct'); $(r.id).value = ''; }); $(wrong[0].id).focus(); save(); }
-    );
-  } else {
-    showAnswerModal('다시 확인해 보세요', `빨갛게 표시된 칸 중 ${wrong.length}개가 틀렸어요. 다시 한번 확인해 보세요. (${theoryAttempts}/2회)`, wrong, false);
-  }
-};
-$('check-theory').addEventListener('click', checkTheory);  // 버튼 id는 자유, 텍스트는 항상 "빈칸 확인하기"
+const checker = sjBindGrade('check-theory', 'theory-note', {
+  b1: '산화',
+  b2: ['중화 반응', '중화'],
+});
 ```
 
-전역 `input` 리스너에 아래를 추가하면 실시간 표시가 된다(기존 `.invalid`/`.correct` 초기화 로직 바로 뒤에):
-```js
-if (THEORY_ANSWERS[e.target.id] !== undefined) {
-  const val = e.target.value.trim();
-  if (val) {
-    const ok = norm(val) === norm(THEORY_ANSWERS[e.target.id]);
-    e.target.classList.toggle('correct', ok);
-    e.target.classList.toggle('invalid', !ok);
-  }
-}
-```
-
-**숫자 오차범위 채점(예: 심층순환 T-S도 연습)도 같은 `showAnswerModal`을 그대로 재사용할 수 있다** — `wrong` 배열의 각 항목에 `{ id, label, answerText }`를 넣고 정확히 일치하는 대신 `Math.abs(mine - actual) <= 허용오차`로 `ok` 판정만 다르게 하면 된다. 심층순환 파일의 `checkPractice` 함수 참고.
-
-
+숫자 문항은 `{ test: value => /* 허용 오차 판정 */, display: () => /* 정답 표시 */ }` 형태로 연결한다. 심층순환의 `practiceChecker`가 예시다.
 
 ## 7. 탭 이동 — 완전 자유 이동 + PDF 저장 시에만 체크리스트 (2026-08 말 최종)
 
@@ -545,7 +445,7 @@ const exportPDF = async () => {
 - [ ] 목표·준비물 JS 상수로 고정
 - [ ] 사진 업로드에 `capture` 속성 없음, `object-fit:contain`, 긴 변 900px · JPEG 75%
 - [ ] 이론적 배경·개념 확인 빈칸마다 초성 힌트(양자택일 빈칸 포함), 정답과 초성 일치
-- [ ] 빈칸에 실시간 채점 + "빈칸 확인하기" 2회 재시도 + 팝업(틀린 것만, 사람이 읽을 수 있는 라벨) + 정답 공개 후 재입력 유도
+- [ ] "빈칸 확인하기" 버튼 채점 + 2회 오답 후 정답 안내 + 직접 재입력·재채점 + 답 수정 시 통과 취소
 - [ ] 04 탭 활동 유형 (A)/(B) 판단(13장), 시뮬레이션이 있으면 14장 규칙
 - [ ] 탭·"다음"·보고서 탭 전부 자유 이동(검증 없음), "PDF로 저장" 버튼에서만 `showChecklist()` (7장)
 - [ ] 모달(`answerModal` 등)이 `.step` 섹션 밖(body 직속)에 있는지 확인 (7장)
