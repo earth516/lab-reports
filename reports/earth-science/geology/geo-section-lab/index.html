@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>지질 단면 실험실</title>
+<title>지구과학 탐구활동 — 지질 단면도 시뮬레이션</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
 <style>
@@ -11,7 +11,7 @@
   --paper:#0c0e12; --surface:#171a20; --sunk:#1e222b;
   --ink:#e8eaee; --body:#b4b9c4; --faint:#8b909b;
   --line:#2a2e37; --line-soft:#22262b;
-  --sea:#6fb3e6; --sea-soft:rgba(111,179,230,.14);
+  --sea:#e0913e; --sea-soft:rgba(224,145,62,.14);
   --coral:#e06a5b; --teal:#7dd3c8;
   --sans:'Pretendard','Pretendard Variable',-apple-system,system-ui,sans-serif;
 }
@@ -70,13 +70,12 @@ header.top h1{font-size:1.4rem;font-weight:700;color:#fff;letter-spacing:-.03em;
   .tab .key{display:none}
 }
 
-/* ---- 캔버스 아래 도구 설정 ---- */
-.settings{border-top:1px solid var(--line);background:var(--sunk);border-radius:0 0 14px 14px}
-.settings-head{display:flex;align-items:center;gap:.7rem;padding:.85rem 1.1rem 0}
+/* ---- 도구 설정 (사이드) ---- */
+.settings-head{display:flex;align-items:center;gap:.7rem;padding:.9rem 1.1rem;border-bottom:1px solid var(--line)}
 .settings-head .tool-ic{width:30px;height:30px;border-radius:9px;background:var(--sea-soft);color:var(--sea);display:grid;place-items:center;flex:none}
 .settings-head .tool-ic svg{width:20px;height:20px}
 .settings-head h3{font-size:1.05rem;font-weight:700;color:var(--sea)}
-.settings .hint{border-top:0;padding:.35rem 1.1rem 0}
+.settings .hint{border-top:0;padding:.7rem 1.1rem 0}
 
 /* ---- 본문 배치 ---- */
 .layout{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:2rem;padding:2rem 2.4rem 2.4rem;flex:1;align-items:start}
@@ -206,9 +205,27 @@ code{background:var(--paper);padding:.05rem .35rem;border-radius:5px;font-size:.
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* ---- 꼬리말 ---- */
-.site-footer{padding:1.3rem 2.4rem 1.6rem;background:var(--paper);border-top:1px solid var(--line);text-align:center}
-.site-footer p{margin:0;font-size:12px;color:var(--faint);line-height:1.6}
+.site-footer{padding:1.4rem 2.4rem 1.8rem;background:var(--paper);border-top:1px solid var(--line)}
+.site-footer-top{position:relative;display:flex;align-items:center;justify-content:flex-end;
+  min-height:2.4rem}
+.site-footer-copy{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  margin:0;font-size:12px;color:var(--faint);line-height:1.5;text-align:center;white-space:nowrap}
+.site-footer-links{display:flex;align-items:center;gap:.6rem}
 @media(max-width:700px){.site-footer{padding:1.1rem 1.2rem 1.4rem}}
+@media(max-width:640px){
+  .site-footer-top{position:static;flex-direction:column-reverse;align-items:center;gap:.8rem}
+  .site-footer-copy{position:static;transform:none;white-space:normal}
+}
+.yt-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem .5rem .7rem;
+  background:var(--surface);border:1.5px solid var(--line);border-radius:999px;
+  color:var(--ink);text-decoration:none;font-weight:700;font-size:.8rem;
+  transition:border-color .15s,transform .1s}
+.yt-badge:hover{border-color:var(--sea);transform:translateY(-1px)}
+.yt-badge .play{display:inline-flex;align-items:center;justify-content:center;
+  width:18px;height:18px;border-radius:5px;background:var(--sea);flex:none}
+.yt-badge .play::before{content:"";width:0;height:0;margin-left:2px;
+  border-style:solid;border-width:4px 0 4px 7px;border-color:transparent transparent transparent #0c0e12}
+.yt-badge .badge-icon{font-size:.85rem;line-height:1}
 </style>
 </head>
 <body>
@@ -216,7 +233,7 @@ code{background:var(--paper);padding:.05rem .35rem;border-radius:5px;font-size:.
 <header class="top">
   <div class="titles">
     <div class="kicker">지구과학 탐구활동 (지질·지사학)</div>
-    <h1 id="app-title">지질 단면 실험실</h1>
+    <h1 id="app-title">지질 단면도 시뮬레이션</h1>
   </div>
   <div class="actions">
     <button class="tb" id="btn-examples">📚<span class="lbl"> 예제</span></button>
@@ -278,15 +295,16 @@ code{background:var(--paper);padding:.05rem .35rem;border-radius:5px;font-size:.
           <div class="wrap" id="wrap"><canvas id="rock"></canvas><canvas id="ovl"></canvas></div>
         </div>
       </div>
-      <div class="settings">
-        <div class="settings-head"><span class="tool-ic" id="tool-ic"></span><h3 id="tool-name">도구</h3></div>
-        <div class="hint" id="hint"></div>
-        <div class="panel" id="panel"></div>
-      </div>
     </div>
   </section>
 
   <aside class="side">
+    <div class="card settings">
+      <div class="settings-head"><span class="tool-ic" id="tool-ic"></span><h3 id="tool-name">도구</h3></div>
+      <div class="hint" id="hint"></div>
+      <div class="panel" id="panel"></div>
+    </div>
+
     <details class="card" id="tl-card" open>
       <summary>작업 기록 <span class="count" id="tl-count">0</span></summary>
       <ul class="tl" id="tl"></ul>
@@ -301,7 +319,17 @@ code{background:var(--paper);padding:.05rem .35rem;border-radius:5px;font-size:.
 </main>
 
 <footer class="site-footer">
-  <p>© 교사 이상준. All rights reserved.<br>오류제보/문의: cepheid@kakao.com</p>
+  <div class="site-footer-top">
+    <p class="site-footer-copy">© 교사 이상준. All rights reserved.<br>오류제보/문의: cepheid@kakao.com</p>
+    <div class="site-footer-links">
+      <a class="yt-badge" href="https://www.youtube.com/@science_earth" target="_blank" rel="noopener">
+        <span class="play"></span> 유튜브
+      </a>
+      <a class="yt-badge" href="https://linktr.ee/earth_sj" target="_blank" rel="noopener">
+        <span class="badge-icon">🌍</span> Linktree
+      </a>
+    </div>
+  </div>
 </footer>
 </div>
 

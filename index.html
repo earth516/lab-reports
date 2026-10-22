@@ -189,7 +189,6 @@
   @media (prefers-reduced-motion: reduce) {
     .card, #search { transition: none; }
   }
-.progress-badge{display:inline-block;margin-top:9px;padding:3px 9px;border-radius:999px;color:var(--cc);background:#ffffff0a;border:1px solid currentColor;font-size:12px}
 </style>
 </head>
 <body>
@@ -245,12 +244,12 @@
 const SUB_META = {
   '대기·해양': { color: '#6fb3e6', icon: '🌊' },
   '지질':      { color: '#e0913e', icon: '🌋' },
-  '우주':      { color: '#7dd3c8', icon: '🪐' },
-  '융합':      { color: '#7dd3c8', icon: '🔗' },
-  '물리학':    { color: '#7dd3c8', icon: '⚛️' },
-  '화학':      { color: '#7dd3c8', icon: '🧪' },
-  '생명과학':  { color: '#7dd3c8', icon: '🧬' },
-  '지구과학':  { color: '#7dd3c8', icon: '🌍' },
+  '우주':      { color: '#7d8cff', icon: '🪐' },
+  '융합':      { color: '#2bb6a4', icon: '🔗' },
+  '물리학':    { color: '#7d8cff', icon: '⚛️' },
+  '화학':      { color: '#ff8a65', icon: '🧪' },
+  '생명과학':  { color: '#6fcf97', icon: '🧬' },
+  '지구과학':  { color: '#e0913e', icon: '🌍' },
 };
 
 const TABS = [
@@ -289,12 +288,6 @@ function deriveMeta(url) {
    url은 실제 파일이 있는 경로 그대로 두고 tab·subcategory만 수동으로 적으면 그 값이 우선한다. */
 const REPORTS = [
   {
-    name: '자석과 코일의 전자기 유도',
-    desc: '자석을 코일에 넣고 빼며 개수·빠르기에 따른 전류 변화를 비교해요',
-    emoji: '🧲',
-    url: 'reports/integrated-science/physics/electromagnetic-induction/index.html'
-  },
-  {
     name: '심층 순환의 발생 원리 추론하기',
     desc: '수온·염분 차이로 밀도류와 심층 순환이 일어나는 원리를 추론해요',
     emoji: '🌊',
@@ -319,12 +312,6 @@ const REPORTS = [
     url: 'reports/earth-science/geology/igneous-rocks/index.html'
   },
   {
-    name: '지질단면도 시뮬레이션',
-    desc: '지질단면도를 직접 만들어 보아요',
-    emoji: '🦴',
-    url: 'reports/earth-science/geology/geological_profile/index.html'
-  },
-    {
     name: '퇴적암 관찰하기 🔎',
     desc: '퇴적암을 기원·입자 크기·성분에 따라 관찰하고 분류해요',
     emoji: '🪨',
@@ -358,16 +345,32 @@ const REPORTS = [
     url: 'reports/integrated-science/chemistry/ion-movement/index.html'
   },
   {
-    name: '산화·환원 실험(1) - 구리판의 변화',
+    name: '산화 환원 - 구리판 가열 실험',
     desc: '구리판을 겉불꽃·속불꽃에 넣어가며 산화와 환원이 반복되는 과정을 관찰해요',
     emoji: '🔥',
     url: 'reports/integrated-science/chemistry/copper-oxidation/index.html'
   },
   {
-    name: '산화·환원 실험(2) - 아연판과 황산 구리(Ⅱ) 수용액의 반응',
+    name: '산화 환원 - 아연판과 황산 구리(Ⅱ) 수용액의 반응',
     desc: '아연판을 황산 구리 수용액에 넣어 금속의 반응성 차이에 따른 산화·환원을 관찰해요',
     emoji: '⚙️',
     url: 'reports/integrated-science/chemistry/zinc-copper-reaction/index.html'
+  },
+  {
+    name: '단백질을 이용한 감염병 진단 기술 체험하기',
+    desc: '4 홈판에 포획 항체·진단 시료·검출 시약·진단 반응물을 순서대로 넣어 색 변화로 감염 여부를 진단해요',
+    emoji: '🧬',
+    url: 'reports/integrated-science/biology/infectious-disease-diagnosis/index.html'
+  },
+  {
+    /* 보고서 시스템과 별도로 동작하는 시뮬레이션 도구 - reports/ 폴더 바깥에 있어
+       폴더 경로로 분류가 자동 계산되지 않으므로 tab·subcategory를 직접 지정한다. */
+    name: '지질 단면도 시뮬레이션',
+    desc: '나만의 지질 단면을 만들어 보고, 그 생성 순서를 거꾸로 추론해 보는 시뮬레이터예요',
+    emoji: '🌋',
+    url: 'geo-section-lab/index.html',
+    tab: 'earth',
+    subcategory: '지질'
   }
 ].map(r => Object.assign(deriveMeta(r.url), r));
 
@@ -414,16 +417,6 @@ tabbarEl.addEventListener('click', e => {
   render();
 });
 
-function statusHTML(url) {
-  try {
-    const key = 'sjstatus:' + url.replace(/\/index\.html$/, '').replace(/\/$/, '');
-    const status = JSON.parse(localStorage.getItem(key) || 'null');
-    if (!status || !Number.isInteger(status.done) || !Number.isInteger(status.total) || status.total < 1) return '';
-    const done = Math.max(0, Math.min(status.done, status.total));
-    return '<span class="progress-badge">' + (status.pdf ? '✓ PDF 저장 완료' : '작성 중 · ' + done + '/' + status.total + '단계') + '</span>';
-  } catch { return ''; }
-}
-
 function cardHTML(r, cc) {
   return `
     <a class="card${r.soon ? ' soon' : ''}" href="${r.url}" style="--cc:${cc}" ${r.soon ? 'aria-disabled="true" tabindex="-1"' : ''}>
@@ -431,7 +424,6 @@ function cardHTML(r, cc) {
       <span class="txt">
         <h3>${r.name}</h3>
         <p>${r.desc}</p>
-        ${statusHTML(r.url)}
       </span>
     </a>`;
 }
@@ -467,9 +459,6 @@ function render() {
   emptyEl.style.display = (q && shownTotal === 0) ? 'block' : 'none';
 }
 
-window.addEventListener('storage', e => { if (!e.key || e.key.startsWith('sjstatus:')) render(); });
-window.addEventListener('pageshow', render);
-window.addEventListener('focus', render);
 searchEl.addEventListener('input', render);
 render();
 </script>
