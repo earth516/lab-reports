@@ -363,14 +363,13 @@ const REPORTS = [
     url: 'reports/integrated-science/biology/infectious-disease-diagnosis/index.html'
   },
   {
-    /* 보고서 시스템과 별도로 동작하는 시뮬레이션 도구 - reports/ 폴더 바깥에 있어
-       폴더 경로로 분류가 자동 계산되지 않으므로 tab·subcategory를 직접 지정한다. */
+    /* 보고서(정보입력·채점·PDF)는 없는 단순 시뮬레이션 도구지만, 폴더 위치는
+       다른 지질 실험들과 같은 reports/earth-science/geology/ 아래 두었다
+       → tab·subcategory는 다른 카드처럼 폴더 경로에서 자동 계산됨 */
     name: '지질 단면도 시뮬레이션',
     desc: '나만의 지질 단면을 만들어 보고, 그 생성 순서를 거꾸로 추론해 보는 시뮬레이터예요',
     emoji: '🌋',
-    url: 'geo-section-lab/index.html',
-    tab: 'earth',
-    subcategory: '지질'
+    url: 'reports/earth-science/geology/geo-section-lab/index.html'
   }
 ].map(r => Object.assign(deriveMeta(r.url), r));
 
