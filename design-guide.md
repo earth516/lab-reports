@@ -31,7 +31,9 @@
 
 - 헤더 배경은 `#101216`(별도 하드코딩, 사이트 전체와 통일).
 - 정답/성공 상태는 그린 계열(`#4ade80`)을 별도로 쓴다 — `--coral`(오답)과 짝을 이루는 색으로, 변수화하지 않고 직접 `.correct`/`.blank.correct` 규칙에 하드코딩되어 있다.
-- 폰트는 Pretendard (`cdn.jsdelivr.net/gh/orioncactus/pretendard`), 본문 17px, `word-break:keep-all`(한글 단어 단위 줄바꿈).
+- 폰트는 사용자 제공 **경기천년바탕체 Regular(400)·Bold(700)**를 사용한다. `assets/fonts/gyeonggi-batang/`의 원본 OTF 두 파일을 각 페이지의 `@font-face`와 preload로 연결한다. 메인은 `assets/fonts/...`, 보고서는 `../../../../assets/fonts/...` 상대 경로를 사용한다.
+- 공통 글꼴 이름은 `SJ Gyeonggi Batang`, 대체 글꼴은 `Batang`, `바탕`, `serif` 순서다. 일반 보고서 본문은 17px·줄 간격 1.85·자간 0이며 `word-break:keep-all`(한글 단어 단위 줄바꿈)을 유지한다. 메인과 지질 단면 도구는 기존 글자 크기를 유지하며 줄 간격은 각각 1.65와 1.75다.
+- 화면뿐 아니라 SVG·canvas 글씨도 같은 글꼴을 지정한다. `sjWaitForReportFonts()`로 실제 400·700 두 글꼴과 `document.fonts.ready`를 기다린 다음 PDF용 보고서와 그래프를 만들고 캡처한다. 지질 단면도 PNG 저장에도 같은 절차를 적용한다. 로드에 실패하면 저장을 중단하고 재시도 안내를 표시한다.
 - `:root`에 `color-scheme:dark;`를 반드시 넣는다. 이게 없으면 `<input type="date">`를 눌렀을 때 뜨는 브라우저 기본 달력 팝업이 흰 배경으로 튀어나와서 다크 테마랑 안 어울린다.
 
 **보고서(#report, PDF로 나가는 부분)는 이 다크 팔레트를 쓰지 않는다.** `#report` 블록 안에서는 CSS 변수를 흰 종이용으로 재정의한다:

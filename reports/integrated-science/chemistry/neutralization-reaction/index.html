@@ -4,10 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>중화 반응 - 이온 모형 실험 · 활동 보고서</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<link rel="preload" href="../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Regular.otf" as="font" type="font/otf" crossorigin>
+<link rel="preload" href="../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Bold.otf" as="font" type="font/otf" crossorigin>
 <style>
-:root{color-scheme:dark;
+/* 사이트 공통 글꼴: 경기천년바탕 Regular / Bold */
+button,input,select,textarea{font-family:var(--sans)}
+@font-face{font-family:'SJ Gyeonggi Batang';src:url('../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Regular.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'SJ Gyeonggi Batang';src:url('../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Bold.otf') format('opentype');font-weight:700;font-style:normal;font-display:swap}
+
+:root{
+  --sans:'SJ Gyeonggi Batang','Batang','바탕',serif;color-scheme:dark;
   /* 심층순환 연구노트 팔레트 적용: paper/surface/sunk 3단 다크 + 청록 accent */
   --paper:#0c0e12; --surface:#171a20; --sunk:#1e222b; --line:#2a2e37; --line-soft:#22262b;
   --ink:#e8eaee; --body:#b4b9c4; --faint:#8b909b;
@@ -19,8 +26,8 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
 body{
-  font-family:"Pretendard Variable",Pretendard,system-ui,sans-serif;
-  background:var(--paper); color:var(--ink); line-height:1.7; letter-spacing:-.01em; word-break:keep-all;
+  font-family:var(--sans);
+  background:var(--paper); color:var(--ink); line-height:1.85; letter-spacing:0; word-break:keep-all;
 }
 .sheet{max-width:1060px;margin:0 auto;background:var(--surface);
   border-left:1px solid var(--line);border-right:1px solid var(--line);min-height:100vh}
@@ -877,6 +884,14 @@ async function sjWaitForImages(report) {
   })));
   await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 }
+// Wait for both real font faces before rasterizing charts and saved reports.
+async function sjWaitForReportFonts(){
+ if(!document.fonts)return;
+ const faces=await Promise.all([400,700].map(weight=>document.fonts.load(`${weight} 17px "SJ Gyeonggi Batang"`,'가나다라 ABC 0123')));
+ if(faces.some(group=>group.length===0))throw new Error('경기천년바탕체를 불러오지 못했습니다. 새로고침 후 다시 저장해 주세요.');
+ await document.fonts.ready;
+}
+
 async function sjExportPDF(button, options, neutral = false, animate = false) {
   if (button.disabled || !showChecklist()) return;
   if (typeof html2pdf !== 'function') {
@@ -891,6 +906,7 @@ async function sjExportPDF(button, options, neutral = false, animate = false) {
   button.disabled = true; button.textContent = '저장 중…';
   document.getElementById('sj-pdf-note')?.remove();
   try {
+    await sjWaitForReportFonts();
     buildReport();
     const report = document.getElementById('report');
     if (neutral) {
@@ -1131,7 +1147,7 @@ function drawLegend(){
     ctx.fill();
     ctx.strokeStyle = "rgba(255,255,255,.3)"; ctx.lineWidth = 1.2;
     ctx.stroke();
-    ctx.font = "600 18px Pretendard, sans-serif";
+    ctx.font = "600 18px SJ Gyeonggi Batang, serif";
     ctx.textAlign = "left"; ctx.textBaseline = "middle";
     ctx.fillStyle = "rgba(200,212,235,.92)";
     ctx.fillText(label, 50, y+1);
@@ -1282,7 +1298,7 @@ function draw(){
       ctx.beginPath(); ctx.arc(e.x, e.y, 14+t*32, 0, Math.PI*2); ctx.stroke();
     }else if(e.kind==="heat"){
       ctx.fillStyle = hexA("#ff9a6a", 1-t);
-      ctx.font = "700 26px Pretendard, sans-serif"; ctx.textAlign = "center";
+      ctx.font = "700 26px SJ Gyeonggi Batang, serif"; ctx.textAlign = "center";
       ctx.fillText("+열", e.x, e.y - t*38);
     }else if(e.kind==="ripple"){
       ctx.strokeStyle = hexA("#a8c8ff", .6*(1-t)); ctx.lineWidth = 2;
@@ -1376,7 +1392,7 @@ function drawDropperAt(dp, isSqueezing, label, bulbColor, bulbHi, liquidColor){
   ctx.lineTo(cx+8, tipY-46); ctx.lineTo(cx+8, tipY-88);
   ctx.closePath(); ctx.fill();
 
-  ctx.font = "700 21px Pretendard, sans-serif";
+  ctx.font = "700 21px SJ Gyeonggi Batang, serif";
   ctx.textAlign = "center"; ctx.fillStyle = "rgba(232,236,245,.9)";
   ctx.fillText(label, cx, topY-14);
   ctx.restore();
@@ -1402,7 +1418,7 @@ function drawParticle(p){
   ctx.strokeStyle = "rgba(255,255,255,.3)"; ctx.lineWidth = 1.2;
   ctx.stroke();
   ctx.fillStyle = (p.type==="H") ? "#1a2130" : (p.type==="Na") ? "#3a2f10" : "#fff";
-  ctx.font = "700 18px Pretendard, sans-serif";
+  ctx.font = "700 18px SJ Gyeonggi Batang, serif";
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
   ctx.fillText(p.label(), p.x, p.y+1);
   ctx.restore();
@@ -1779,7 +1795,7 @@ function reportGraphDataURL(){
   const x = i => L + (920-L-R)*(i/4);
   const yOf = t => T + (560-T-B)*(1-(t-23)/(27-23));
   g.strokeStyle = "#c9d2e0"; g.fillStyle="#3a4a66";
-  g.font = "22px Pretendard, sans-serif"; g.textAlign="end";
+  g.font = "22px SJ Gyeonggi Batang, serif"; g.textAlign="end";
   for(let tv=23; tv<=27; tv++){
     const yy = yOf(tv);
     g.beginPath(); g.setLineDash(tv===23?[]:[5,6]);
@@ -1788,15 +1804,15 @@ function reportGraphDataURL(){
   }
   g.setLineDash([]);
   g.textAlign="start";
-  g.font = "20px Pretendard, sans-serif";
+  g.font = "20px SJ Gyeonggi Batang, serif";
   g.fillText("온도(℃)", 20, T-18);
   g.textAlign="center";
   for(let i=0;i<5;i++){
-    g.fillStyle="#3a4a66"; g.font="22px Pretendard, sans-serif";
+    g.fillStyle="#3a4a66"; g.font="22px SJ Gyeonggi Batang, serif";
     g.fillText(COMBOS[i][0], x(i), 560-B+34);
     g.fillText(COMBOS[i][1], x(i), 560-B+64);
   }
-  g.textAlign="start"; g.font="18px Pretendard, sans-serif"; g.fillStyle="#6a7690";
+  g.textAlign="start"; g.font="18px SJ Gyeonggi Batang, serif"; g.fillStyle="#6a7690";
   g.fillText("HCl(mL)", x(4)+45, 560-B+34);
   g.fillText("NaOH(mL)", x(4)+45, 560-B+64);
   const idxs = Object.keys(records).map(Number).sort((a,b)=>a-b);
@@ -1811,7 +1827,7 @@ function reportGraphDataURL(){
   for(const i of idxs){
     const px=x(i), py=yOf(records[i].temp);
     g.fillStyle="#e05a54"; g.beginPath(); g.arc(px,py,9,0,Math.PI*2); g.fill();
-    g.fillStyle="#14203a"; g.font="700 22px Pretendard, sans-serif"; g.textAlign="center";
+    g.fillStyle="#14203a"; g.font="700 22px SJ Gyeonggi Batang, serif"; g.textAlign="center";
     g.fillText(records[i].temp.toFixed(1), px, py-18);
   }
   return c.toDataURL("image/png");
@@ -1968,6 +1984,10 @@ if(curStep===7) buildReport();
 sync();
 loop();
 sjInit();
+sjWaitForReportFonts().then(()=>{
+  if(document.querySelector('section.step.active #report, section.step.on #report'))buildReport();
+}).catch(()=>sjNotice('sj-font-note','경기천년바탕체를 불러오지 못해 기본 글꼴로 표시하고 있습니다. 새로고침해 주세요.',true));
+
 </script>
 </body>
 </html>
