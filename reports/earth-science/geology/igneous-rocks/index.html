@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>화성암 관찰하기 · 활동 보고서</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<link rel="preload" href="../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Regular.otf" as="font" type="font/otf" crossorigin>
-<link rel="preload" href="../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Bold.otf" as="font" type="font/otf" crossorigin>
+<link rel="preload" href="../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Bold.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 /* 사이트 공통 글꼴: 경기천년바탕 Regular / Bold */
 button,input,select,textarea{font-family:var(--sans)}
-@font-face{font-family:'SJ Gyeonggi Batang';src:url('../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Regular.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'SJ Gyeonggi Batang';src:url('../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Bold.otf') format('opentype');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'SJ Gyeonggi Batang';src:url('../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'SJ Gyeonggi Batang';src:url('../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Bold.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
 
 :root{color-scheme:dark;
   --paper:#0c0e12; --surface:#171a20; --sunk:#1e222b;
@@ -48,7 +48,7 @@ nav::-webkit-scrollbar{display:none}
   font-family:var(--sans);font-size:.95rem;font-weight:600;color:var(--body);cursor:pointer;
   white-space:nowrap;display:flex;gap:.6rem;align-items:baseline;transition:.16s;letter-spacing:-.01em}
 .tab .n{font-family:var(--mono);font-size:.78rem;color:var(--ink);font-weight:500;letter-spacing:0}
-.tab:hover{background:rgba(255,255,255,.6);color:var(--ink)}
+.tab:hover{background:rgba(255,255,255,.06);color:var(--ink)}
 .tab.active{background:var(--surface);color:var(--sea);border-bottom-color:var(--sea);font-weight:700}
 .tab.done .n::after{content:"✓";margin-left:.25rem;color:var(--ink)}
 
@@ -107,7 +107,7 @@ textarea{resize:vertical;line-height:1.95}
 .suffix-field .suffix{display:flex;align-items:center;padding:0 .85rem;font-size:1.03rem;
   color:var(--body);background:var(--sunk);border-left:1px solid var(--line);white-space:nowrap}
 .suffix-field:has(input.invalid){border-color:var(--coral)!important}
-.counter{text-align:right;font-family:var(--mono);font-size:.8rem;color:var(--faint);margin-top:.4rem}
+.counter{text-align:right;font-family:var(--mono);font-size:13px;color:var(--faint);margin-top:.4rem}
 .hint{font-size:.92rem;color:var(--faint);margin:-.1rem 0 .75rem;letter-spacing:-.005em}
 
 .info-form{width:100%;border-collapse:collapse;background:var(--surface);
@@ -161,7 +161,7 @@ textarea{resize:vertical;line-height:1.95}
 .site-footer-top{position:relative;display:flex;align-items:center;justify-content:flex-end;
   min-height:2.4rem}
 .site-footer-copy{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  margin:0;font-size:12px;color:var(--faint);line-height:1.5;text-align:center;white-space:nowrap}
+  margin:0;font-size:13px;color:var(--faint);line-height:1.5;text-align:center;white-space:nowrap}
 .site-footer-links{display:flex;align-items:center;gap:.6rem}
 @media(max-width:640px){
   .site-footer-top{position:static;flex-direction:column-reverse;align-items:center;gap:.8rem}
@@ -257,15 +257,27 @@ a.submit:hover{background:#62beb3}
 #sj-notices{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:10000;width:min(620px,calc(100% - 24px));display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow:auto;pointer-events:none}
 .sj-toast{box-sizing:border-box;display:flex;align-items:center;gap:12px;padding:14px 18px;border:1px solid var(--sea,#7dd3c8);border-radius:12px;background:#171a20;color:#e8eaee;box-shadow:0 6px 24px #0008;font-size:14px;line-height:1.6;pointer-events:auto}
 .sj-toast button{margin-left:auto;flex-shrink:0;background:transparent;border:1px solid #8b909b;border-radius:8px;color:inherit;padding:5px 9px;cursor:pointer}.sj-toast.sj-error{border-color:#e06a5b}
+
+/* 공통 머리글과 저장 상태 */
+header.brand-header{display:flex;align-items:center;gap:10px;padding-left:18px}
+header.brand-header .header-copy,header.brand-header .titles{min-width:0;flex:1}
+.brand-mark{display:flex;align-items:center;justify-content:center;flex:0 0 52px;width:52px;height:52px;border-radius:12px;text-decoration:none}
+.brand-mark img{display:block;width:100%;height:auto}
+.brand-mark:focus-visible{outline:2px solid var(--sea,#7dd3c8);outline-offset:4px}
+.save-strip{display:flex;justify-content:flex-end;padding:4px 18px;background:#101216;border-bottom:1px solid var(--line);font-size:13px;line-height:1.6;color:var(--faint)}
+.save-strip [data-state="saved"],.save-strip [data-state="pdf"]{color:#9cddd2}.save-strip [data-state="error"]{color:#ffb2a7}
+@media(max-width:700px){header.brand-header{padding-left:12px;gap:8px}.brand-mark{flex-basis:44px;width:44px;height:44px}.save-strip{padding:4px 12px}}
+@media print{.save-strip{display:none!important}}
 </style>
 </head>
 <body>
 <div class="sheet">
 
-<header class="top">
+<header class="top brand-header"><a class="brand-mark" href="../../../../index.html" aria-label="실험 보고서 목록으로"><img src="../../../../assets/images/sj-science-logo.png" alt="" width="128" height="124"></a><div class="header-copy">
   <div class="kicker">지구과학 탐구활동 (지질)</div>
   <h1>화성암 관찰하기 🔎</h1>
-</header>
+</div></header>
+<div class="save-strip"><span id="save-state" role="status" aria-live="polite" data-state="idle">입력하면 이 브라우저에 자동 저장됩니다</span></div>
 
 <nav>
   <button class="tab active" data-step="1"><span class="n">01</span>정보 입력</button>
@@ -673,6 +685,14 @@ let sjPdf = false;
 let sjResetting = false;
 const sjPath = location.pathname.replace(/^.*?(?=reports\/)/, '').replace(/\/index\.html$/, '').replace(/\/$/, '');
 const sjStatusKey = 'sjstatus:' + sjPath;
+let sjSaveFailed = false;
+function sjSetSaveState(state, text) {
+  const el = document.getElementById('save-state');
+  if (!el) return;
+  el.dataset.state = state;
+  if (el.textContent !== text) el.textContent = text;
+}
+
 function sjNotice(id, message, error = false) {
   let note = document.getElementById(id);
   if (!note) {
@@ -691,9 +711,13 @@ function sjNotice(id, message, error = false) {
   note.append(text, close);
 }
 function sjStorageFull() {
+  sjSaveFailed = true;
+  sjSetSaveState('error', '저장하지 못했습니다 · PDF로 보관해 주세요');
   sjNotice('sj-storage-note', '기기에 저장하지 못했습니다. 저장 공간이나 브라우저 설정을 확인하고, 페이지를 닫기 전에 PDF로 저장해 주세요.', true);
 }
 function sjStorageSaved() {
+  sjSaveFailed = false;
+  sjSetSaveState('saved', '입력 내용 자동 저장됨 · ' + new Date().toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'}));
   document.getElementById('sj-storage-note')?.remove();
   if (Object.keys(localStorage).some(key => key.startsWith(sjPrefix) && (localStorage.getItem(key) || '').startsWith('data:image'))) {
     localStorage.removeItem(sjPrefix + 'photos_cleared');
@@ -706,7 +730,9 @@ function sjWriteStatus() {
     const total = sjTotal();
     let done = 0;
     for (let n = 1; n <= total; n++) if (stepValid(n)) done++;
-    localStorage.setItem(sjStatusKey, JSON.stringify({done, total, updated:Date.now(), pdf:sjPdf}));
+    localStorage.setItem(sjStatusKey, JSON.stringify({done, total, updated:Date.now(), pdf:sjPdf, saved:!sjSaveFailed}));
+    if (!sjSaveFailed && sjPdf) sjSetSaveState('pdf', 'PDF 저장 완료 · 내려받은 파일을 확인하세요');
+    else if (!sjSaveFailed && document.getElementById('save-state')?.dataset.state === 'pdf') sjSetSaveState('idle', '활동 중 · 입력 내용은 자동 저장됩니다');
   } catch { sjStorageFull(); }
 }
 function sjQueue(dirty = false) {
@@ -716,6 +742,7 @@ function sjQueue(dirty = false) {
   sjTimer = setTimeout(sjWriteStatus, 600);
 }
 function sjClearStatus() {
+  sjSetSaveState('idle', '입력하면 이 브라우저에 자동 저장됩니다');
   sjResetting = true;
   clearTimeout(sjTimer);
   localStorage.removeItem(sjStatusKey);
@@ -835,6 +862,9 @@ function sjInit() {
   try {
     const previous = JSON.parse(localStorage.getItem(sjStatusKey) || 'null');
     sjStarted = !!previous; sjPdf = !!previous?.pdf;
+    sjSaveFailed = previous?.saved === false;
+    if (sjSaveFailed) sjSetSaveState('error', '이전 저장에 실패했습니다 · 입력 내용을 확인해 주세요');
+    else if (previous) sjSetSaveState(previous.pdf ? 'pdf' : 'saved', previous.pdf ? 'PDF 저장 이력이 있습니다' : '이 브라우저의 작성 기록을 불러왔습니다');
     if (localStorage.getItem(sjPrefix + 'photos_cleared') === '1') {
       sjNotice('sj-photo-note', '지난 PDF 저장 후 기기에 보관하던 사진을 정리했습니다. 새 PDF에 사진을 넣으려면 다시 올려 주세요.');
     }
@@ -848,6 +878,7 @@ function sjInit() {
   });
   document.addEventListener('pointerup', e => { if (e.target.closest('section[data-step="4"] svg, section[data-step="4"] canvas')) sjQueue(true); });
   window.addEventListener('pagehide', () => { if (sjTimer !== null) { clearTimeout(sjTimer); sjWriteStatus(); } });
+  sjWriteStatus();
 }
 
 const TOTAL = 6;

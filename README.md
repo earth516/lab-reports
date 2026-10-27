@@ -8,7 +8,8 @@
 /
 ├── index.html                                   ← 허브 페이지 (여기서 항목을 클릭하면 각 보고서로 이동)
 ├── README.md
-├── assets/fonts/gyeonggi-batang/                 ← 공통 경기천년바탕체 Regular·Bold OTF
+├── assets/fonts/gyeonggi-batang/                 ← 공통 글꼴 WOFF2 · 보관용 원본 OTF
+├── assets/images/sj-science-logo.png             ← 공통 머리글 로고
 └── reports/
     ├── earth-science/                            ← 지구과학 탭
     │   ├── atmosphere-ocean/                     ← 하위분류: 대기·해양
@@ -19,6 +20,8 @@
     │   │   │   └── index.html                    ← "화성암 관찰하기" 활동 보고서
     │   │   ├── sedimentary-rocks/
     │   │   │   └── index.html                    ← "퇴적암 관찰하기" 활동 보고서
+    │   │   ├── sedimentary-structures/
+    │   │   │   └── index.html                    ← "퇴적 구조 실험실" (3D 형성 과정 · 지층 상하 판별)
     │   │   └── geo-section-lab/                  ← "지질 단면도 시뮬레이션" (보고서 아님 - 정보입력/PDF 없는 단순 시뮬레이션 도구)
     │   │       ├── index.html
     │   │       └── examples.js
@@ -61,9 +64,22 @@
 공통 글꼴은 `assets/fonts/gyeonggi-batang/`를 참조한다. 배포할 때 이 폴더도 함께 올린다.
 
 메인과 모든 보고서·시뮬레이션에 경기천년바탕체 기본체(400)·굵은체(700)를 적용한다.
+웹용 글꼴은 원본의 글자 구성과 굵기를 유지한 WOFF2로, 최초 글꼴 전송량은 합계 약 7.34MB에서
+4.25MB로 약 42% 줄었다. OTF 원본은 변환·보관용으로 남겨 둔다.
 PDF와 지질 단면도 PNG는 글꼴이 로드된 뒤 생성한다. 2026-10-27 글꼴 변경 후 14개 HTML의
 스크립트 문법, 글꼴 경로·굵기, 저장 전 로드 순서와 실패 처리를 점검했다.
 실제 화면·PDF 배치는 브라우저 접근 제한으로 자동 검증하지 못했다.
+
+보고서 머리글 아래에는 실제 입력 저장 상태를, 메인 카드에는 작성 단계·PDF 저장 이력을 표시한다.
+아직 파일이 없는 감염병 진단 활동은 ‘준비 중’으로 표시하며 링크로 열리지 않는다.
+
+지질 단면도 습곡에는 `lean`(−75~75°) 조절을 추가했다. 기존 파일에서 생략하면 0°로 동작한다.
+「예제 → ④ 옆으로 누운 습곡」 또는 습곡 도구의 같은 이름 설정을 사용하고, 작업 기록에서 진폭·파장·눕는 정도를 바꿀 수 있다.
+지층이 겹쳐 그려지지 않도록 역변환이 가능한 좌표 모형을 사용하며, 힘·압력·변형 시간을 수치로 재현하는 물리 모형은 아니다.
+
+퇴적 구조 실험실은 `reports/earth-science/geology/sedimentary-structures/index.html`에 두고 메인의 지구과학 → 지질에서 연결한다.
+사층리·점이층리·연흔·건열의 원본 시뮬레이션 기능을 유지하며, 공통 글꼴과 로고를 참조한다.
+Three.js와 OrbitControls는 기존 CDN에서 불러오므로 인터넷 연결이 필요하다.
 
 ## GitHub Pages로 배포하기
 

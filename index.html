@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>SJ SCIENCE LAB</title>
-<link rel="preload" href="assets/fonts/gyeonggi-batang/GyeonggiBatang-Regular.otf" as="font" type="font/otf" crossorigin>
-<link rel="preload" href="assets/fonts/gyeonggi-batang/GyeonggiBatang-Bold.otf" as="font" type="font/otf" crossorigin>
+<link rel="preload" href="assets/fonts/gyeonggi-batang/GyeonggiBatang-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/gyeonggi-batang/GyeonggiBatang-Bold.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 /* 사이트 공통 글꼴: 경기천년바탕 Regular / Bold */
 button,input,select,textarea{font-family:var(--sans)}
-@font-face{font-family:'SJ Gyeonggi Batang';src:url('assets/fonts/gyeonggi-batang/GyeonggiBatang-Regular.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'SJ Gyeonggi Batang';src:url('assets/fonts/gyeonggi-batang/GyeonggiBatang-Bold.otf') format('opentype');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'SJ Gyeonggi Batang';src:url('assets/fonts/gyeonggi-batang/GyeonggiBatang-Regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'SJ Gyeonggi Batang';src:url('assets/fonts/gyeonggi-batang/GyeonggiBatang-Bold.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
 
   :root {
     --sans:'SJ Gyeonggi Batang','Batang','바탕',serif;
@@ -115,7 +115,7 @@ button,input,select,textarea{font-family:var(--sans)}
   .subhead { display: flex; align-items: baseline; gap: 9px; margin-bottom: 12px; }
   .subhead .icon { font-size: 15px; }
   .subhead h3 { font-size: 14px; font-weight: 800; color: var(--cc); margin: 0; }
-  .subhead .subcount { font: 600 11px/1 var(--mono); color: var(--sub-2); }
+  .subhead .subcount { font: 600 13px/1 var(--mono); color: var(--sub-2); }
 
   /* ---------- 보고서 카드 ---------- */
   .list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
@@ -138,7 +138,7 @@ button,input,select,textarea{font-family:var(--sans)}
   }
   .card .txt { flex: 1; min-width: 0; }
   .card h3 { font-size: 15.5px; font-weight: 800; letter-spacing: -.02em; margin: 0; }
-  .card p { font-size: 12.5px; color: var(--sub); margin: 2px 0 0; line-height: 1.5; }
+  .card p { font-size:13px; color: var(--sub); margin: 2px 0 0; line-height: 1.5; }
 
   .card.soon { opacity: .55; pointer-events: none; }
   .card.soon h3::after {
@@ -164,7 +164,7 @@ button,input,select,textarea{font-family:var(--sans)}
   }
   .footer-copy {
     position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-    margin: 0; font-size: 12px; color: var(--sub-2); line-height: 20px;
+    margin: 0; font-size:13px; color: var(--sub-2); line-height: 20px;
     text-align: center; white-space: nowrap;
   }
   .footer-links { display: flex; align-items: center; gap: .6rem; }
@@ -195,6 +195,21 @@ button,input,select,textarea{font-family:var(--sans)}
   @media (prefers-reduced-motion: reduce) {
     .card, #search { transition: none; }
   }
+
+/* 공통 머리글과 저장 상태 */
+header.brand-header{display:flex;align-items:center;gap:10px;padding-left:18px}
+header.brand-header .header-copy,header.brand-header .titles{min-width:0;flex:1}
+.brand-mark{display:flex;align-items:center;justify-content:center;flex:0 0 52px;width:52px;height:52px;border-radius:12px;text-decoration:none}
+.brand-mark img{display:block;width:100%;height:auto}
+.brand-mark:focus-visible{outline:2px solid var(--sea,#7dd3c8);outline-offset:4px}
+.save-strip{display:flex;justify-content:flex-end;padding:4px 18px;background:#101216;border-bottom:1px solid var(--line);font-size:13px;line-height:1.6;color:var(--faint)}
+.save-strip [data-state="saved"],.save-strip [data-state="pdf"]{color:#9cddd2}.save-strip [data-state="error"]{color:#ffb2a7}
+@media(max-width:700px){header.brand-header{padding-left:12px;gap:8px}.brand-mark{flex-basis:44px;width:44px;height:44px}.save-strip{padding:4px 12px}}
+@media print{.save-strip{display:none!important}}
+
+.hero-brand{display:flex;align-items:center;gap:10px;position:relative;z-index:1}.hero-copy{min-width:0}.hero .lead{white-space:normal}.hero h1{margin-bottom:5px}
+.card .progress{display:inline-block;margin-top:7px;padding:2px 7px;border-radius:5px;background:#7dd3c812;color:#a4d7cf;font-size:13px;line-height:1.5}.card .progress.done{color:#b7e7c0;background:#6fcf9712}.card .progress.error{color:#ffb2a7;background:#e06a5b12}
+@media(max-width:560px){.hero-brand{gap:8px}.hero h1{font-size:clamp(24px,6vw,32px)}.card h3{font-size:16px}}
 </style>
 </head>
 <body>
@@ -212,8 +227,8 @@ button,input,select,textarea{font-family:var(--sans)}
       <line x1="22" y1="100" x2="178" y2="100" stroke="#7dd3c8" stroke-width="1" opacity=".4"/>
       <circle cx="100" cy="100" r="2.5" fill="#7dd3c8"/>
     </svg>
-    <h1>SJ SCIENCE LAB</h1>
-    <p class="lead">직접 조작하며 탐구할 수 있는 디지털 실험실입니다. 각 수업에 맞는 활동을 선택해 탐구를 시작해 보세요.</p>
+    <div class="hero-brand"><a class="brand-mark" href="index.html" aria-label="실험 보고서 목록으로"><img src="assets/images/sj-science-logo.png" alt="" width="128" height="124"></a><div class="hero-copy"><h1>SJ SCIENCE LAB</h1>
+    <p class="lead">직접 조작하며 탐구할 수 있는 디지털 실험실입니다. 각 수업에 맞는 활동을 선택해 탐구를 시작해 보세요.</p></div></div>
   </header>
 
   <div class="tabbar" id="tabbar"></div>
@@ -330,6 +345,12 @@ const REPORTS = [
     url: 'reports/earth-science/geology/sedimentary-rocks/index.html'
   },
   {
+    name: '퇴적 구조 실험실',
+    desc: '사층리·점이층리·연흔·건열의 형성 과정을 3D로 관찰하고 지층의 위아래를 판별해요',
+    emoji: '🏜️',
+    url: 'reports/earth-science/geology/sedimentary-structures/index.html'
+  },
+  {
     name: '지질시대 화석 박람회',
     desc: '지질시대의 대표 표준화석을 관찰하고 정보를 찾아 기록해요',
     emoji: '🦴',
@@ -372,7 +393,8 @@ const REPORTS = [
     name: '단백질을 이용한 감염병 진단 기술 체험하기',
     desc: '4 홈판에 포획 항체·진단 시료·검출 시약·진단 반응물을 순서대로 넣어 색 변화로 감염 여부를 진단해요',
     emoji: '🧬',
-    url: 'reports/integrated-science/biology/infectious-disease-diagnosis/index.html'
+    url: 'reports/integrated-science/biology/infectious-disease-diagnosis/index.html',
+    soon: true
   },
   {
     /* 보고서(정보입력·채점·PDF)는 없는 단순 시뮬레이션 도구지만, 폴더 위치는
@@ -428,15 +450,30 @@ tabbarEl.addEventListener('click', e => {
   render();
 });
 
+function progressHTML(r) {
+  try {
+    const key = 'sjstatus:' + r.url.replace(/\/index\.html$/, '').replace(/\/$/, '');
+    const state = JSON.parse(localStorage.getItem(key) || 'null');
+    if (!state || !Number.isInteger(state.done) || !Number.isInteger(state.total) || state.total <= 0) return '';
+    const done = Math.max(0, Math.min(state.total, state.done));
+    if (state.saved === false) return '<span class="progress error">저장 확인 필요</span>';
+    if (state.pdf === true) return '<span class="progress done">✓ PDF 저장 완료</span>';
+    if (done === state.total) return '<span class="progress">작성 완료 · PDF 저장 전</span>';
+    return `<span class="progress">작성 중 · ${done}/${state.total}단계</span>`;
+  } catch { return ''; }
+}
 function cardHTML(r, cc) {
+  const tag = r.soon ? 'div' : 'a';
+  const attrs = r.soon ? 'aria-disabled="true"' : `href="${r.url}"`;
   return `
-    <a class="card${r.soon ? ' soon' : ''}" href="${r.url}" style="--cc:${cc}" ${r.soon ? 'aria-disabled="true" tabindex="-1"' : ''}>
+    <${tag} class="card${r.soon ? ' soon' : ''}" ${attrs} style="--cc:${cc}">
       <span class="emoji">${r.emoji}</span>
       <span class="txt">
         <h3>${r.name}</h3>
         <p>${r.desc}</p>
+        ${r.soon ? '' : progressHTML(r)}
       </span>
-    </a>`;
+    </${tag}>`;
 }
 
 function listHTML(items, q, cc) {
@@ -471,6 +508,9 @@ function render() {
 }
 
 searchEl.addEventListener('input', render);
+window.addEventListener('pageshow', render);
+window.addEventListener('storage', e => { if (!e.key || e.key.startsWith('sjstatus:')) render(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
 render();
 </script>
 </body>

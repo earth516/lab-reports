@@ -60,5 +60,19 @@ window.GEO_EXAMPLES = [
       {t:"ero", level:345, mark:"dash"},
       {t:"dep", rock:"sandstone", level:310}
     ]
+  },
+  {
+    id: "overturned-fold",
+    title: "④ 옆으로 누운 습곡",
+    description: "습곡 도구의 눕는 정도를 바꾸어 한쪽 날개가 뒤집히는 모습을 비교하세요. 목표 단면을 내 캔버스로 가져온 뒤 작업 기록의 마지막 습곡을 선택하면 값을 조절할 수 있어요.",
+    events: [
+      {t:"dep", rock:"basement", level:420},
+      {t:"dep", rock:"tuff", level:365},
+      {t:"dep", rock:"limestone", level:310},
+      {t:"dep", rock:"mudstone", level:255},
+      {t:"dep", rock:"shale", level:230},
+      {t:"dep", rock:"sandstone", level:190},
+      {t:"fold", amp:110, wl:640, ph:80, lean:70, cy:260}
+    ]
   }
 ];

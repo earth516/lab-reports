@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>지구과학 탐구활동 — 지질 단면도 시뮬레이션</title>
-<link rel="preload" href="../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Regular.otf" as="font" type="font/otf" crossorigin>
-<link rel="preload" href="../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Bold.otf" as="font" type="font/otf" crossorigin>
+<link rel="preload" href="../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Bold.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 /* 사이트 공통 글꼴: 경기천년바탕 Regular / Bold */
 button,input,select,textarea{font-family:var(--sans)}
-@font-face{font-family:'SJ Gyeonggi Batang';src:url('../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Regular.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'SJ Gyeonggi Batang';src:url('../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Bold.otf') format('opentype');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'SJ Gyeonggi Batang';src:url('../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'SJ Gyeonggi Batang';src:url('../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Bold.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
 
 :root{color-scheme:dark;
   --paper:#0c0e12; --surface:#171a20; --sunk:#1e222b;
@@ -214,7 +214,7 @@ code{background:var(--paper);padding:.05rem .35rem;border-radius:5px;font-size:.
 .site-footer-top{position:relative;display:flex;align-items:center;justify-content:flex-end;
   min-height:2.4rem}
 .site-footer-copy{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  margin:0;font-size:12px;color:var(--faint);line-height:1.5;text-align:center;white-space:nowrap}
+  margin:0;font-size:13px;color:var(--faint);line-height:1.5;text-align:center;white-space:nowrap}
 .site-footer-links{display:flex;align-items:center;gap:.6rem}
 @media(max-width:700px){.site-footer{padding:1.1rem 1.2rem 1.4rem}}
 @media(max-width:640px){
@@ -231,11 +231,23 @@ code{background:var(--paper);padding:.05rem .35rem;border-radius:5px;font-size:.
 .yt-badge .play::before{content:"";width:0;height:0;margin-left:2px;
   border-style:solid;border-width:4px 0 4px 7px;border-color:transparent transparent transparent #0c0e12}
 .yt-badge .badge-icon{font-size:.85rem;line-height:1}
+
+/* 공통 머리글과 저장 상태 */
+header.brand-header{display:flex;align-items:center;gap:10px;padding-left:18px}
+header.brand-header .header-copy,header.brand-header .titles{min-width:0;flex:1}
+.brand-mark{display:flex;align-items:center;justify-content:center;flex:0 0 52px;width:52px;height:52px;border-radius:12px;text-decoration:none}
+.brand-mark img{display:block;width:100%;height:auto}
+.brand-mark:focus-visible{outline:2px solid var(--sea,#7dd3c8);outline-offset:4px}
+.save-strip{display:flex;justify-content:flex-end;padding:4px 18px;background:#101216;border-bottom:1px solid var(--line);font-size:13px;line-height:1.6;color:var(--faint)}
+.save-strip [data-state="saved"],.save-strip [data-state="pdf"]{color:#9cddd2}.save-strip [data-state="error"]{color:#ffb2a7}
+@media(max-width:700px){header.brand-header{padding-left:12px;gap:8px}.brand-mark{flex-basis:44px;width:44px;height:44px}.save-strip{padding:4px 12px}}
+@media(max-width:560px){header.tool-header{flex-wrap:wrap}header.tool-header>.actions{flex-basis:100%;justify-content:flex-end}}
+@media print{.save-strip{display:none!important}}
 </style>
 </head>
 <body>
 <div class="sheet">
-<header class="top">
+<header class="top brand-header tool-header"><a class="brand-mark" href="../../../../index.html" aria-label="실험 보고서 목록으로"><img src="../../../../assets/images/sj-science-logo.png" alt="" width="128" height="124"></a>
   <div class="titles">
     <div class="kicker">지구과학 탐구활동 (지질·지사학)</div>
     <h1 id="app-title">지질 단면도 시뮬레이션</h1>
@@ -420,7 +432,11 @@ function pat(p,u,v){
 function prep(e){
   switch(e.t){
     case 'tilt': { const a=e.ang*Math.PI/180; e._c=Math.cos(a); e._s=Math.sin(a); if(e.cx==null){e.cx=W/2;e.cy=H/2;} break; }
-    case 'fold': e._k=2*Math.PI/e.wl; break;
+    case 'fold': {
+      e.lean=Number.isFinite(e.lean)?Math.max(-75,Math.min(75,e.lean)):0;
+      e.cy=Number.isFinite(e.cy)?e.cy:H/2;
+      e._k=2*Math.PI/e.wl;e._shear=Math.tan(e.lean*Math.PI/180);break;
+    }
     case 'fault': { const dx=e.x2-e.x1, dy=e.y2-e.y1, L=Math.hypot(dx,dy)||1;
       e._dx=dx; e._dy=dy; e._len=L; const tx=dx/L, ty=dy/L;
       e._sy=e.d; e._sx=Math.abs(ty)>1e-3 ? tx*e.d/ty : 0; break; }
@@ -474,7 +490,12 @@ function ev(k,x,y){
       case 'ero':
         if (y<e.level){ gEro=k; gEu=x; gEv=e.level-y; return -1; }
         k--; continue;
-      case 'fold': y -= e.amp*Math.sin(e._k*(x-e.ph)); k--; continue;
+      case 'fold': {
+        // The oblique coordinate is invariant along the displacement. This
+        // keeps the fold invertible even when one limb turns back on itself.
+        const d=e.amp*Math.sin(e._k*(x-e._shear*(y-e.cy)-e.ph));
+        x-=e._shear*d;y-=d;k--;continue;
+      }
       case 'tilt': { const dx=x-e.cx, dy=y-e.cy; x=e.cx+dx*e._c-dy*e._s; y=e.cy+dx*e._s+dy*e._c; k--; continue; }
       case 'fault': {
         const cr=e._dx*(y-e.y1)-e._dy*(x-e.x1);
@@ -529,7 +550,7 @@ function unitAt(events,x,y){ E=events; gF=0; gEro=-1; return ev(events.length-1,
 /* 좌표 변환: 사건 k 직후의 좌표 <-> 현재 좌표 (지층 기호 위치 고정용) */
 function fwd(events,k,x,y){
   for (let j=k+1;j<events.length;j++){ const e=events[j];
-    if (e.t==='fold') y += e.amp*Math.sin(e._k*(x-e.ph));
+    if (e.t==='fold'){const d=e.amp*Math.sin(e._k*(x-e._shear*(y-e.cy)-e.ph));x+=e._shear*d;y+=d;}
     else if (e.t==='tilt'){ const dx=x-e.cx, dy=y-e.cy; x=e.cx+dx*e._c+dy*e._s; y=e.cy-dx*e._s+dy*e._c; }
     else if (e.t==='fault'){ const cr=e._dx*(y-e.y1)-e._dy*(x-e.x1); if ((cr>0?1:-1)===e.side){ x+=e._sx; y+=e._sy; } }
     else if (e.t==='sill' && x>=e.x1 && x<=e.x2){ if (y<arrAt(e.b,e.x1,x)) y-=sillTh(e,x); }
@@ -538,7 +559,7 @@ function fwd(events,k,x,y){
 }
 function inv(events,k,x,y){
   for (let j=events.length-1;j>k;j--){ const e=events[j];
-    if (e.t==='fold') y -= e.amp*Math.sin(e._k*(x-e.ph));
+    if (e.t==='fold'){const d=e.amp*Math.sin(e._k*(x-e._shear*(y-e.cy)-e.ph));x-=e._shear*d;y-=d;}
     else if (e.t==='tilt'){ const dx=x-e.cx, dy=y-e.cy; x=e.cx+dx*e._c-dy*e._s; y=e.cy+dx*e._s+dy*e._c; }
     else if (e.t==='fault'){ const cr=e._dx*(y-e.y1)-e._dy*(x-e.x1); if ((cr>0?1:-1)===e.side){ x-=e._sx; y-=e._sy; } }
     else if (e.t==='sill' && x>=e.x1 && x<=e.x2){ const b=arrAt(e.b,e.x1,x), t=sillTh(e,x); if (y<b-t) y+=t; else if (y<b) y=b-.5; }
@@ -583,7 +604,7 @@ function shortName(e,i,L){
 function longName(e,i,L){
   switch(e.t){
     case 'dep': return `${L[i]} 퇴적 · ${ROCKS[e.rock].name}`;
-    case 'fold': return `습곡 · 진폭 ${Math.round(Math.abs(e.amp))}`;
+    case 'fold': return `습곡 · 진폭 ${Math.round(Math.abs(e.amp))}${e.lean?' · '+(e.lean>0?'오른쪽':'왼쪽')+'으로 '+Math.abs(e.lean)+'° 눕힘':''}`;
     case 'tilt': return `경사 · ${e.ang>0?'반시계':'시계'} ${Math.abs(e.ang).toFixed(1)}°`;
     case 'ero': return `침식 (부정합면)`;
     case 'fault': return `단층 · ${faultKind(e)}`;
@@ -708,7 +729,7 @@ const S = {
   labels: true,
   depRock: 'sandstone',
   ign: {type:'dike', rock:'granite', w:16, bake:6, lava:22},
-  fold: {amp:45, wl:420, ph:0},
+  fold: {amp:45, wl:420, ph:0,lean:0,cy:H/2},
   tilt: {ang:15},
   eroMark: 'both',
   fault: null,            // 그려진 단층면(낙차 정하기 전)
@@ -872,8 +893,8 @@ const TOOLS = {
     }
   },
   fold: {
-    hint:'캔버스를 누른 채 위·아래로 끌면 휘어지는 크기(진폭), 좌우로 끌면 습곡 위치가 바뀌어요. 휠로 파장을 바꿀 수 있어요. 아래 슬라이더로 숫자를 정해 적용해도 됩니다.',
-    down(p){ const f=S.fold; gesture.ph0=f.ph; S.pending={t:'fold', amp:0, wl:f.wl, ph:f.ph}; prep(S.pending); },
+    hint:'위·아래로 끌면 진폭, 좌우로 끌면 습곡 위치가 바뀌어요. 휠은 파장, 「눕는 정도」는 휘는 방향을 조절합니다. 옆으로 누운 모양은 예제 ④에서도 볼 수 있어요.',
+    down(p){ const f=S.fold; gesture.ph0=f.ph; S.pending={t:'fold', amp:0, wl:f.wl, ph:f.ph,lean:f.lean,cy:f.cy}; prep(S.pending); },
     move(p){ const g=gesture; S.pending.amp=clamp((g.start.y-p.y)*.6,-150,150); S.pending.ph=((g.ph0+(p.x-g.start.x))%S.pending.wl+S.pending.wl)%S.pending.wl; prep(S.pending); },
     up(){ const e=S.pending; if (!e || Math.abs(e.amp)<1){ S.pending=null; return; }
       S.fold.amp=Math.round(e.amp); S.fold.ph=Math.round(e.ph); e.amp=Math.round(e.amp); e.ph=Math.round(e.ph); commit(e); },
@@ -1017,6 +1038,7 @@ function slider(name,min,max,step,val,unit,onInput,onChange){
   const w=el('div',{class:'slider'});
   const v=el('span',{class:'sl-val'}); const fmt=x=>`${(+x).toFixed(step<1?1:0)}${unit||''}`; v.textContent=fmt(val);
   const r=el('input',{type:'range',min,max,step,value:val});
+  r.setAttribute('aria-label',name);
   r.addEventListener('input',()=>{ v.textContent=fmt(r.value); onInput(+r.value); });
   r.addEventListener('change',()=>onChange&&onChange(+r.value));
   w.append(el('span',{class:'sl-name'},name),v,r); return w;
@@ -1050,7 +1072,17 @@ function renderPanel(){
     panel.append(slider('진폭 (휘어지는 정도)',-150,150,1,Math.round(src.amp),'',v=>upd('amp',v),()=>le&&editDone()));
     panel.append(slider('파장 (물결 간격)',120,1200,10,src.wl,'',v=>upd('wl',v),()=>le&&editDone()));
     panel.append(slider('위치 (좌우 이동)',0,1200,5,Math.round(src.ph),'',v=>upd('ph',v),()=>le&&editDone()));
-    panel.append(el('button',{class:'btn primary',type:'button',on:{click:()=>commit({t:'fold',amp:S.fold.amp,wl:S.fold.wl,ph:S.fold.ph})}},'＋ 이 값으로 새 습곡 적용'));
+    panel.append(slider('눕는 정도 (− 왼쪽 / ＋ 오른쪽)',-75,75,1,src.lean||0,'°',v=>upd('lean',v),()=>le&&editDone()));
+    const presets=el('div',{class:'row'});
+    for(const [label,values] of [['완만한 습곡',{amp:45,wl:420,ph:0,lean:0}],['옆으로 누운 습곡',{amp:110,wl:640,ph:80,lean:70}]]){
+      presets.append(el('button',{class:'btn small',type:'button',on:{click:()=>{
+        Object.assign(S.fold,values);if(le){Object.assign(le,values);prep(le);editDone();}renderPanel();
+        if(!le)toast('설정했습니다. 아래 적용 버튼을 누르거나 캔버스를 끌어 보세요.');
+      }}},label));
+    }
+    panel.append(presets);
+    panel.append(el('button',{class:'btn primary',type:'button',on:{click:()=>commit({t:'fold',...S.fold})}},'＋ 이 값으로 새 습곡 적용'));
+    panel.append(el('p',{class:'note'},'0°는 보통의 물결 모양입니다. 진폭을 키우고 60~75°로 눕히면 한쪽 날개가 뒤집히는 모양도 만들 수 있어요. 지층이 휘는 모습을 비교하는 모형이며, 실제 압력이나 변형 시간을 나타내는 값은 아닙니다.'));
   }
   if (t==='tilt'){
     const le=lastOf('tilt'), src=le||S.tilt;
@@ -1133,7 +1165,7 @@ function renderEditor(){
   if (e.rock) box.append(rockSelect(isIgn(e)?IGN:SED,e.rock,v=>{ e.rock=v; editDone(); }));
   switch(e.t){
     case 'dep': sl('윗면 높이 (작을수록 위)','level',-150,H+60,1,''); break;
-    case 'fold': sl('진폭','amp',-150,150,1,''); sl('파장','wl',120,1200,10,''); sl('위치','ph',0,1200,5,''); break;
+    case 'fold': sl('진폭','amp',-150,150,1,''); sl('파장','wl',120,1200,10,''); sl('위치','ph',0,1200,5,''); sl('눕는 정도','lean',-75,75,1,'°'); break;
     case 'tilt': sl('기울기','ang',-35,35,.5,'°'); break;
     case 'ero': sl('침식 높이 (작을수록 위)','level',-100,H+40,1,'');
       box.append(seg(MARKS,e.mark||'both',v=>{ e.mark=v; editDone(); })); break;
@@ -1280,7 +1312,7 @@ $('#btn-help').onclick=()=>{
    <li>퇴적 도구에서 지층 기호(A, B, P…)를 끌어 옮길 수 있어요. 지층을 <b>더블클릭</b>하면 암석 종류가 바뀌어요.</li>
    <li>되돌리기 Ctrl+Z, 다시 실행 Ctrl+Y, 취소 Esc</li></ul>
   <h4>🪨 퇴적</h4><ul><li>클릭한 높이까지 빈 곳을 채우며 수평으로 쌓여요. 아래로 끌면 얇게, 위로 끌면 두껍게.</li></ul>
-  <h4>〰️ 습곡 · ↗ 경사</h4><ul><li>습곡: 위·아래 = 진폭, 좌우 = 위치, 휠 = 파장. 경사: 위로 끌면 반시계, 아래로 끌면 시계 방향.</li></ul>
+  <h4>〰️ 습곡 · ↗ 경사</h4><ul><li>습곡: 위·아래 = 진폭, 좌우 = 위치, 휠 = 파장. 「눕는 정도」로 휘는 방향을 바꾸고, 「옆으로 누운 습곡」 설정이나 예제 ④로 뒤집힌 날개를 만들어 보세요. 경사: 위로 끌면 반시계, 아래로 끌면 시계 방향.</li></ul>
   <h4>⛏ 침식</h4><ul><li>깎을 높이를 클릭. 그 위에 지층을 쌓으면 부정합면(자갈·점선)이 생겨요.</li></ul>
   <h4>🌋 관입·분출</h4><ul><li>암맥: 아래에서 위로 끌기 · 암상: 지층 경계를 따라 좌우로 끌기 · 저반: 꼭대기에서 바깥으로 끌기 · 분출: 시작점에서 지표까지 끌기</li></ul>
   <h4>⚡ 단층</h4><ul><li>① 단면을 가로질러 단층면을 그리고 ② 움직일 쪽 지괴를 위·아래로 끌어요.</li></ul>

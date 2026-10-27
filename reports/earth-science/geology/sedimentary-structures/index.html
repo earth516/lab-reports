@@ -1,0 +1,1312 @@
+<!doctype html><html lang="ko" data-theme="dark"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>퇴적 구조 실험실</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: field-notebook lab — graph-paper 3D stage on the left, stage notes + facts on the right, summary table below */
+:root{
+  --bg:#EDF0EC; --surface:#F8FAF7; --ink:#1E2422; --muted:#59645F; --line:#D0D6CF;
+  --accent:#1D6579; --accent-ink:#FFFFFF; --ochre:#C0861F; --vp:#E2E7E1; --grid:rgba(30,60,55,.07);
+  --lbl-bg:rgba(250,251,248,.94); --good:#2F7D4F; --bad:#B4432F;
+  --f-display:'SJ Gyeonggi Batang','Batang','바탕',serif;
+  --f-body:var(--f-display);
+  --f-mono:var(--f-display);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111615; --surface:#181E1D; --ink:#E4E9E5; --muted:#99A49F; --line:#2A3331;
+  --accent:#62B4CA; --accent-ink:#0D1A1E; --ochre:#E1A94B; --vp:#161C1B; --grid:rgba(200,230,220,.05);
+  --lbl-bg:rgba(24,30,29,.93); --good:#6CC08E; --bad:#EB8A73; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111615; --surface:#181E1D; --ink:#E4E9E5; --muted:#99A49F; --line:#2A3331;
+  --accent:#62B4CA; --accent-ink:#0D1A1E; --ochre:#E1A94B; --vp:#161C1B; --grid:rgba(200,230,220,.05);
+  --lbl-bg:rgba(24,30,29,.93); --good:#6CC08E; --bad:#EB8A73; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6;word-break:keep-all;overflow-wrap:anywhere;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,label:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+
+/* masthead */
+.masthead{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;justify-content:space-between}
+.brand{display:flex;gap:14px;align-items:center;min-width:0}
+.strat{width:34px;height:46px;border:1.5px solid var(--ink);border-radius:3px;display:grid;grid-template-rows:2fr 1fr 2.4fr 1fr 1.6fr;overflow:hidden;flex:none}
+.strat i:nth-child(1){background:#E7CF9E}.strat i:nth-child(2){background:#9C968C}
+.strat i:nth-child(3){background:repeating-linear-gradient(115deg,#E7CF9E 0 3px,#C9AE7C 3px 4px)}
+.strat i:nth-child(4){background:#7B6248}.strat i:nth-child(5){background:#D9C08D}
+.strat i+i{border-top:1px solid var(--ink)}
+.eyebrow{margin:0;font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:500}
+h1{margin:0;font-family:var(--f-display);font-weight:700;font-size:clamp(26px,3.4vw,36px);line-height:1.15;text-wrap:balance;letter-spacing:-.01em}
+.lede{margin:0;max-width:62ch;color:var(--muted);font-size:14.5px}
+
+/* tabs */
+.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.tab{display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px 11px;position:relative;transition:border-color .2s,background .2s}
+.tab:hover{border-color:var(--muted)}
+.tab .t-ko{font-family:var(--f-display);font-weight:700;font-size:20px;line-height:1.25}
+.tab .t-en{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;color:var(--muted)}
+.tab .t-env{font-size:12px;color:var(--muted);margin-top:3px}
+.tab[aria-selected="true"]{border-color:var(--ink);box-shadow:inset 0 -3px 0 var(--ochre)}
+.tab[aria-selected="true"] .t-en{color:var(--ink)}
+
+/* lab grid */
+.lab{display:grid;grid-template-columns:minmax(0,1fr) clamp(300px,29vw,352px);gap:18px;align-items:start}
+.sim{display:flex;flex-direction:column;gap:10px;min-width:0}
+.viewport{position:relative;width:100%;aspect-ratio:16/10;min-height:320px;max-height:max(320px,calc(100vh - 330px));max-height:max(320px,calc(100svh - 330px));max-width:100%;border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  background-color:var(--vp);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:22px 22px;touch-action:none}
+.viewport canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lbl{position:absolute;left:0;top:0;white-space:nowrap;font-size:12.5px;font-weight:500;line-height:1.25;padding:4px 8px;border-radius:6px;background:var(--lbl-bg);color:var(--ink);border:1px solid var(--line);box-shadow:0 1px 3px rgba(0,0,0,.12);opacity:0;transition:opacity .25s}
+.lbl::after{content:"";position:absolute;left:calc(50% + var(--sx,0px));top:100%;width:1px;height:var(--sh,9px);background:var(--ink);opacity:.55}
+.lbl::before{content:"";position:absolute;left:calc(50% + var(--sx,0px) - 3px);top:calc(100% + var(--sh,9px) - 1px);width:6px;height:6px;border-radius:50%;background:var(--ochre)}
+.lbl.show{opacity:1}
+.lbl.below::after{top:auto;bottom:100%}
+.lbl.below::before{top:auto;bottom:calc(100% + var(--sh,9px) - 1px)}
+.lbl.key{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:600}
+.vp-top{position:absolute;left:12px;top:10px;max-width:calc(100% - 24px);pointer-events:none}
+.vp-title{display:flex;flex-direction:column;background:var(--lbl-bg);border:1px solid var(--line);border-radius:8px;padding:6px 11px;min-width:0;pointer-events:auto}
+.vp-title b{font-family:var(--f-display);font-size:16px;line-height:1.3}
+.vp-title span{font-size:12.5px;color:var(--muted)}
+.vp-tools{position:absolute;top:10px;right:12px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100% - 24px)}
+.tool{background:var(--lbl-bg);border:1px solid var(--line);border-radius:7px;padding:5px 10px;font-size:12.5px;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+.tool:hover{border-color:var(--muted)}
+.tool input{accent-color:var(--accent);margin:0}
+.vp-hint{position:absolute;left:12px;bottom:10px;margin:0;font-size:11.5px;color:var(--muted);background:var(--lbl-bg);padding:3px 8px;border-radius:6px;pointer-events:none}
+.vp-badge{position:absolute;right:12px;bottom:10px;font-size:13px;font-weight:600;background:var(--ochre);color:#1d1408;padding:5px 11px;border-radius:6px;display:inline-flex;gap:6px;align-items:center}
+.hint-touch{display:none}
+.vp-err{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:var(--muted)}
+
+/* timeline */
+.timeline{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;flex-wrap:wrap}
+.transport{display:flex;gap:6px;flex:none}
+.ctl{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--bg);display:grid;place-items:center}
+.ctl svg{width:16px;height:16px;fill:currentColor}
+.ctl.play{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);width:44px;height:44px}
+.ctl:hover{border-color:var(--muted)}
+.scrub{flex:1 1 240px;min-width:0}
+.track{position:relative;height:22px}
+.track input{position:absolute;inset:0;width:100%;margin:0;background:transparent;-webkit-appearance:none;appearance:none;z-index:2}
+.track input::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(90deg,var(--ochre) var(--p,0%),var(--line) var(--p,0%))}
+.track input::-moz-range-track{height:6px;border-radius:3px;background:linear-gradient(90deg,var(--ochre) var(--p,0%),var(--line) var(--p,0%))}
+.track input::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--ink);border:3px solid var(--surface);margin-top:-5px;box-shadow:0 0 0 1px var(--ink)}
+.track input::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--ink);border:3px solid var(--surface)}
+.speed{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;flex:none}
+.speed button{background:none;border:0;padding:6px 9px;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.speed button.on{background:var(--ink);color:var(--bg)}
+
+/* panel */
+.panel{display:flex;flex-direction:column;gap:12px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:0}
+.stepno{margin:0;font-size:12px;font-weight:600;letter-spacing:.06em;color:var(--ochre)}
+.stagecard h2{margin:2px 0 8px;font-family:var(--f-display);font-size:20px;line-height:1.35;text-wrap:balance}
+.stagecard p:last-child{margin:0;font-size:14.5px}
+.mini{margin:0 0 8px;font-size:12px;color:var(--muted);font-weight:500}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{background:none;border:0;padding:8px 6px;font-size:13px;font-weight:500;color:var(--muted)}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:var(--accent);color:var(--accent-ink)}
+.mode-note{margin:8px 0 0;font-size:12.5px;color:var(--muted)}
+.facts{display:grid;gap:10px}
+.facts div{display:grid;gap:1px}
+.facts dt{font-size:11.5px;font-weight:600;letter-spacing:.06em;color:var(--muted)}
+.facts dd{margin:0;font-size:14px}
+.facts dd strong{background:linear-gradient(transparent 62%,color-mix(in srgb,var(--ochre) 35%,transparent) 62%);font-weight:600}
+.btn{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600}
+
+/* orientation check */
+.orient{display:grid;gap:10px}
+.orient-head{display:grid;gap:8px}
+.orient h2{margin:0;font-family:var(--f-display);font-size:17px;line-height:1.3}
+.orient-seg button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;font-size:14px;font-weight:600}
+.orient-seg svg{width:18px;height:18px;flex:none}
+.orient-seg button[data-o="flip"].on{background:var(--ochre);color:#1d1408}
+.orient p{margin:0;font-size:14px;color:var(--muted)}
+.orient p b{color:var(--ink);font-weight:600}
+
+/* summary */
+.summary h2{margin:6px 0 10px;font-family:var(--f-display);font-size:22px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:10px 14px;border-bottom:1px solid var(--line)}
+thead th{font-size:12px;letter-spacing:.06em;color:var(--muted);font-weight:600;background:var(--bg)}
+tbody th{font-family:var(--f-display);font-size:16px;white-space:nowrap}
+tbody tr:last-child>*{border-bottom:0}
+.note{margin:8px 2px 0;font-size:12.5px;color:var(--muted)}
+
+@media (max-width:980px){
+  .lab{grid-template-columns:minmax(0,1fr)}
+  .viewport{max-height:none}
+}
+@media (min-width:641px) and (max-width:980px){
+  .orient-head{grid-template-columns:auto minmax(0,380px);justify-content:space-between;align-items:center}
+}
+/* short landscape screens (tablets with browser bars): tighten the header so the stage fits */
+@media (min-width:981px) and (max-height:900px){
+  body{padding-block:12px 32px}
+  .wrap{gap:12px}
+  h1{font-size:28px}
+  .tab{padding:7px 12px 8px}
+  .tab .t-ko{font-size:18px}
+  .tab .t-env{display:none}
+  .viewport{max-height:max(320px,calc(100vh - 250px));max-height:max(320px,calc(100svh - 250px))}
+}
+/* touch screens: larger hit areas */
+@media (pointer:coarse){
+  .tool{padding:9px 13px;font-size:13.5px}
+  .tool input{width:18px;height:18px}
+  .speed button{padding:10px 13px;font-size:13px}
+  .seg button{min-height:46px}
+  .ctl{width:46px;height:46px}.ctl.play{width:52px;height:52px}
+  .track{height:34px}
+  .track input::-webkit-slider-thumb{width:26px;height:26px;margin-top:-10px}
+  .track input::-moz-range-thumb{width:20px;height:20px}
+  .hint-mouse{display:none}.hint-touch{display:inline}
+}
+@media (max-width:640px){
+  .tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tab .t-env{display:none}
+  .viewport{aspect-ratio:4/3.5;min-height:280px}
+  .vp-tools{top:auto;bottom:10px;left:12px;right:12px}
+  .vp-title{padding:5px 9px}.vp-title b{font-size:14px}.vp-title span{font-size:11.5px}
+  .tool{padding:4px 8px;font-size:12px}
+  .lbl{font-size:11px;padding:3px 6px}
+  .vp-hint{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+
+<link rel="preload" href="../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<style id="sj-site-style">
+/* SJ 공통 디자인: 원본 시뮬레이션과 조작 기능 유지. */
+@font-face{font-family:'SJ Gyeonggi Batang';src:url('../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Regular.woff2') format('woff2');font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:'SJ Gyeonggi Batang';src:url('../../../../assets/fonts/gyeonggi-batang/GyeonggiBatang-Bold.woff2') format('woff2');font-style:normal;font-weight:700;font-display:swap}
+:root[data-theme="dark"]{
+ --bg:#0c0e12;--surface:#171a20;--ink:#e8eaee;--muted:#a8aeb9;--line:#2a2e37;
+ --accent:#e0913e;--accent-ink:#16100a;--ochre:#e0913e;--vp:#11171d;--grid:rgba(170,185,205,.045);
+ --lbl-bg:rgba(23,26,32,.95);--good:#8dd4b2;--bad:#f49a8f;
+ --f-display:'SJ Gyeonggi Batang','Batang','바탕',serif;
+ --f-body:var(--f-display);--f-mono:var(--f-display);color-scheme:dark;
+}
+body{padding:0;background:var(--bg);font-family:var(--f-body);font-size:16px;line-height:1.75;letter-spacing:0;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+button,input,select,textarea{font-family:var(--f-body)}
+.wrap{max-width:1280px;gap:0;min-height:100vh;background:var(--surface);border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.masthead{padding:1.4rem 2.4rem 1.4rem 18px;gap:10px;align-items:center;justify-content:flex-start;background:#101216;border-bottom:1px solid var(--line)}
+.brand{gap:10px;min-width:0}.brand>div:last-child{min-width:0}
+.sj-mark{display:flex;align-items:center;justify-content:center;flex:none;width:52px;height:52px}.sj-mark img{display:block;width:100%;height:auto}
+.eyebrow{color:var(--ochre);font-size:.88rem;font-weight:600;letter-spacing:-.01em;margin-bottom:.1rem}
+h1{font-size:1.4rem;line-height:1.4;letter-spacing:-.03em;color:#fff}
+.tabs{display:flex;gap:0;overflow-x:auto;background:#1e222b;border-bottom:1px solid var(--line);scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;gap:0;min-height:44px;padding:10px 22px;border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;color:#b4b9c4;white-space:nowrap}
+.tab:hover{background:rgba(255,255,255,.06);color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--surface);border-color:var(--ochre);box-shadow:none;color:var(--ochre)}
+.tab .t-ko{font-size:.95rem;font-weight:600;line-height:1.4;letter-spacing:-.01em}.tab[aria-selected="true"] .t-ko{font-weight:700}
+.tab .t-en,.tab .t-env{display:none}
+.lab{padding:20px 26px;gap:18px}
+.viewport{border-color:#35404a;border-radius:12px}
+.timeline,.card{background:#1c2027;border-radius:12px;border-color:var(--line)}
+.timeline{padding:12px}.panel{gap:12px}.card{padding:16px}
+.stagecard h2{font-size:19px;line-height:1.5}.stagecard p:last-child{font-size:15px;line-height:1.85}
+.orient h2{font-size:17px}.orient p,.mode-note{font-size:14px;line-height:1.8}
+.stepno,.mini{font-size:13px;letter-spacing:0}
+.seg{border-radius:8px}.seg button{min-height:42px}.seg button.on{font-weight:700}
+.tool{min-height:38px;font-size:13px;border-radius:8px}.tool:hover,.btn:hover{border-color:var(--ochre)}
+.vp-title b{font-size:16px}.vp-title span,.vp-hint,.lbl{font-size:13px}
+.speed button{min-height:38px;font-size:13px}.speed button.on{background:var(--ochre);color:var(--accent-ink);font-weight:700}
+.ctl{width:42px;height:42px}.ctl.play{width:46px;height:46px}
+.summary{padding:0 26px 26px}.summary h2{font-size:19px;margin:4px 0 12px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+thead th{font-size:13px;letter-spacing:0}table{font-size:14px;line-height:1.8}tbody th{font-size:16px}.note{font-size:13px;line-height:1.8}
+.sample-footer{padding:20px 26px;background:var(--bg);border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:14px}
+.sample-footer p{margin:0;color:#a8aeb9;font-size:13px;line-height:1.7}.sample-footer-links{display:flex;gap:8px;flex-wrap:wrap}
+.sample-footer a{color:var(--ink);text-decoration:none;font-size:13px;padding:7px 12px;border:1px solid #39404b;border-radius:999px}.sample-footer a:hover{border-color:var(--ochre)}
+@media(max-width:980px){.wrap{border:0}.lab{padding:18px}.summary{padding:0 18px 22px}.masthead{padding-right:18px}}
+@media(max-width:700px){.masthead{padding:1.1rem 1.2rem 1.1rem 12px;gap:8px}.brand{gap:8px}.sj-mark{width:44px;height:44px}.eyebrow{font-size:.8rem}h1{font-size:1.15rem}.tab{flex:1 0 auto;padding:10px 12px;min-height:44px}.tab .t-ko{font-size:.9rem}}
+@media(max-width:640px){.lab{padding:14px;gap:14px}.summary{padding:0 14px 20px}.card{padding:14px}.vp-tools .tool{min-height:36px;padding:5px 8px;font-size:13px}.vp-title span,.lbl{font-size:13px}.sample-footer{padding:18px 14px;flex-direction:column;text-align:center}}
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="brand">
+      <div class="sj-mark"><img src="../../../../assets/images/sj-science-logo.png" alt="SJ SCIENCE LAB 로고" width="128" height="124"></div>
+      <div>
+        <p class="eyebrow">지구과학 탐구활동 (지질)</p>
+        <h1>퇴적 구조 실험실</h1>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="퇴적 구조 선택">
+    <button class="tab" role="tab" id="tab-cross" data-key="cross" aria-selected="true"><span class="t-ko">사층리</span><span class="t-en">CROSS-BEDDING</span><span class="t-env">사막 · 하천 · 삼각주</span></button>
+    <button class="tab" role="tab" id="tab-graded" data-key="graded" aria-selected="false"><span class="t-ko">점이층리</span><span class="t-en">GRADED BEDDING</span><span class="t-env">깊은 바다 · 호수</span></button>
+    <button class="tab" role="tab" id="tab-ripple" data-key="ripple" aria-selected="false"><span class="t-ko">연흔</span><span class="t-en">RIPPLE MARKS</span><span class="t-env">얕은 물 밑 · 사막</span></button>
+    <button class="tab" role="tab" id="tab-mud" data-key="mud" aria-selected="false"><span class="t-ko">건열</span><span class="t-en">MUD CRACKS</span><span class="t-env">갯벌 · 호숫가 · 건조 지역</span></button>
+  </nav>
+
+  <main class="lab">
+    <section class="sim" aria-label="시뮬레이션">
+      <div class="viewport" id="vp">
+        <canvas id="cv"></canvas>
+        <div class="labels" id="labels" aria-hidden="true"></div>
+        <div class="vp-top">
+          <div class="vp-title"><b id="vpName">사층리</b><span id="vpStage"></span></div>
+        </div>
+        <div class="vp-tools">
+          <button class="tool" id="btnIso" type="button">3D 보기</button>
+          <button class="tool" id="btnFront" type="button">정면 단면</button>
+          <label class="tool" for="autoCam"><input type="checkbox" id="autoCam" checked> 자동 시점</label>
+        </div>
+        <p class="vp-hint"><span class="hint-mouse">드래그로 회전 · 스크롤로 확대</span><span class="hint-touch">한 손가락으로 회전 · 두 손가락으로 확대</span></p>
+        <div class="vp-badge" id="orientBadge" hidden>역전된 지층 · 위아래가 뒤집힘</div>
+        <div class="vp-err" id="vpErr" hidden>이 브라우저에서는 3D 그래픽(WebGL)을 사용할 수 없습니다. 크롬이나 엣지 최신 버전에서 열어 주세요.</div>
+      </div>
+
+      <div class="timeline">
+        <div class="transport">
+          <button class="ctl" id="btnRestart" type="button" aria-label="처음부터 다시"><svg viewBox="0 0 16 16"><path d="M8 2.5a5.5 5.5 0 1 1-5.2 3.7l1.5.5A4 4 0 1 0 8 4v2L4.5 3.2 8 .5z"/></svg></button>
+          <button class="ctl play" id="btnPlay" type="button" aria-label="재생"><svg viewBox="0 0 16 16" id="playIcon"><path d="M4 2l10 6-10 6z"/></svg></button>
+        </div>
+        <div class="scrub">
+          <div class="track"><input type="range" id="scrub" min="0" max="1000" value="0" aria-label="진행 시간"></div>
+        </div>
+        <div class="speed" role="group" aria-label="재생 속도">
+          <button type="button" data-s="0.5" aria-pressed="false">0.5×</button><button type="button" data-s="1" class="on" aria-pressed="true">1×</button><button type="button" data-s="2" aria-pressed="false">2×</button>
+        </div>
+      </div>
+
+    </section>
+
+    <aside class="panel">
+      <section class="card orient" aria-labelledby="orientTitle">
+        <div class="orient-head">
+          <h2 id="orientTitle">지층 상하 확인</h2>
+          <div class="seg orient-seg" id="orientSeg" role="group" aria-label="지층 상태 선택">
+            <button type="button" data-o="normal" class="on" aria-pressed="true"><svg viewBox="0 0 18 18" aria-hidden="true"><rect x="2" y="10" width="14" height="6" rx="1" fill="currentColor" opacity=".35"/><rect x="2" y="5" width="14" height="4" rx="1" fill="currentColor" opacity=".7"/><path d="M9 0.8l3 3H10v1H8v-1H6z" fill="currentColor"/></svg>정상 지층</button>
+            <button type="button" data-o="flip" aria-pressed="false"><svg viewBox="0 0 18 18" aria-hidden="true"><rect x="2" y="2" width="14" height="6" rx="1" fill="currentColor" opacity=".35"/><rect x="2" y="9" width="14" height="4" rx="1" fill="currentColor" opacity=".7"/><path d="M9 17.2l3-3H10v-1H8v1H6z" fill="currentColor"/></svg>역전된 지층</button>
+          </div>
+        </div>
+        <p id="orientText"></p>
+      </section>
+      <article class="card stagecard" aria-live="polite">
+        <p class="stepno">생성 과정</p>
+        <h2 id="stageTitle"></h2>
+        <p id="stageText"></p>
+      </article>
+      <div class="card" id="modeBox" hidden>
+        <p class="mini" id="modeLabel"></p>
+        <div class="seg" id="modeSeg"></div>
+        <p class="mode-note" id="modeNote" hidden></p>
+      </div>
+    </aside>
+  </main>
+
+  <section class="summary" aria-labelledby="sumTitle">
+    <h2 id="sumTitle">한눈에 정리</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col">구조</th><th scope="col">형성 환경</th><th scope="col">생성 원리</th><th scope="col">상하 판별 기준</th><th scope="col">알 수 있는 것</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">사층리</th><td>사막의 사구, 하천, 삼각주, 얕은 바다</td><td>한 방향으로 흐르는 바람·물이 운반한 퇴적물이 경사면을 따라 비스듬히 쌓임</td><td>층리가 아래로 볼록하면 정상, 위로 볼록하면 역전</td><td>과거 바람·물이 흐른 방향과 그 변화</td></tr>
+          <tr><th scope="row">점이층리</th><td>깊은 바다(대륙대, 해저 선상지), 깊은 호수</td><td>저탁류처럼 크기가 다양한 입자가 한꺼번에 가라앉을 때 큰 입자가 먼저 가라앉음. 저탁류는 퇴적물이 많이 쌓여 불안정해지거나 지진·폭풍·홍수 등으로 해저 사태가 일어날 때 생김</td><td>아래로 갈수록 입자가 굵고, 위로 갈수록 가늘어짐</td><td>저탁류(해저 사태)가 일어난 횟수</td></tr>
+          <tr><th scope="row">연흔</th><td>수심이 얕은 물 밑(해안, 호숫가, 하천), 사막 표면</td><td>물결이나 흐름이 퇴적물 표면을 움직여 물결 모양 자국을 남김</td><td>뾰족한 마루가 위, 둥근 골이 아래를 향함</td><td>얕은 물 환경, 비대칭형이면 흐름 방향</td></tr>
+          <tr><th scope="row">건열</th><td>갯벌, 호숫가, 범람원 등 건조와 습윤이 반복되는 곳</td><td>점토질 퇴적물이 대기에 노출되어 마르면서 수축해 갈라짐</td><td>쐐기 모양 틈의 넓은 쪽이 위, 뾰족한 쪽이 아래</td><td>퇴적 당시 대기 중에 노출되어 건조했던 환경</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">모델의 크기와 시간은 과정을 쉽게 볼 수 있도록 과장했습니다. 실제 사층리 한 묶음은 수 cm~수십 m, 점이층 한 층은 수 cm~수 m, 연흔 간격은 수 cm~수십 cm, 건열 다각형 폭은 수 cm~수십 cm입니다.</p>
+  </section>
+
+  <footer class="sample-footer"><p>© 교사 이상준. All rights reserved.<br>오류제보/문의: cepheid@kakao.com</p><div class="sample-footer-links"><a href="https://www.youtube.com/@science_earth" target="_blank" rel="noopener">▶ 유튜브</a><a href="https://linktr.ee/earth_sj" target="_blank" rel="noopener">🌍 Linktree</a></div></footer>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+'use strict';
+/* ---------- math helpers ---------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const sat=v=>clamp(v,0,1);
+const ease=t=>{t=sat(t);return t*t*(3-2*t);};
+const seg=(t,a,b)=>sat((t-a)/(b-a));
+const eseg=(t,a,b)=>ease(seg(t,a,b));
+const fract=v=>v-Math.floor(v);
+/* ripple profile 0..1, sharp crest at xi=c0, rounded troughs */
+function rip(x,lam,c0){const xi=fract(x/lam);return xi<c0?Math.pow(xi/c0,1.5):Math.pow(1-(xi-c0)/(1-c0),1.5);}
+
+const STATE={rippleMode:'wave'};
+const REDUCED=!!(typeof window!=='undefined'&&window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+/* materials drawn against the page background follow the theme (ink / accent) */
+const OVERLAY=[];
+function overlay(mat,role){OVERLAY.push({mat,role:role||'ink'});return mat;}
+
+/* ---------- strata shader ---------- */
+const VERT=`
+varying vec3 vP; varying vec3 vWN;
+void main(){ vP=position; vWN=normalize(mat3(modelMatrix)*normal);
+  gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`;
+const FRAG=`
+uniform int uMode; uniform vec3 uC1; uniform vec3 uC2; uniform vec3 uC3;
+uniform vec4 uP; uniform vec4 uQ; uniform float uSpeck; uniform float uK; uniform float uOpacity;
+uniform sampler2D uTex; uniform vec4 uBox;
+varying vec3 vP; varying vec3 vWN;
+float h31(vec3 p){ p=fract(p*vec3(.1031,.1030,.0973)); p+=dot(p,p.yxz+33.33); return fract((p.x+p.y)*p.z); }
+float speck(vec3 p,float k){ vec3 c=floor(p*k); vec3 f=fract(p*k); vec3 r=vec3(h31(c),h31(c+17.1),h31(c+41.7));
+  float on=step(.70,h31(c+5.3)); return on*(1.-smoothstep(.16,.26,length(f-r))); }
+float rip(float x,float lam,float c0){ float xi=fract(x/lam); return xi<c0?pow(xi/c0,1.5):pow(1.-(xi-c0)/(1.-c0),1.5); }
+float lineAt(float p,float w){ float d=abs(fract(p+.5)-.5); float aa=fwidth(p)*1.2; return 1.-smoothstep(w,w+aa,d); }
+void main(){
+  vec3 n=normalize(vWN);
+  vec3 L=normalize(vec3(.45,.85,.55));
+  float lam=.60+.40*max(dot(n,L),0.);
+  lam*=mix(1.,.88,step(.6,abs(n.x)));
+  vec3 col=uC1; float ink=0.;
+  if(uMode==1){
+    float u=clamp((vP.y-uP.x)/uP.y,0.,1.);
+    float sx=uP.w<0.?-vP.x:vP.x; float p=(sx-uP.z*(1.-sqrt(u)))/uQ.x;
+    col=mix(uC1,uC3,mod(floor(p),2.)*.6);
+    ink=lineAt(p,.035)*.8;
+  } else if(uMode==2){
+    float k=1.-clamp((vP.y-uP.x)/uP.y,0.,1.);
+    float r=uQ.z>0.?(rip(vP.x,uQ.z,uQ.w)-.5)*uP.z*k:0.;
+    float p=(vP.y-uP.x-r)/uQ.x;
+    col=mix(uC1,uC3,mod(floor(p),2.)*.7);
+    ink=lineAt(p,.05)*.45;
+  } else if(uMode==3){
+    if(abs(n.y)<.5){ float a=abs(n.x)>.5?vP.z:vP.x;
+      col=texture2D(uTex,vec2((a-uBox.x)/uBox.z,clamp((vP.y-uBox.y)/uBox.w,.002,.998))).rgb; }
+  }
+  float s=speck(vP,uK)*uSpeck;
+  col=mix(col,uC2,max(ink,s*.65));
+  gl_FragColor=vec4(col*lam,uOpacity);
+}`;
+function strataMat(o){
+  o=o||{};
+  const m=new THREE.ShaderMaterial({
+    uniforms:{
+      uMode:{value:o.mode||0}, uC1:{value:new THREE.Color(o.c1||'#e8d3a8')}, uC2:{value:new THREE.Color(o.c2||'#3d2e20')},
+      uC3:{value:new THREE.Color(o.c3||o.c1||'#e8d3a8')}, uP:{value:new THREE.Vector4().fromArray(o.p||[0,1,0,0])},
+      uQ:{value:new THREE.Vector4().fromArray(o.q||[.3,0,0,0])}, uSpeck:{value:o.speck==null?1:o.speck}, uK:{value:o.k||32},
+      uOpacity:{value:1}, uTex:{value:o.tex||null}, uBox:{value:new THREE.Vector4().fromArray(o.box||[0,0,1,1])}
+    },
+    vertexShader:VERT, fragmentShader:FRAG, side:THREE.DoubleSide,
+    polygonOffset:true, polygonOffsetFactor:1, polygonOffsetUnits:1, transparent:!!o.transparent
+  });
+  m.extensions.derivatives=true;
+  return m;
+}
+const INK=new THREE.LineBasicMaterial({color:0x2a2018,transparent:true,opacity:.9});
+
+/* ---------- Slab: solid whose top and bottom follow functions of x ---------- */
+class Slab{
+  constructor(parent,x0,x1,z0,z1,n,mat,outline){
+    this.x0=x0;this.x1=x1;this.z0=z0;this.z1=z1;this.n=n;
+    const nv=8*(n+1)+8, g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(nv*3),3));
+    g.setAttribute('normal',new THREE.BufferAttribute(new Float32Array(nv*3),3));
+    const idx=[];
+    for(let s=0;s<4;s++){const o=s*2*(n+1);for(let i=0;i<n;i++){const a=o+2*i;idx.push(a,a+1,a+2,a+1,a+3,a+2);}}
+    const e=8*(n+1);idx.push(e,e+1,e+2,e+1,e+3,e+2,e+4,e+5,e+6,e+5,e+7,e+6);
+    g.setIndex(idx);
+    this.geo=g; this.mesh=new THREE.Mesh(g,mat); this.mesh.frustumCulled=false; parent.add(this.mesh);
+    this.T=new Float32Array(n+1); this.B=new Float32Array(n+1);
+    if(outline!==false){
+      const lg=new THREE.BufferGeometry();
+      lg.setAttribute('position',new THREE.BufferAttribute(new Float32Array((3*n+8)*6),3));
+      this.line=new THREE.LineSegments(lg,INK); this.line.frustumCulled=false; parent.add(this.line);
+    }
+  }
+  set(bot,top){
+    const {x0,x1,z0,z1,n,T,B}=this, dx=(x1-x0)/n, P=this.geo.attributes.position.array, N=this.geo.attributes.normal.array;
+    let maxH=0;
+    for(let i=0;i<=n;i++){const x=x0+dx*i;T[i]=top(x);B[i]=Math.min(bot(x),T[i]);maxH=Math.max(maxH,T[i]-B[i]);}
+    for(let i=0;i<=n;i++)if(T[i]-B[i]<1e-4){B[i]-=.004;T[i]=B[i];}
+    this.visible(maxH>1e-4);
+    if(maxH<=1e-4) return;
+    let k=0;const put=(x,y,z,a,b,c)=>{P[k]=x;P[k+1]=y;P[k+2]=z;N[k]=a;N[k+1]=b;N[k+2]=c;k+=3;};
+    for(let i=0;i<=n;i++){const x=x0+dx*i,i0=Math.max(0,i-1),i1=Math.min(n,i+1),s=(T[i1]-T[i0])/((i1-i0)*dx),l=Math.hypot(s,1);
+      put(x,T[i],z0,-s/l,1/l,0);put(x,T[i],z1,-s/l,1/l,0);}
+    for(let i=0;i<=n;i++){const x=x0+dx*i,i0=Math.max(0,i-1),i1=Math.min(n,i+1),s=(B[i1]-B[i0])/((i1-i0)*dx),l=Math.hypot(s,1);
+      put(x,B[i],z0,s/l,-1/l,0);put(x,B[i],z1,s/l,-1/l,0);}
+    for(let i=0;i<=n;i++){const x=x0+dx*i;put(x,B[i],z1,0,0,1);put(x,T[i],z1,0,0,1);}
+    for(let i=0;i<=n;i++){const x=x0+dx*i;put(x,B[i],z0,0,0,-1);put(x,T[i],z0,0,0,-1);}
+    put(x0,B[0],z0,-1,0,0);put(x0,B[0],z1,-1,0,0);put(x0,T[0],z0,-1,0,0);put(x0,T[0],z1,-1,0,0);
+    put(x1,B[n],z0,1,0,0);put(x1,B[n],z1,1,0,0);put(x1,T[n],z0,1,0,0);put(x1,T[n],z1,1,0,0);
+    this.geo.attributes.position.needsUpdate=true;this.geo.attributes.normal.needsUpdate=true;
+    if(this.line){
+      const L=this.line.geometry.attributes.position.array;let j=0;
+      const sg=(a,b,c,d,e,f)=>{L[j++]=a;L[j++]=b;L[j++]=c;L[j++]=d;L[j++]=e;L[j++]=f;};
+      for(let i=0;i<n;i++){const xa=x0+dx*i,xb=xa+dx;
+        sg(xa,T[i],z1,xb,T[i+1],z1);sg(xa,T[i],z0,xb,T[i+1],z0);sg(xa,B[i],z1,xb,B[i+1],z1);}
+      sg(x0,B[0],z1,x0,T[0],z1);sg(x1,B[n],z1,x1,T[n],z1);sg(x0,B[0],z0,x0,T[0],z0);sg(x1,B[n],z0,x1,T[n],z0);
+      sg(x0,T[0],z0,x0,T[0],z1);sg(x1,T[n],z0,x1,T[n],z1);sg(x0,B[0],z0,x0,B[0],z1);sg(x1,B[n],z0,x1,B[n],z1);
+      this.line.geometry.attributes.position.needsUpdate=true;
+    }
+  }
+  flat(y0,y1){this.set(()=>y0,()=>y1);}
+  visible(v){this.mesh.visible=v;if(this.line)this.line.visible=v;}
+}
+
+/* ---------- grains (instanced) ---------- */
+const _o=new THREE.Object3D();
+function grains(parent,count,r,colors,seed){
+  const m=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(r,0),new THREE.MeshLambertMaterial({color:0xffffff}),count);
+  m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  const c=new THREE.Color(),R=mulberry32(seed||count);
+  for(let i=0;i<count;i++){c.set(colors[Math.floor(R()*colors.length)]);m.setColorAt(i,c);hideGrain(m,i);}
+  m.frustumCulled=false;parent.add(m);return m;
+}
+function setGrain(m,i,x,y,z,s,rot){_o.position.set(x,y,z);_o.rotation.set(rot||0,(rot||0)*1.3,0);_o.scale.setScalar(s==null?1:s);_o.updateMatrix();m.setMatrixAt(i,_o.matrix);}
+function hideGrain(m,i){_o.position.set(0,-99,0);_o.scale.setScalar(1e-4);_o.updateMatrix();m.setMatrixAt(i,_o.matrix);}
+
+/* ---------- arrows ---------- */
+function makeArrow(len,role,dbl,r){
+  r=r||.035;const g=new THREE.Group(),m=overlay(new THREE.MeshLambertMaterial({color:0x222222}),role);
+  const shaft=new THREE.Mesh(new THREE.CylinderGeometry(r,r,len-(dbl?.36:.18),10),m);
+  shaft.rotation.z=Math.PI/2;shaft.position.x=dbl?0:-.09;g.add(shaft);
+  const cg=new THREE.ConeGeometry(r*3,.2,14),h1=new THREE.Mesh(cg,m);h1.rotation.z=-Math.PI/2;h1.position.x=len/2-.1;g.add(h1);
+  if(dbl){const h2=new THREE.Mesh(cg,m);h2.rotation.z=Math.PI/2;h2.position.x=-len/2+.1;g.add(h2);}
+  return g;
+}
+function makeCurvedArrow(w,h,role){
+  const g=new THREE.Group(),m=overlay(new THREE.MeshLambertMaterial({color:0x222222}),role);
+  const c=new THREE.QuadraticBezierCurve3(new THREE.Vector3(-w/2,0,0),new THREE.Vector3(0,h,0),new THREE.Vector3(w/2-.05,-.05,0));
+  g.add(new THREE.Mesh(new THREE.TubeGeometry(c,30,.045,8,false),m));
+  const head=new THREE.Mesh(new THREE.ConeGeometry(.13,.3,14),m),tan=c.getTangent(1);
+  head.position.copy(c.getPoint(1));head.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),tan.normalize());g.add(head);
+  return g;
+}
+
+/* ---------- water / misc ---------- */
+function waterMat(op,col){return new THREE.MeshPhongMaterial({color:col||0x7fbfe0,transparent:true,opacity:op==null?.24:op,depthWrite:false,shininess:70,specular:0x335566,side:THREE.DoubleSide});}
+function radialTex(stops,size){
+  size=size||128;const c=document.createElement('canvas');c.width=c.height=size;const g=c.getContext('2d');
+  const gr=g.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);stops.forEach(s=>gr.addColorStop(s[0],s[1]));
+  g.fillStyle=gr;g.fillRect(0,0,size,size);return new THREE.CanvasTexture(c);
+}
+function blobShadow(parent,x,y,z,w,d){
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),new THREE.MeshBasicMaterial({map:radialTex([[0,'rgba(0,0,0,.28)'],[.6,'rgba(0,0,0,.12)'],[1,'rgba(0,0,0,0)']]),transparent:true,depthWrite:false}));
+  m.rotation.x=-Math.PI/2;m.position.set(x,y,z);parent.add(m);return m;
+}
+
+/* ---------- labels ---------- */
+const LABELS=[];
+function addLabel(owner,text,cls){
+  const el=document.createElement('div');el.className='lbl'+(cls?' '+cls:'');el.textContent=text;
+  document.getElementById('labels').appendChild(el);
+  const L={el,owner,pos:new THREE.Vector3(),on:false,text,cur:text};LABELS.push(L);return L;
+}
+function showLabel(L,on,x,y,z){L.on=!!on;if(on&&x!=null)L.pos.set(x,y,z);}
+function setLabelText(L,t){if(L.text!==t){L.text=t;L.cur=null;L.dirty=true;}}
+
+function deepWater(parent,x0,x1,y0,y1,z0,z1,op){
+  const g=new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0,1,6,1);g.translate((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);
+  const p=g.attributes.position,col=new Float32Array(p.count*3),deep=new THREE.Color('#1f5674'),shal=new THREE.Color('#8fd0e8'),c=new THREE.Color();
+  for(let i=0;i<p.count;i++){c.copy(deep).lerp(shal,Math.pow(sat((p.getY(i)-y0)/(y1-y0)),.8));col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;}
+  g.setAttribute('color',new THREE.BufferAttribute(col,3));
+  const m=new THREE.Mesh(g,new THREE.MeshPhongMaterial({vertexColors:true,transparent:true,opacity:op==null?.24:op,depthWrite:false,shininess:60,specular:0x2a4455,side:THREE.DoubleSide}));
+  m.renderOrder=5;parent.add(m);return m;
+}
+const PUFF_UNI={uScale:{value:900}};
+function makePuffTex(){
+  const S=128,c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d'),R=mulberry32(99);
+  for(let i=0;i<20;i++){const a=R()*Math.PI*2,rd=R()*S*.2,x=S/2+Math.cos(a)*rd,y=S/2+Math.sin(a)*rd,r=S*(.14+R()*.18);
+    const gr=g.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,'rgba(255,255,255,.5)');gr.addColorStop(.55,'rgba(255,255,255,.2)');gr.addColorStop(1,'rgba(255,255,255,0)');
+    g.fillStyle=gr;g.fillRect(0,0,S,S);}
+  g.globalCompositeOperation='destination-in';
+  const m=g.createRadialGradient(S/2,S/2,S*.18,S/2,S/2,S/2);m.addColorStop(0,'rgba(0,0,0,1)');m.addColorStop(1,'rgba(0,0,0,0)');
+  g.fillStyle=m;g.fillRect(0,0,S,S);
+  return new THREE.CanvasTexture(c);
+}
+function puffPoints(parent,n){
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(n*3),3).setUsage(THREE.DynamicDrawUsage));
+  g.setAttribute('aSize',new THREE.BufferAttribute(new Float32Array(n),1).setUsage(THREE.DynamicDrawUsage));
+  g.setAttribute('aAlpha',new THREE.BufferAttribute(new Float32Array(n),1).setUsage(THREE.DynamicDrawUsage));
+  g.setAttribute('aCol',new THREE.BufferAttribute(new Float32Array(n*3),3).setUsage(THREE.DynamicDrawUsage));
+  const m=new THREE.ShaderMaterial({
+    uniforms:{uTex:{value:makePuffTex()},uScale:PUFF_UNI.uScale},
+    vertexShader:`uniform float uScale;attribute float aSize;attribute float aAlpha;attribute vec3 aCol;varying float vA;varying vec3 vC;
+      void main(){vec4 mv=modelViewMatrix*vec4(position,1.);gl_Position=projectionMatrix*mv;gl_PointSize=aSize*uScale/max(.5,-mv.z);vA=aAlpha;vC=aCol;}`,
+    fragmentShader:`uniform sampler2D uTex;varying float vA;varying vec3 vC;
+      void main(){vec4 t=texture2D(uTex,gl_PointCoord);float a=t.a*vA;if(a<.004)discard;
+        gl_FragColor=vec4(vC*mix(1.1,.78,gl_PointCoord.y),a);}`,
+    transparent:true,depthWrite:false});
+  const pts=new THREE.Points(g,m);pts.frustumCulled=false;pts.renderOrder=4;parent.add(pts);
+  return pts;
+}
+
+const SCENES={};
+
+/* ================= 사층리 (cross-bedding) ================= */
+SCENES.cross=(function(){
+  const X0=-5,X1=5,Z0=-2,Z1=2,HD=1.6,H1=1.0,LL=4.4,LS=3.6,SP=.3,G=.35,Y2=H1+G;
+  const K1=LS*(1-(2/Math.PI)*Math.asin(H1/HD));
+  let base,mid,set1,set2,gr,arrow;const L={},RND=[];
+  // dune surface: rounded stoss, lee face = newest lamina (tangential toe), preserved set truncated at y0+H1
+  function dune(x,s,y0,s0){
+    let y=y0;
+    if(x<=s){const q=1-(s-x)/LS;if(q>0)y=y0+HD*Math.sin(Math.PI/2*q);}
+    else{const xi=(x-s)/LL;if(xi<1)y=y0+HD*(1-xi)*(1-xi);}
+    if(x<=s-K1&&x>=s0-K1)y=Math.max(y,y0+H1);
+    return y;
+  }
+  const s1=t=>t<5?lerp(-4,-2.2,t/5):lerp(-2.2,7.2,seg(t,5,12));
+  const s2=t=>lerp(-9.4,7.2,seg(t,14,21.5));
+  return{
+    stages:[0,5,12,21.5],end:26,center:[0,.65,0],
+    cams:[{p:[6.5,5.8,11.5],t:[0,.5,0]},{p:[5.6,5,13.4],t:[.2,.6,0]},{p:[7.5,6.5,12.5],t:[0,.8,0]},{p:[0,1,15.5],t:[0,.65,0]}],
+    build(root){
+      blobShadow(root,0,-1.02,0,14,7);
+      base=new Slab(root,X0,X1,Z0,Z1,1,strataMat({mode:2,c1:'#b0aaa0',c3:'#9d968b',c2:'#4a443c',p:[-1,1,0,0],q:[.2,0,0,0],speck:.4}));
+      base.flat(-1,0);
+      mid=new Slab(root,X0,X1,Z0,Z1,1,strataMat({mode:2,c1:'#aaa49a',c3:'#958e83',c2:'#4a443c',p:[H1,G,0,0],q:[.09,0,0,0],speck:.4}));
+      const cm={mode:1,c1:'#ecd5a6',c3:'#dcc08a',c2:'#4a3523',q:[SP,0,0,0],speck:.5,k:40};
+      set1=new Slab(root,X0,X1,Z0,Z1,200,strataMat(Object.assign({},cm,{p:[0,HD,LL,1]})));
+      set2=new Slab(root,X0,X1,Z0,Z1,200,strataMat(Object.assign({},cm,{p:[Y2,HD,LL,1]})));
+      gr=grains(root,120,.04,['#3a3027','#55473a','#2a231d','#6b5a48'],11);
+      const R=mulberry32(5);for(let i=0;i<120;i++)RND.push([R(),R(),R()]);
+      arrow=makeCurvedArrow(2.6,.9,'ink');root.add(arrow);
+      L.stoss=addLabel('cross','바람받이 사면 · 깎여 나감');
+      L.lee=addLabel('cross','바람그늘 사면 · 비스듬히 쌓임');
+      L.wind=addLabel('cross','물이 흐르거나 바람이 부는 방향 →');
+      L.cut=addLabel('cross','침식면 · 층리 윗부분이 잘림');
+      L.mid=addLabel('cross','흐름이 약할 때 쌓인 수평층');
+      L.set2=addLabel('cross','두 번째 사층리 묶음');
+      L.turn=addLabel('cross','바람 방향이 반대로 바뀜','key');
+      L.dir=addLabel('cross','← 물이 흐르거나 바람이 분 방향');
+      L.dir1=addLabel('cross','물이 흐르거나 바람이 분 방향 →');
+    },
+    update(t){
+      const d=-1; // the wind always reverses for the second set
+      set2.mesh.material.uniforms.uP.value.w=d;
+      const a=s1(t);
+      set1.set(()=>0,x=>dune(x,a,0,-100));
+      const g=eseg(t,12,14);
+      if(g>0)mid.flat(H1,H1+G*g);else mid.visible(false);
+      const b=s2(t);
+      if(t>=14)set2.set(()=>Y2,x=>dune(d*x,b,Y2,-9.4));else set2.visible(false);
+      // s is measured along the wind, sd turns it back into block coordinates
+      let s=null,y0=0,s0=-100,sd=1;
+      if(t<12)s=a;else if(t>=14&&t<21.5){s=b;y0=Y2;s0=-9.4;sd=d;}
+      const live=s!==null&&s>X0+.3&&s<X1+1.5;
+      for(let i=0;i<120;i++){
+        if(!live){hideGrain(gr,i);continue;}
+        const r=RND[i],ph=fract(t*.32+r[0]),z=lerp(Z0+.15,Z1-.15,r[1]);
+        let x,y;
+        if(ph<.78){const q=ph/.78;x=s-LS*.95+LS*.95*q;y=dune(x,s,y0,s0)+.04+.2*Math.abs(Math.sin(q*Math.PI*(3+i%3)))*(.5+.5*r[2]);}
+        else{const q=(ph-.78)/.22;x=s+LL*.7*q;y=dune(x,s,y0,s0)+.04;}
+        if(x<X0||x>X1)hideGrain(gr,i);else setGrain(gr,i,sd*x,y,z,1,ph*6);
+      }
+      gr.instanceMatrix.needsUpdate=true;
+      arrow.visible=live&&s<X1-.3;
+      if(arrow.visible){arrow.position.set(sd*(s-.4),y0+HD+.35,0);arrow.rotation.y=sd<0?Math.PI:0;}
+      const lv=live&&(t<12||t>15.5);
+      setLabelText(L.wind,sd<0?'← 물이 흐르거나 바람이 부는 방향':'물이 흐르거나 바람이 부는 방향 →');
+      showLabel(L.stoss,lv&&s-LS*.5>X0+.3,sd*(s-LS*.5),y0+HD*.72,Z1);
+      showLabel(L.lee,lv&&s+LL*.25<X1-.3,sd*(s+LL*.22),y0+HD*.5,Z1);
+      showLabel(L.wind,lv&&s<X1-.3,sd*(s-.4),y0+HD+1.15,0);
+      showLabel(L.turn,d<0&&t>14&&t<15.8,0,Y2+1.9,0);
+      showLabel(L.cut,t>12.3&&t<21.5,-3,H1,Z1);
+      showLabel(L.mid,t>13.4&&t<21.5,3,H1+G*.5,Z1);
+      setLabelText(L.set2,d<0?'바람이 바뀐 뒤 쌓인 사층리 묶음':'두 번째 사층리 묶음');
+      showLabel(L.set2,t>20.2&&t<21.5,-2*d,Y2+.55,Z1);
+      const fin=t>=21.8;
+      showLabel(L.dir,fin,0,Y2+H1*.55,Z1);
+      showLabel(L.dir1,fin,0,H1*.55,Z1);
+    }
+  };
+})();
+
+/* ================= 점이층리 (graded bedding) ================= */
+function makeGradedTex(seed){
+  const W=1536,H=308,c=document.createElement('canvas');c.width=W;c.height=H;
+  const g=c.getContext('2d'),R=mulberry32(seed),gv=.75;
+  const grd=g.createLinearGradient(0,H,0,0);
+  grd.addColorStop(0,'#b5ab9b');grd.addColorStop(gv*.55,'#d8c7a3');grd.addColorStop(gv,'#c3a882');grd.addColorStop(1,'#a3886a');
+  g.fillStyle=grd;g.fillRect(0,0,W,H);
+  const cols=['#8f969c','#a9a49b','#c8b48c','#6f6a63','#b8a27c','#9c8f80','#d6c29b'];
+  let y=0;
+  while(y<gv*H){
+    const v=y/H,r=1.1+15*Math.pow(1-v/gv,1.8);
+    let x=-r+R()*r*2;
+    while(x<W+r){
+      const rr=r*(.7+.6*R());
+      if(r<2.4){ if(R()<.55){g.fillStyle=R()<.5?'rgba(80,62,45,.55)':'rgba(255,245,225,.45)';g.fillRect(x,H-y-rr,rr*1.4,rr*1.4);} x+=rr*2.6;continue; }
+      const cy=H-(y+rr*(.8+.4*R()));
+      g.beginPath();g.ellipse(x,cy,rr,rr*(.72+.28*R()),R()*3,0,Math.PI*2);
+      g.fillStyle=cols[(R()*cols.length)|0];g.fill();
+      g.lineWidth=Math.min(1.8,rr*.14);g.strokeStyle='rgba(38,30,22,.85)';g.stroke();
+      x+=rr*2.02+R()*r*.5;
+    }
+    y+=r*1.5;
+  }
+  for(let k=0;k<10;k++){
+    const v=gv+(1-gv)*(k+.5)/10,py=H*(1-v);
+    g.beginPath();for(let x=0;x<=W;x+=24){const yy=py+Math.sin(x*.01+k*1.7+seed)*1.1;x===0?g.moveTo(x,yy):g.lineTo(x,yy);}
+    g.strokeStyle=k%2?'rgba(60,44,30,.5)':'rgba(255,240,215,.3)';g.lineWidth=k%2?1.3:2.2;g.stroke();
+  }
+  g.fillStyle='rgba(42,32,24,.9)';g.fillRect(0,H*(1-gv)-1,W,1.4);
+  const t=new THREE.CanvasTexture(c);t.wrapS=THREE.RepeatWrapping;t.anisotropy=4;return t;
+}
+
+SCENES.graded=(function(){
+  const BX0=-1.5,BX1=4.5,Z0=-2,Z1=2,HG=.9,HM=.3,HC=HG+HM,NC=520,NP=640;
+  // q: earthquake, f0: current leaves the shelf, fA: head at the slope foot, fB: head at the far end, s: settling, m: quiet-time mud
+  const CY=[
+    {q:0,f0:.9,fA:3.1,fB:6.0,s:[5.8,13],m:[13,15],base:0},
+    {q:15.1,f0:15.9,fA:17.4,fB:19.3,s:[19.1,22.9],m:[22.9,23.8],base:HC}];
+  const CLS=[
+    {n:70,r:.075,v:2.6,w:[0,.35],xi:[.02,.4],eta:[.03,.28],cols:['#8f969c','#a9a49b','#c8b48c','#6f6a63','#b8a27c'],name:'자갈 · 가장 먼저 가라앉음'},
+    {n:150,r:.038,v:1.1,w:[.12,.6],xi:[.02,.8],eta:[.03,.55],cols:['#d9c49a','#cdb48a','#e2d0a8','#bfa77d'],name:'모래 · 그다음'},
+    {n:220,r:.018,v:.42,w:[.35,.95],xi:[0,1],eta:[.05,.95],cols:['#8a6d50','#9b7d5e','#7a5f45'],name:'점토 · 가장 늦게'}];
+  const WT=[.4,.35,.25];
+  const slopeY=x=>x<-5.5?3:x>-1.5?0:1.5*(1+Math.cos(Math.PI*(x+5.5)/4));
+  const bump=u=>Math.abs(u)<1?(1-u*u)*(1-u*u):0;
+  const moundF=t=>t<12?(t<.7?lerp(.7,1,eseg(t,0,.7)):1-eseg(t,.7,2.4)):t<15.4?eseg(t,12,15):1-eseg(t,15.4,17.2);
+  const slopeSurf=(x,t)=>slopeY(x)+.42*bump((x+5.65)/.95)*moundF(t);
+  function F(q){let f=0;for(let k=0;k<3;k++)f+=WT[k]*seg(q,CLS[k].w[0],CLS[k].w[1]);return f;}
+  const lagX=x=>.7*sat((x-BX0)/(BX1-BX0));
+  const layerTop=(x,t,c)=>c.base+HG*F(seg(t,c.s[0]+lagX(x),c.s[1]))+HM*seg(t,c.m[0],c.m[1]);
+  const depTop=(x,t)=>layerTop(x,t,t<CY[1].s[0]?CY[0]:CY[1]);
+  const ground=(x,t)=>x<BX0?Math.max(slopeSurf(x,t),depTop(BX0,t)):depTop(x,t);
+  function headX(t,c){
+    if(t<=c.f0)return -5.3;
+    if(t<c.fA)return -5.3+3.8*Math.pow(seg(t,c.f0,c.fA),1.5);
+    if(t<c.fB)return -1.5+6*(1-Math.pow(1-seg(t,c.fA,c.fB),1.3));
+    return 4.5+.9*eseg(t,c.fB,c.fB+2.5);
+  }
+  const tailX=(t,c)=>lerp(-5.45,-1.25,eseg(t,c.f0+1.2,c.fB+.6));
+  function hRel(xi){ // thickness along the current: raised head, steady body, thinning tail
+    if(xi<.07)return Math.sqrt(xi/.07);
+    if(xi<.25)return lerp(1,.62,ease((xi-.07)/.18));
+    if(xi<.75)return .62-.07*(xi-.25)/.5;
+    return lerp(.55,.16,ease((xi-.75)/.25));
+  }
+  const thick=(t,c)=>.95*eseg(t,c.f0,c.f0+.7)*(1+.2*seg(t,c.fA,c.fB))*(1-.65*eseg(t,c.s[0]+.8,c.s[1]));
+  const dens=(t,c)=>eseg(t,c.f0,c.f0+.7)*(1-.3*seg(t,c.fB,c.s[0]+1.2))*(1-eseg(t,c.s[0]+.6,c.s[1]+.2));
+  const warp=(t,c)=>{const a=c.s[0];if(t<=a)return t;const u=t-a;return a+u-.65*(u<2?u*u/4:u-1);};
+  const _p=[0,0];
+  function framePos(xi,eta,t,c){
+    const xf=headX(t,c),xt=tailX(t,c),x=xf-xi*(xf-xt),d=eta*thick(t,c)*hRel(xi);
+    const g=ground(x,t),sl=(ground(x+.03,t)-ground(x-.03,t))/.06,nl=Math.hypot(1,sl);
+    _p[0]=x-sl*d/nl;_p[1]=g+d/nl;return _p;
+  }
+  let root,R0,slope,floor,water,pts,slopeShadow;const lay=[],wed=[],G=[],D=[],PD=[],SN=[],L={};
+  let snow;
+  const PX=new Float32Array(NP*3),PS=new Float32Array(NP),PA=new Float32Array(NP),PC=new Float32Array(NP*3),ORD=new Uint16Array(NP),DEP=new Float32Array(NP);
+  const cDark=new THREE.Color('#4b3a28'),cLight=new THREE.Color('#a88e69'),cWater=new THREE.Color('#5d8fa3'),cTmp=new THREE.Color();
+  const cG=new THREE.Color('#9a958c'),cS=new THREE.Color('#d3bf98'),cM=new THREE.Color('#a88a68');
+  return{
+    stages:[0,6.2,13,23.8],end:28.5,center:[1.5,.9,0],
+    cams:[{p:[-1,4.3,15.4],t:[-1.2,1.3,0]},{p:[3.6,3.4,10.8],t:[1.4,1,0]},{p:[0,4.6,14.2],t:[-.6,1.4,0]},{p:[1.5,1.1,11.5],t:[1.5,1.05,0]}],
+    build(r){
+      root=r;R0=root.position.clone();
+      blobShadow(root,1.5,-.62,0,8.6,6.4);slopeShadow=blobShadow(root,-4.2,-.63,0,7,6.4);
+      slope=new Slab(root,-6.5,BX0,Z0,Z1,90,strataMat({c1:'#d9c59e',c2:'#6b5a44',speck:.8,transparent:true}));
+      floor=new Slab(root,BX0,BX1,Z0,Z1,1,strataMat({mode:2,c1:'#8f877b',c3:'#7f776b',c2:'#3f3a33',p:[-.6,.6,0,0],q:[.08,0,0,0],speck:.3}));floor.flat(-.6,0);
+      CY.forEach((c,ci)=>{const tex=makeGradedTex(31+ci*17),o={mode:3,tex,box:[BX0,c.base,6,HC],c1:'#b9ad99',c2:'#3a2c20',speck:.45};
+        lay.push(new Slab(root,BX0,BX1,Z0,Z1,60,strataMat(o)));
+        wed.push(new Slab(root,-3.6,BX0,Z0,Z1,40,strataMat(Object.assign({transparent:true},o)),false));});
+      water=deepWater(root,-6.52,4.52,-.6,4,-2.02,2.02,.2);
+      pts=puffPoints(root,NP);
+      const R=mulberry32(321);
+      for(let j=0;j<NC;j++)PD.push({ph:R(),om:.06+R()*.07,r:.05+R()*.42,z:lerp(Z0+.25,Z1-.25,R()),s:.38+R()*.42,a:.3+R()*.32,psi:R()*6.28,er:.8+R()*.9,tint:(R()-.5)*.25,dxi:(R()-.5)*.06});
+      for(let j=NC;j<NP;j++)PD.push({ph:R(),om:.2+R()*.14,x0:.08+R()*.55,z:lerp(Z0+.3,Z1-.3,R()),s:.7+R()*.6,a:.09+R()*.1,psi:R()*6.28,er:.5+R()*.6,tint:R()*.2});
+      CLS.forEach((k,ki)=>{G.push(grains(root,k.n,k.r,k.cols,40+ki));const Q=mulberry32(90+ki),arr=[];
+        for(let i=0;i<k.n;i++)arr.push({xiF:lerp(k.xi[0],k.xi[1],Q()),xiS:lerp(.1,.97,Q()),eta:lerp(k.eta[0],k.eta[1],Q()),z:Q(),rt:Q(),ph:Q()*6.28});D.push(arr);});
+      snow=grains(root,70,.016,['#8a6d50','#9b7d5e','#b39a7c'],7);
+      const S2=mulberry32(55);for(let i=0;i<70;i++)SN.push([S2(),S2(),S2()]);
+      L.quake=addLabel('graded','이번에는 지진으로 무너짐','key');
+      L.load=addLabel('graded','퇴적물이 계속 쌓여 불안정해짐','key');
+      L.slump=addLabel('graded','대륙붕 끝의 퇴적물이 무너짐 (해저 사태)');
+      L.shelf=addLabel('graded','대륙붕 · 수심 약 200 m 이내');
+      L.slope=addLabel('graded','대륙 사면');
+      L.deep=addLabel('graded','깊은 바다 바닥 · 수심 수천 m');
+      L.head=addLabel('graded','머리 · 가장 두껍고 빠름');
+      L.cloud=addLabel('graded','저탁류 · 바닷물보다 무거워 바닥을 따라 흐름');
+      L.cls=CLS.map(k=>addLabel('graded',k.name));
+      L.law=addLabel('graded','침강 속도 ∝ (입자 반지름)²');
+      L.lam=addLabel('graded','평상시 · 점토가 천천히 쌓인 얇은 층');
+      L.top=addLabel('graded','위: 가는 입자','key');L.top.flip='가는 입자가 아래에 있음';
+      L.bot=addLabel('graded','아래: 굵은 입자','key');L.bot.flip='굵은 입자가 위에 있음';
+      L.one=addLabel('graded','저탁류 1회 = 점이층 1개');
+    },
+    update(t){
+      // earthquake shake
+      const qa=c=>seg(t,c.q,c.q+.25)*(1-seg(t,c.q+1,c.q+1.5)),amp=REDUCED?0:.035*qa(CY[1]);
+      root.position.set(R0.x+amp*Math.sin(t*61),R0.y+amp*.6*Math.sin(t*83+1),R0.z);
+      const fade=1-eseg(t,23.8,24.8);
+      slope.set(()=>-.6,x=>slopeSurf(x,t));
+      slope.mesh.material.uniforms.uOpacity.value=fade;slope.mesh.visible=fade>.01;slope.line.visible=fade>.6;slopeShadow.material.opacity=fade;
+      CY.forEach((c,ci)=>{
+        const S=lay[ci],W=wed[ci],top=x=>layerTop(x,t,c);
+        if(top(BX0)>c.base+1e-4){
+          S.set(()=>c.base,top);
+          const f=F(seg(t,c.s[0]+.35,c.s[1])),u=S.mesh.material.uniforms.uC1.value;
+          u.copy(cG).lerp(cS,sat(f/.6)).lerp(cM,Math.max(sat((f-.6)/.4),seg(t,c.m[0],c.m[0]+.4)));
+          const tb=top(BX0),xOn=-5.5+4*Math.acos(clamp(tb/1.5-1,-1,1))/Math.PI;
+          if(xOn<BX0-.02){W.x0=xOn;W.set(x=>Math.max(slopeY(x),c.base),x=>Math.max(slopeY(x),tb));}else W.visible(false);
+          W.mesh.material.uniforms.uOpacity.value=fade;W.mesh.material.uniforms.uC1.value.copy(u);if(fade<=.01)W.visible(false);
+        }else{S.visible(false);W.visible(false);}
+      });
+      water.material.opacity=.2*fade;water.visible=fade>.01;
+      // ---- turbidity current (soft particle cloud) ----
+      const ci=t<15?0:1,c=CY[ci],Dn=dens(t,c),H=thick(t,c),T=warp(t,c),xf=headX(t,c),xt=tailX(t,c);
+      for(let j=0;j<NP;j++){
+        const P=PD[j];
+        if(Dn<.004||H<.01){PA[j]=0;PS[j]=0;continue;}
+        const core=j<NC;let xi,eta,amul=1;
+        if(core){const th=2*Math.PI*(P.ph+P.om*T);xi=clamp(.5+.5*Math.cos(th)+P.dxi,0,1);eta=clamp(.5-P.r*Math.sin(th),0,1);}
+        else{const u=fract(P.ph+P.om*T);xi=clamp(P.x0+.3*u,0,1);eta=.85+1.15*u;amul=Math.sin(Math.PI*u);}
+        const hr=hRel(xi),h=H*hr,ea=P.psi+P.er*T,er=.18*h*(.25+Math.min(eta,1));
+        const x=xf-xi*(xf-xt)+er*Math.cos(ea),dd=eta*h+er*Math.sin(ea);
+        const g=ground(x,t),sl=(ground(x+.03,t)-ground(x-.03,t))/.06,nl=Math.hypot(1,sl);
+        const px=x-sl*dd/nl;
+        PX[j*3]=px;PX[j*3+1]=g+dd/nl+.03;PX[j*3+2]=P.z+.06*Math.sin(t*.9+P.psi);
+        if(core){
+          PS[j]=P.s*(.5+.75*hr)*Math.sqrt(H/.95)*(1+.35*eta);
+          PA[j]=P.a*Dn*(1.12-.55*eta)*(1-Math.pow(xi,5))*(1-seg(px,4.2,4.7));
+          cTmp.copy(cDark).lerp(cLight,clamp(eta*.85+P.tint,0,1)).lerp(cWater,(1-Dn)*.35);
+        }else{
+          PS[j]=P.s*(.6+.5*(eta-.85))*Math.sqrt(H/.95);
+          PA[j]=P.a*amul*Dn*(1-Math.pow(xi,4))*(1-seg(px,4.2,4.7));
+          cTmp.copy(cLight).lerp(cWater,.3+P.tint);
+        }
+        PC[j*3]=cTmp.r;PC[j*3+1]=cTmp.g;PC[j*3+2]=cTmp.b;
+      }
+      // ---- grains ride in the current, then drop out coarse-first ----
+      const spread=eseg(t,c.fB-.5,c.s[0]+.8);
+      CLS.forEach((k,ki)=>{const g=G[ki],arr=D[ki];
+        for(let i=0;i<k.n;i++){const d=arr[i];
+          const Ri=c.s[0]+(c.s[1]-c.s[0])*(k.w[0]+(k.w[1]-k.w[0])*d.rt);
+          if(t<c.f0+.2||t>c.s[1]+3||(ki===2&&t<Ri)){hideGrain(g,i);continue;}
+          const tr=Math.min(t,Ri),xi=clamp(lerp(d.xiF,d.xiS,spread)+.05*Math.sin(tr*1.3+d.ph),0,1),eta=clamp(d.eta+.06*Math.sin(tr*2.1+d.ph*1.7),0,1);
+          framePos(xi,eta,tr,c);let x=_p[0],y=_p[1]+.03;
+          if(t>Ri){x+=.12*(t-Ri);y-=k.v*(t-Ri);if(y<=depTop(x,t)){hideGrain(g,i);continue;}}
+          if(x>BX1+.05){hideGrain(g,i);continue;}
+          setGrain(g,i,x,y,lerp(Z0+.2,Z1-.2,d.z),1,tr*3+d.ph);}
+        g.instanceMatrix.needsUpdate=true;});
+      // ---- quiet-time mud falling slowly ----
+      const quiet=Math.max(seg(t,12.7,13.2)*(1-seg(t,15.2,15.6)),seg(t,22.6,23)*(1-seg(t,23.8,24.2)));
+      for(let i=0;i<70;i++){const r=SN[i];
+        if(quiet<=0){hideGrain(snow,i);continue;}
+        const x=lerp(BX0+.2,BX1-.2,r[0]),y=depTop(x,t)+.05+fract(r[1]-t*.18)*2.2;
+        setGrain(snow,i,x,y,lerp(Z0+.2,Z1-.2,r[2]),quiet,t+r[1]*6);}
+      snow.instanceMatrix.needsUpdate=true;
+      // ---- labels ----
+      const q0=CY[0],q1=CY[1];
+      showLabel(L.load,t<.9,-5.65,3.9,0);
+      showLabel(L.quake,t>q1.q+.05&&t<q1.q+1.9,-5.65,3.9,0);
+      showLabel(L.slump,t>=.9&&t<q0.f0+1.7,-5.65,3.9,0);
+      showLabel(L.shelf,t<2.9,-6.3,3.02,Z1);
+      showLabel(L.slope,t<2.9,-3.6,slopeY(-3.6)+.04,Z1);
+      showLabel(L.deep,t<2.9,3.2,.03,Z1);
+      const live=Dn>.3&&t<c.fB;
+      if(live){framePos(.06,1.05,t,c);showLabel(L.head,t>c.f0+1.3,_p[0],_p[1],0);framePos(.55,1.1,t,c);showLabel(L.cloud,t>c.f0+.9,_p[0],_p[1],0);}
+      else{showLabel(L.head,false);showLabel(L.cloud,false);}
+      setLabelText(L.cloud,ci?'두 번째 저탁류':'저탁류 · 바닷물보다 무거워 바닥을 따라 흐름');
+      const qs=seg(t,q0.s[0],q0.s[1]),inS=t>=q0.s[0]+.3&&t<13;
+      L.cls.forEach((lb,k)=>showLabel(lb,inS&&qs>=CLS[k].w[0],BX1-.6,2.45-k*.42,Z1));
+      showLabel(L.law,inS&&qs>.12,BX0+.9,2.8,0);
+      showLabel(L.lam,t>13.3&&t<23.8,.2,HG+HM*.5,Z1);
+      const fin=t>=24.1;
+      showLabel(L.top,fin,BX1-.9,HC+HG*.82,Z1);
+      showLabel(L.bot,fin,BX1-.9,HC+.08,Z1);
+      showLabel(L.one,fin,BX0+1.3,HC*.5,Z1);
+    },
+    beforeRender(camera){ // draw the cloud back to front so the soft particles layer correctly
+      const cp=root.worldToLocal(camera.position.clone());
+      for(let j=0;j<NP;j++){ORD[j]=j;const dx=PX[j*3]-cp.x,dy=PX[j*3+1]-cp.y,dz=PX[j*3+2]-cp.z;DEP[j]=dx*dx+dy*dy+dz*dz;}
+      ORD.sort((a,b)=>DEP[b]-DEP[a]);
+      const g=pts.geometry,P=g.attributes.position.array,S=g.attributes.aSize.array,A=g.attributes.aAlpha.array,C=g.attributes.aCol.array;
+      for(let n=0;n<NP;n++){const j=ORD[n];P[n*3]=PX[j*3];P[n*3+1]=PX[j*3+1];P[n*3+2]=PX[j*3+2];S[n]=PS[j];A[n]=PA[j];C[n*3]=PC[j*3];C[n*3+1]=PC[j*3+1];C[n*3+2]=PC[j*3+2];}
+      g.attributes.position.needsUpdate=g.attributes.aSize.needsUpdate=g.attributes.aAlpha.needsUpdate=g.attributes.aCol.needsUpdate=true;
+    }
+  };
+})();
+
+/* ================= 연흔 (ripple marks) ================= */
+SCENES.ripple=(function(){
+  // shallow water: depth WD stays small and follows the rising bed; a beach rises beyond X1
+  const X0=-4.5,X1=4.5,Z0=-2,Z1=2,LAM=1.1,A=.2,TH=.4,TS=.55,B2=TH+TS,WD=1.2,BW=3.4,K=2*Math.PI/4.5,W=2.0;
+  const G1=[5,12],M1=[13,15],S2=[15,17],G2=[17,19.5],M2=[19.5,21],S3=[21,22.5];
+  const c0=()=>STATE.rippleMode==='wave'?.5:.72;
+  const r=x=>rip(x,LAM,c0())-.5;
+  let sand1,lam1,sand2,lam2,sand3,water,beach,gr,bedNow,beachShadow;const rings=[],dbl=[],flows=[],L={},RND=[];
+  const RX=[-3.3,-1.1,1.1,3.3],LV=[{y:.86,rx:.34,ry:.16},{y:.5,rx:.32,ry:.07}];
+  return{
+    stages:[0,5,13,22.5],end:27,center:[0,.45,0],
+    cams:[{p:[7.2,4.9,12.8],t:[1.4,.5,0]},{p:[6.2,3.4,11.8],t:[.9,.3,0]},{p:[7.2,5.2,13],t:[1.2,.9,0]},{p:[0,.9,13.5],t:[0,.75,0]}],
+    build(root){
+      blobShadow(root,0,-.92,0,11.5,6.6);beachShadow=blobShadow(root,6.2,-.93,0,6,6.6);
+      const sm={c1:'#ecd9ad',c2:'#6a5338',speck:.9,k:30};
+      const lm={mode:2,c1:'#bca582',c3:'#a68b67',c2:'#5a4430',q:[.07,0,LAM,.5],speck:.2};
+      sand1=new Slab(root,X0,X1,Z0,Z1,240,strataMat(sm));
+      lam1=new Slab(root,X0,X1,Z0,Z1,240,strataMat(Object.assign({},lm,{p:[0,TH*1.18,A,0]})));
+      sand2=new Slab(root,X0,X1,Z0,Z1,240,strataMat(sm));
+      lam2=new Slab(root,X0,X1,Z0,Z1,240,strataMat(Object.assign({},lm,{p:[B2,TH*1.18,A,0]})));
+      sand3=new Slab(root,X0,X1,Z0,Z1,240,strataMat(sm));
+      beach=new Slab(root,X1,X1+BW,Z0,Z1,48,strataMat({c1:'#e9d6a9',c2:'#6a5338',speck:.9,k:30,transparent:true}));
+      water=new Slab(root,X0-.02,X1+BW,Z0-.02,Z1+.02,220,waterMat(.22,0x8fd3e3),false);water.mesh.renderOrder=5;
+      const ringMat=overlay(new THREE.LineBasicMaterial({color:0x22302e}),'ink'),dot=overlay(new THREE.MeshLambertMaterial({color:0x1d2a33}),'ink');
+      RX.forEach(x=>LV.forEach(lv=>{
+        const pts=[];for(let i=0;i<64;i++){const q=i/64*Math.PI*2;pts.push(new THREE.Vector3(x+lv.rx*Math.cos(q),lv.y+lv.ry*Math.sin(q),Z1+.03));}
+        const ring=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts),ringMat);root.add(ring);
+        const m=new THREE.Mesh(new THREE.SphereGeometry(.06,14,10),dot);root.add(m);rings.push({ring,m,x,lv});}));
+      RX.forEach(x=>{const q=makeArrow(.7,'ink',true,.026);root.add(q);dbl.push({a:q,x});});
+      for(let i=0;i<8;i++){const q=makeArrow(.8,'accent',false,.03);root.add(q);flows.push(q);}
+      gr=grains(root,80,.03,['#cdb48a','#8c7254','#e2d0a8','#5e4c3a'],21);
+      const R=mulberry32(77);for(let i=0;i<80;i++)RND.push([R(),R(),R()]);
+      L.wave=addLabel('ripple','수면의 물결 (파랑)');
+      L.orb=addLabel('ripple','얕은 물: 물 입자가 납작한 타원을 그림');
+      L.osc=addLabel('ripple','바닥: 물이 앞뒤로 왕복');
+      L.flow=addLabel('ripple','한 방향으로 흐르는 물 →');
+      L.move=addLabel('ripple','모래가 흐름 방향으로 이동');
+      L.shore=addLabel('ripple','물가 · 수심이 얕은 곳');
+      L.rip=addLabel('ripple','');
+      L.cover=addLabel('ripple','진흙이 덮어 연흔을 보존');
+      L.again=addLabel('ripple','다시 연흔이 생김');
+      L.top=addLabel('ripple','뾰족한 마루 → 위','key');L.top.flip='뾰족한 마루가 아래를 향함';
+      L.bot=addLabel('ripple','둥근 골 → 아래','key');L.bot.flip='둥근 골이 위를 향함';
+      L.dir=addLabel('ripple','가파른 면이 향하는 쪽 = 흐름 방향 →');
+    },
+    update(t){
+      const wave=STATE.rippleMode==='wave',cc=c0();
+      lam1.mesh.material.uniforms.uQ.value.w=cc;lam2.mesh.material.uniforms.uQ.value.w=cc;
+      const a1=eseg(t,G1[0],G1[1]),q1=eseg(t,M1[0],M1[1]),q2=eseg(t,S2[0],S2[1]),a2=eseg(t,G2[0],G2[1]),q3=eseg(t,M2[0],M2[1]),q4=eseg(t,S3[0],S3[1]);
+      const top1=x=>A*a1*r(x);
+      const lamTop=(b,q)=>x=>b+A*r(x)*(1-.85*q)+TH*q;
+      const top2=x=>TH+TS*q2+A*r(x)*.15*(1-q2)+A*a2*r(x);
+      const top3=x=>B2+TH+A*r(x)*.15*(1-q4)+.45*q4;
+      sand1.set(()=>-.9,top1);bedNow=top1;
+      if(t>M1[0]){lam1.set(x=>A*r(x),lamTop(0,q1));bedNow=lamTop(0,q1);}else lam1.visible(false);
+      if(t>S2[0]){sand2.set(lamTop(0,1),top2);bedNow=top2;}else sand2.visible(false);
+      if(t>M2[0]){lam2.set(x=>B2+A*r(x),lamTop(B2,q3));bedNow=lamTop(B2,q3);}else lam2.visible(false);
+      if(t>S3[0]){sand3.set(lamTop(B2,1),top3);bedNow=top3;}else sand3.visible(false);
+      const lev=TH*q1+TS*q2+TH*q3+.45*q4,WY=lev+WD,bed=bedNow;
+      const fade=1-eseg(t,22.5,23.3),bt=bed(X1),beachTop=x=>bt+(WY+.55-bt)*ease((x-X1)/BW);beachShadow.material.opacity=fade;
+      if(fade>.01){
+        beach.set(()=>-.9,beachTop);beach.mesh.material.uniforms.uOpacity.value=fade;beach.line.visible=fade>.6;
+        const surf=wave?x=>{const th=K*x-W*t;return WY+.1*(Math.cos(th)+.3*Math.cos(2*th));}:x=>WY+.025*Math.sin(4*x-3*t)+.015*Math.sin(7.3*x-4.1*t);
+        water.set(x=>x<=X1?bed(x):beachTop(x),surf);water.mesh.material.opacity=.22*fade;}
+      else{beach.visible(false);water.visible(false);}
+      const act=t<13||(t>=G2[0]-.5&&t<G2[1]+.3),inG2=t>=15,bedY=inG2?B2:0;
+      rings.forEach(o=>{const on=wave&&act&&fade>.5;o.ring.visible=on;o.m.visible=on;
+        if(on){o.ring.position.y=bedY;const th=K*o.x-W*t;o.m.position.set(o.x-o.lv.rx*Math.sin(th),bedY+o.lv.y+o.lv.ry*Math.cos(th),Z1+.03);}});
+      dbl.forEach(o=>{o.a.visible=wave&&act;if(o.a.visible)o.a.position.set(o.x-.14*Math.sin(K*o.x-W*t),bedY+.22,Z1+.03);});
+      flows.forEach((q,i)=>{q.visible=!wave&&act;if(!q.visible)return;const f=fract(t*.18+i/8);
+        q.position.set(X0+.5+f*(X1-X0-1),bedY+[.35,.65,.95][i%3],Z1+.03);q.scale.setScalar(Math.min(1,Math.min(f,1-f)*8));});
+      for(let i=0;i<80;i++){const rr=RND[i];
+        if(!act||fade<.5){hideGrain(gr,i);continue;}
+        let x;
+        if(wave){const x0=lerp(X0+.2,X1-.2,rr[0]);x=x0-.16*Math.sin(K*x0-W*t);}
+        else x=X0+.1+fract(rr[0]+t*.12)*(X1-X0-.2);
+        const hop=wave?.05*Math.abs(Math.cos(K*x-W*t)):.09*Math.abs(Math.sin(t*4+rr[2]*6));
+        setGrain(gr,i,x,bed(x)+.03+hop,lerp(Z0+.15,Z1-.15,rr[1]),1,t*2+rr[2]);}
+      gr.instanceMatrix.needsUpdate=true;
+      const early=t<12.5;
+      showLabel(L.wave,wave&&early,.7,WY+.25,Z1);
+      showLabel(L.orb,wave&&early,-3.3,1.1,Z1);
+      showLabel(L.osc,wave&&early&&t<8,1.1,.3,Z1);
+      showLabel(L.flow,!wave&&early,0,WY+.15,Z1);
+      showLabel(L.move,!wave&&early&&t<8,1.1,.3,Z1);
+      showLabel(L.shore,t<13&&fade>.5,X1+BW*.62,beachTop(X1+BW*.62)+.02,Z1);
+      setLabelText(L.rip,wave?'대칭형 연흔 · 마루는 뾰족, 골은 둥긂':'비대칭형 연흔 · 가파른 면이 하류(→)를 향함');
+      showLabel(L.rip,t>=8&&t<13,LAM*cc,A/2+.02,Z1);
+      showLabel(L.cover,t>13.3&&t<17,-2.6,.25,Z1);
+      showLabel(L.again,t>17.6&&t<20,LAM*(cc+1),B2+A/2+.03,Z1);
+      const fin=t>=22.8;
+      showLabel(L.top,fin,LAM*(cc-2),B2+A/2,Z1);
+      showLabel(L.bot,fin,LAM*2,B2-A/2,Z1);
+      showLabel(L.dir,fin&&!wave,-2.6,B2+TH+.45+.55,Z1);
+    }
+  };
+})();
+
+/* ================= 건열 (mud cracks) ================= */
+function vClip(poly,m,d,tag){
+  const out=[],f=p=>(p[0]-m[0])*d[0]+(p[1]-m[1])*d[1];
+  for(let i=0;i<poly.length;i++){
+    const A=poly[i],B=poly[(i+1)%poly.length],fa=f(A.p),fb=f(B.p),ia=fa<=0,ib=fb<=0;
+    const I=()=>{const s=fa/(fa-fb);return[A.p[0]+(B.p[0]-A.p[0])*s,A.p[1]+(B.p[1]-A.p[1])*s];};
+    if(ia&&ib)out.push({p:B.p,t:B.t});
+    else if(ia&&!ib)out.push({p:I(),t:tag});
+    else if(!ia&&ib){out.push({p:I(),t:A.t});out.push({p:B.p,t:B.t});}
+  }
+  return out.filter((v,i,a)=>{const w=a[(i+1)%a.length];return Math.hypot(v.p[0]-w.p[0],v.p[1]-w.p[1])>1e-4;});
+}
+function voronoi(seed,nx,nz,X0,X1,Z0,Z1){
+  const R=mulberry32(seed),pts=[];
+  for(let i=0;i<nx;i++)for(let j=0;j<nz;j++)pts.push([X0+(i+.5+(R()-.5)*.75)*(X1-X0)/nx,Z0+(j+.5+(R()-.5)*.75)*(Z1-Z0)/nz]);
+  return pts.map((p,i)=>{
+    let poly=[{p:[X0,Z0],t:-1},{p:[X1,Z0],t:-1},{p:[X1,Z1],t:-1},{p:[X0,Z1],t:-1}];
+    pts.forEach((q,j)=>{if(i!==j)poly=vClip(poly,[(p[0]+q[0])/2,(p[1]+q[1])/2],[q[0]-p[0],q[1]-p[1]],j);});
+    return poly;
+  });
+}
+function insetPoly(c,w,ce){
+  const n=c.length,lines=c.map((v,i)=>{const a=v.p,b=c[(i+1)%n].p,e=[b[0]-a[0],b[1]-a[1]],l=Math.hypot(e[0],e[1])||1;
+    let nn=[-e[1]/l,e[0]/l];if((ce[0]-a[0])*nn[0]+(ce[1]-a[1])*nn[1]<0)nn=[-nn[0],-nn[1]];
+    const d=v.t>=0?w:0;return{p:[a[0]+nn[0]*d,a[1]+nn[1]*d],e};});
+  return c.map((v,i)=>{const L1=lines[(i-1+n)%n],L2=lines[i],den=L1.e[0]*L2.e[1]-L1.e[1]*L2.e[0];
+    if(Math.abs(den)<1e-9)return v.p;
+    const dx=L2.p[0]-L1.p[0],dz=L2.p[1]-L1.p[1],s=(dx*L2.e[1]-dz*L2.e[0])/den,P=[L1.p[0]+L1.e[0]*s,L1.p[1]+L1.e[1]*s];
+    if(Math.hypot(P[0]-v.p[0],P[1]-v.p[1])>w*4+1e-6){const vx=ce[0]-v.p[0],vz=ce[1]-v.p[1],l=Math.hypot(vx,vz)||1;return[v.p[0]+vx/l*w,v.p[1]+vz/l*w];}
+    return P;});
+}
+class CrackSet{
+  // polygon cells whose tops shrink inward as the mud dries; interior walls (the cracks) get their own darker material
+  constructor(root,seed,matTop,matWall,X0,X1,Z0,Z1){
+    this.cells=voronoi(seed,7,4,X0,X1,Z0,Z1);
+    this.cents=this.cells.map(c=>{let x=0,z=0;c.forEach(v=>{x+=v.p[0];z+=v.p[1];});return[x/c.length,z/c.length];});
+    let nt=0,nw=0,nl=0;this.cells.forEach(c=>{nt+=(c.length-2)*3+c.length*6;nw+=c.length*6;nl+=c.length*2;});
+    const mk=(n,mat)=>{const g=new THREE.BufferGeometry();
+      g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(n*3),3));g.setAttribute('normal',new THREE.BufferAttribute(new Float32Array(n*3),3));
+      const m=new THREE.Mesh(g,mat);m.frustumCulled=false;root.add(m);return m;};
+    this.top=mk(nt,matTop);this.wall=mk(nw,matWall);
+    const lg=new THREE.BufferGeometry();lg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(nl*6),3));
+    this.line=new THREE.LineSegments(lg,INK);this.line.frustumCulled=false;root.add(this.line);
+    this.front=[];
+    this.cells.forEach(c=>{const n=c.length;c.forEach((v,i)=>{const pv=c[(i-1+n)%n];if(Math.abs(v.p[1]-Z1)<1e-6&&((pv.t<0)!==(v.t<0)))this.front.push(v.p[0]);});});
+  }
+  near(x){return this.front.reduce((b,v)=>Math.abs(v-x)<Math.abs(b-x)?v:b,this.front[0]||0);}
+  visible(v){this.top.visible=v;this.wall.visible=v;this.line.visible=v;}
+  update(yt,d,w){
+    const GA=this.top.geometry,GB=this.wall.geometry,PA=GA.attributes.position.array,NA=GA.attributes.normal.array,PB=GB.attributes.position.array,NB=GB.attributes.normal.array;
+    const Lp=this.line.geometry.attributes.position.array,yb=yt-d;
+    let ka=0,kb=0,j=0;
+    const pa=(x,y,z,a,b,c)=>{PA[ka]=x;PA[ka+1]=y;PA[ka+2]=z;NA[ka]=a;NA[ka+1]=b;NA[ka+2]=c;ka+=3;};
+    const pb=(x,y,z,a,b,c)=>{PB[kb]=x;PB[kb+1]=y;PB[kb+2]=z;NB[kb]=a;NB[kb+1]=b;NB[kb+2]=c;kb+=3;};
+    const ln=(a,b,c,d2,e,f)=>{Lp[j++]=a;Lp[j++]=b;Lp[j++]=c;Lp[j++]=d2;Lp[j++]=e;Lp[j++]=f;};
+    this.cells.forEach((c,ci)=>{
+      const n=c.length,ce=this.cents[ci],T=insetPoly(c,w,ce);
+      for(let i=1;i<n-1;i++){pa(T[0][0],yt,T[0][1],0,1,0);pa(T[i][0],yt,T[i][1],0,1,0);pa(T[i+1][0],yt,T[i+1][1],0,1,0);}
+      for(let i=0;i<n;i++){
+        const i2=(i+1)%n,b0=c[i].p,b1=c[i2].p,t0=T[i],t1=T[i2],inner=c[i].t>=0,put=inner?pb:pa;
+        let nx=b1[1]-b0[1],nz=-(b1[0]-b0[0]);
+        if(nx*((b0[0]+b1[0])/2-ce[0])+nz*((b0[1]+b1[1])/2-ce[1])<0){nx=-nx;nz=-nz;}
+        const l=Math.hypot(nx,nz)||1,ny=d>1e-5&&inner?w/d:0,l2=Math.hypot(1,ny),NX=nx/l/l2,NY=ny/l2,NZ=nz/l/l2;
+        put(b0[0],yb,b0[1],NX,NY,NZ);put(b1[0],yb,b1[1],NX,NY,NZ);put(t1[0],yt,t1[1],NX,NY,NZ);
+        put(b0[0],yb,b0[1],NX,NY,NZ);put(t1[0],yt,t1[1],NX,NY,NZ);put(t0[0],yt,t0[1],NX,NY,NZ);
+        ln(t0[0],yt+.003,t0[1],t1[0],yt+.003,t1[1]);
+        const pt=c[(i-1+n)%n].t;
+        if((pt<0)!==(c[i].t<0)&&d>1e-4)ln(b0[0],yb,b0[1],t0[0],yt,t0[1]);else ln(0,-99,0,0,-99,0);
+      }
+    });
+    GA.setDrawRange(0,ka/3);GB.setDrawRange(0,kb/3);
+    GA.attributes.position.needsUpdate=GA.attributes.normal.needsUpdate=true;
+    GB.attributes.position.needsUpdate=GB.attributes.normal.needsUpdate=true;
+    this.line.geometry.attributes.position.needsUpdate=true;
+    this.top.visible=true;this.wall.visible=d>1e-4;this.line.visible=w>.004;
+  }
+}
+
+SCENES.mud=(function(){
+  const X0=-4,X1=4,Z0=-2,Z1=2,M=.9,DM=.6,WM=.12,CV=.1,YC=M+CV,Y2T=YC+M,E=.003;
+  let set1,set2,base1,base2,fill1,fill2,water,sun,ev,mat1,mat2,wal1,wal2,fx1=0,fx2a=0,fx2b=0;const L={},RND=[];
+  const wet=new THREE.Color('#6b4f36'),dry=new THREE.Color('#d2b183'),wetW=new THREE.Color('#3f2c1d'),dryW=new THREE.Color('#8f6d48');
+  return{
+    stages:[0,5,12,22],end:26,center:[0,.6,0],
+    cams:[{p:[5.5,5.6,9.5],t:[0,.7,0]},{p:[3,7.5,7.2],t:[0,.6,0]},{p:[6,5.5,10.5],t:[0,1,0]},{p:[0,1,12.5],t:[0,.65,0]}],
+    build(root){
+      blobShadow(root,0,-.72,0,11.5,7);
+      const sand=new Slab(root,X0,X1,Z0,Z1,1,strataMat({c1:'#e6d3a6',c2:'#6a5338',speck:.9,k:30}));sand.flat(-.7,0);
+      mat1=strataMat({c1:'#6b4f36',c2:'#3b2a1c',speck:.3,k:46});mat2=strataMat({c1:'#6b4f36',c2:'#3b2a1c',speck:.3,k:46});
+      wal1=strataMat({c1:'#3f2c1d',c2:'#2a1c11',speck:.25,k:46});wal2=strataMat({c1:'#3f2c1d',c2:'#2a1c11',speck:.25,k:46});
+      const fm={c1:'#8c6b49',c2:'#3a2a1b',speck:.9,k:38};
+      base1=new Slab(root,X0,X1,Z0,Z1,1,mat1,false);set1=new CrackSet(root,7,mat1,wal1,X0,X1,Z0,Z1);
+      fill1=new Slab(root,X0+E,X1-E,Z0+E,Z1-E,1,strataMat(fm),false);
+      base2=new Slab(root,X0,X1,Z0,Z1,1,mat2,false);set2=new CrackSet(root,29,mat2,wal2,X0,X1,Z0,Z1);
+      fill2=new Slab(root,X0+E,X1-E,Z0+E,Z1-E,1,strataMat(fm),false);
+      fx1=set1.near(.6);fx2a=set2.near(-1.4);fx2b=set2.near(1.6);
+      water=new Slab(root,X0-.02,X1+.02,Z0-.02,Z1+.02,1,waterMat(.42,0x5fb0e0),false);water.mesh.renderOrder=5;
+      sun=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex([[0,'rgba(255,236,170,1)'],[.25,'rgba(255,205,90,.95)'],[.5,'rgba(255,180,60,.35)'],[1,'rgba(255,170,60,0)']]),transparent:true,depthWrite:false}));
+      sun.position.set(-1.2,2.9,-2.6);sun.scale.set(2,2,1);root.add(sun);
+      ev=grains(root,40,.035,['#ffffff','#dff1fb','#cbe7f6'],3);
+      const R=mulberry32(13);for(let i=0;i<40;i++)RND.push([R(),R(),R()]);
+      L.water=addLabel('mud','얕은 물에 잠긴 점토질 진흙');
+      L.evap=addLabel('mud','증발 · 진흙이 공기 중에 드러남');
+      L.shrink=addLabel('mud','마르며 수축 → 다각형으로 갈라짐');
+      L.v=addLabel('mud','V자(쐐기) 모양 틈');
+      L.fill=addLabel('mud','틈을 메운 퇴적물');
+      L.new=addLabel('mud','새로 쌓인 진흙층도 마르고 갈라짐');
+      L.top=addLabel('mud','넓은 쪽 → 위','key');L.top.flip='넓은 쪽이 아래를 향함';
+      L.bot=addLabel('mud','뾰족한 쪽 → 아래','key');L.bot.flip='뾰족한 쪽이 위를 향함';
+    },
+    update(t){
+      const q1=eseg(t,5,12),w1=WM*q1,d1=DM*Math.pow(q1,.7);
+      set1.update(M,d1,w1);base1.flat(0,M-d1);
+      const k1=eseg(t,1.5,8);mat1.uniforms.uC1.value.copy(wet).lerp(dry,k1);wal1.uniforms.uC1.value.copy(wetW).lerp(dryW,k1);
+      let fl=null;
+      if(t>=13)fl=t<15?lerp(M-DM,M,eseg(t,13,15)):lerp(M,M+CV,eseg(t,15,15.8));
+      if(fl!==null)fill1.flat(M-DM+.002,fl);else fill1.visible(false);
+      const h2=M*eseg(t,16,17.5);
+      if(h2>0){const q2=eseg(t,18.2,21),yt2=YC+h2,d2=Math.min(DM*Math.pow(q2,.7),h2);
+        set2.update(yt2,d2,WM*q2);base2.flat(YC,yt2-d2);}
+      else{set2.visible(false);base2.visible(false);}
+      const k2=eseg(t,17.5,20.5);mat2.uniforms.uC1.value.copy(wet).lerp(dry,k2);wal2.uniforms.uC1.value.copy(wetW).lerp(dryW,k2);
+      if(t>=21)fill2.flat(Y2T-DM+.002,lerp(Y2T-DM+.002,Y2T-.002,eseg(t,21,22)));else fill2.visible(false);
+      let wb,wh;
+      if(t<12){wb=M;wh=.35*(1-eseg(t,1.5,5));}
+      else if(t<17.5){wb=t<16?Math.max(M,fl||0):YC+h2;wh=.35*eseg(t,12,13);}
+      else{wb=Y2T;wh=.35*(1-eseg(t,17.5,18.2));}
+      if(wh>.003)water.flat(wb,wb+wh);else water.visible(false);
+      const so=Math.max(seg(t,.5,1.5)*(1-seg(t,11,12)),seg(t,17.3,18)*(1-seg(t,20.5,21.5)));
+      sun.material.opacity=so;sun.visible=so>.01;
+      for(let i=0;i<40;i++){const r=RND[i];
+        if(t<.8||t>5.4){hideGrain(ev,i);continue;}
+        const f=fract(t*.35+r[0]);
+        setGrain(ev,i,lerp(X0+.5,X1-.5,r[1])+.12*Math.sin(t*2+r[2]*6),M+wh+f*1.7,lerp(Z0+.3,Z1-.3,r[2]),1-f*.8);}
+      ev.instanceMatrix.needsUpdate=true;
+      showLabel(L.water,t<2.8,2.4,M+.45,Z1);
+      showLabel(L.evap,t>1&&t<5.5,2.2,1.9,-.4);
+      showLabel(L.shrink,t>6&&t<12,0,M+.02,-.3);
+      showLabel(L.v,t>8&&t<12,fx1,M,Z1);
+      showLabel(L.fill,t>13.3&&t<16,fx1,M-.28,Z1);
+      showLabel(L.new,t>16.5&&t<21.5,2.3,YC+M*.6,Z1);
+      const fin=t>=22.2;
+      showLabel(L.top,fin,fx2a,Y2T,Z1);
+      showLabel(L.bot,fin,fx2b,Y2T-DM,Z1);
+    }
+  };
+})();
+
+/* ================= content ================= */
+const CONTENT={
+  cross:{name:'사층리',short:['모래 운반','경사층 퇴적','바람 방향 전환','단면 판별'],
+    stages:[
+      ['바람이 모래를 꼭대기로 밀어 올린다','한 방향으로 부는 바람이나 흐르는 물이 완만한 바람받이 사면을 따라 모래를 굴리고 튀기며 꼭대기로 옮깁니다. 이 사면은 계속 깎여 나갑니다.'],
+      ['바람그늘 사면에 비스듬한 층이 쌓인다','꼭대기를 넘은 모래는 반대편의 가파른 사면(경사 약 30~35°)을 따라 흘러내리며 기울어진 얇은 층을 한 겹씩 덧붙입니다. 그 결과 사구 전체가 바람이 부는 쪽으로 이동합니다.'],
+      ['바람 방향이 바뀌면 반대로 기울어진 층이 쌓인다','사구가 지나간 자리에는 기울어진 층의 아랫부분만 남고, 윗부분은 깎여 평평한 침식면이 됩니다. 흐름이 약한 동안 수평층이 쌓인 뒤 이번에는 바람이 반대 방향으로 불어, 사구가 거꾸로 이동하며 반대쪽으로 기울어진 사층리 묶음을 만듭니다.'],
+      ['단면에서 위아래와 바람의 변화 판별하기','정상 지층에서는 층리가 아래로 볼록하게 휘어 있습니다. 층리가 위로 볼록하다면 지층이 뒤집힌(역전된) 것입니다. 층리가 기울어진 쪽이 물이 흐르거나 바람이 분 방향이므로, 두 묶음의 기울기가 반대라면 퇴적되는 동안 방향이 바뀌었다는 뜻입니다.']],
+    facts:[['형성 환경','사막의 사구, 하천 바닥, 삼각주, 얕은 바다'],['생성 원리','한 방향 흐름이 운반한 퇴적물이 <strong>경사면을 따라 비스듬히</strong> 쌓임'],['상하 판별','층리의 <strong>위쪽은 잘리고</strong>, 아래쪽은 <strong>완만하게 접함</strong>'],['알 수 있는 것','과거에 바람이나 물이 흐른 방향과 그 방향의 변화'],['실제 규모','한 묶음의 두께 수 cm(하천) ~ 수십 m(사막 사구)']],
+    orient:{normal:'층리가 아래로 볼록한 경우',flip:'층리가 위로 볼록한 경우'}},
+  graded:{name:'점이층리',short:['해저 사태·저탁류','입자 침강','반복 퇴적','단면 판별'],
+    stages:[
+      ['해저 사태로 저탁류가 생겨 흘러내린다','대륙붕 끝에 퇴적물이 계속 쌓여 불안정해지면 무너져 내립니다. 지진이 없어도 일어나며, 지진·폭풍·홍수도 원인이 됩니다. 퇴적물이 무너지면, 자갈·모래·점토가 바닷물과 뒤섞인 흙탕물이 됩니다. 이 흙탕물(저탁류)은 주변 바닷물보다 밀도가 커서 대륙 사면의 바닥을 따라 빠르게 흘러내립니다. 앞쪽 머리 부분이 가장 두껍고, 위쪽에서는 소용돌이가 일며 바닷물이 섞여 듭니다.'],
+      ['흐름이 느려지면 큰 입자부터 가라앉는다','깊은 바다 바닥(대륙대)에 이르러 경사가 완만해지면 저탁류가 느려집니다. 물속에서 가라앉는 속도는 입자가 클수록 빠르기 때문에(침강 속도 ∝ 반지름²) 자갈이 가장 먼저, 모래가 그다음, 점토가 가장 늦게 쌓입니다.'],
+      ['평상시 퇴적과 저탁류가 반복된다','저탁류가 없는 평상시에는 아주 가는 점토가 천천히 내려앉아 얇은 층을 만들고, 대륙붕 끝에는 다시 퇴적물이 쌓입니다. 이번에는 지진으로 해저 사태가 일어나 그 위에 새로운 점이층이 생깁니다. 원인이 무엇이든 저탁류가 생길 때마다 점이층이 하나씩 쌓이므로, 저탁류가 일어난 횟수만큼 점이층이 쌓입니다.'],
+      ['단면에서 위아래 판별하기','한 층 안에서 아래쪽은 입자가 굵고 위로 갈수록 점점 가늘어집니다. 굵은 입자 쪽이 아래, 가는 입자 쪽이 위입니다. 위로 갈수록 입자가 굵어진다면 지층이 뒤집힌 것입니다.']],
+    facts:[['형성 환경','대륙 사면 아래의 깊은 바다(대륙대, 해저 선상지), 깊은 호수'],['생성 원리','크기가 다른 입자가 한꺼번에 가라앉을 때 <strong>큰 입자가 먼저</strong> 가라앉음'],['상하 판별','아래는 <strong>굵은 입자</strong>, 위는 <strong>가는 입자</strong>'],['알 수 있는 것','깊은 물 환경, 저탁류(해저 사태)가 일어난 횟수'],['실제 규모','한 층의 두께 수 cm ~ 수 m. 저탁류는 시속 수십 km로 수백 km를 흘러가기도 함']],
+    orient:{normal:'아래쪽에 굵은 입자, 위쪽에 가는 입자가 있으므로 정상 지층입니다.',flip:'굵은 입자가 위쪽에, 가는 입자가 아래쪽에 있습니다. 지층이 뒤집힌(역전된) 상태입니다.'}},
+  ripple:{name:'연흔',short:['물의 운동','연흔 형성','덮이고 반복','단면 판별'],
+    stages:[
+      ['얕은 물에서 물결이 바닥을 흔든다','물가 가까운 얕은 물에서는 물결의 영향이 바닥까지 미칩니다. 물 입자는 앞으로 나아가지 않고 제자리에서 납작한 타원을 그리며 움직이고, 바닥에 가까울수록 위아래 움직임이 줄어 바닥에서는 물이 앞뒤로만 왕복합니다.'],
+      ['모래 표면에 물결 자국이 자란다','왕복하는 물이 모래를 양쪽으로 번갈아 옮기면서 바닥에 규칙적인 물결 모양 자국(연흔)이 점점 뚜렷해집니다. 파랑이 만든 연흔은 마루가 뾰족하고 골이 둥근 대칭형입니다.'],
+      ['진흙에 덮여 보존되고 반복된다','물결이 잦아든 사이 진흙이 가라앉아 연흔을 덮어 보존합니다. 그 위에 다시 모래가 쌓이고 물결이 일면 새로운 연흔이 생기는 과정이 반복됩니다.'],
+      ['단면에서 위아래 판별하기','연흔의 뾰족한 마루는 위를, 둥근 골은 아래를 향합니다. 뾰족한 부분이 아래를 향하고 있다면 지층이 뒤집힌 것입니다.']],
+    modes:{label:'물의 움직임 바꾸기',key:'rippleMode',opts:[['wave','파랑 · 왕복 운동'],['current','한 방향 흐름']]},
+    alt:{current:{
+      0:['물이 한 방향으로 흐른다','하천 바닥처럼 물이 한 방향으로 흐르면 모래 알갱이가 흐름을 따라 바닥을 구르고 튀어 오르며 하류 쪽으로 이동합니다.'],
+      1:['비대칭형 연흔이 자란다','모래가 완만한 면을 타고 올라가 마루를 넘은 뒤 가파른 면으로 떨어지기를 반복합니다. 완만한 면은 흐름이 오는 쪽, 가파른 면은 흐름이 가는 쪽을 향하는 비대칭형 연흔이 생깁니다.'],
+      3:['단면에서 위아래와 흐름 방향 판별하기','비대칭형 연흔도 뾰족한 마루가 위를 향합니다. 가파른 면이 향하는 쪽이 과거에 물이 흘러간 방향입니다.']}},
+    facts:[['형성 환경','수심이 얕은 물 밑(해안, 호숫가, 하천), 사막 표면'],['생성 원리','물결·흐름·바람이 퇴적물 표면을 움직여 <strong>물결 모양 자국</strong>을 남김'],['상하 판별','<strong>뾰족한 마루가 위</strong>, 둥근 골이 아래'],['알 수 있는 것','얕은 물 환경. 대칭형은 파랑(왕복 운동), 비대칭형은 한 방향 흐름과 그 방향'],['실제 규모','마루 사이 간격 수 cm ~ 수십 cm']],
+    orient:{normal:'뾰족한 마루가 위를, 둥근 골이 아래를 향하므로 정상 지층입니다.',flip:'뾰족한 마루가 아래를, 둥근 골이 위를 향합니다. 지층이 뒤집힌(역전된) 상태입니다.'}},
+  mud:{name:'건열',short:['물이 마름','수축·갈라짐','메움과 반복','단면 판별'],
+    stages:[
+      ['물에 잠겼던 진흙이 드러난다','얕은 물 아래 쌓인 점토질 진흙은 물을 많이 머금고 있습니다. 물이 빠지거나 증발하면 진흙 표면이 공기 중에 드러납니다.'],
+      ['마르면서 수축해 갈라진다','진흙이 마르면 물이 빠져나간 만큼 부피가 줄어 표면이 다각형 모양으로 갈라집니다. 틈은 표면에서 가장 넓고 아래로 갈수록 좁아지는 V자(쐐기) 모양입니다.'],
+      ['틈이 메워지고 과정이 반복된다','다시 물이 들어오면 운반된 퇴적물이 갈라진 틈을 메우고 표면을 덮어 건열이 보존됩니다. 그 위에 새로 쌓인 진흙도 마르면 같은 방식으로 갈라집니다.'],
+      ['단면에서 위아래 판별하기','쐐기 모양 틈의 넓은 쪽이 위, 뾰족한 쪽이 아래입니다. 건열은 퇴적 당시 그곳이 대기 중에 노출되어 건조했다는 증거입니다.']],
+    facts:[['형성 환경','갯벌, 호숫가, 범람원처럼 건조와 습윤이 반복되는 곳'],['생성 원리','점토질 퇴적물이 <strong>마르면서 수축</strong>해 갈라짐'],['상하 판별','쐐기 모양 틈의 <strong>넓은 쪽이 위</strong>, 뾰족한 쪽이 아래'],['알 수 있는 것','퇴적 당시 대기에 노출된 건조한 환경'],['실제 규모','다각형 한 칸의 폭 수 cm ~ 수십 cm, 틈의 깊이 수 cm']],
+    orient:{normal:'쐐기 모양 틈이 위쪽에서 넓고 아래로 갈수록 뾰족해지므로 정상 지층입니다.',flip:'쐐기 모양 틈이 위쪽으로 뾰족하고 아래쪽이 넓습니다. 지층이 뒤집힌(역전된) 상태입니다.'}}
+};
+const HASH={cross:'cross-bedding',graded:'graded-bedding',ripple:'ripple-marks',mud:'mud-cracks'};
+
+/* ================= app ================= */
+(function(){
+  const $=id=>document.getElementById(id);
+  const vp=$('vp'),cv=$('cv'),RM=REDUCED;
+  let renderer;
+  try{renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});}
+  catch(e){$('vpErr').hidden=false;return;}
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));renderer.setClearColor(0x000000,0);
+  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(32,1.6,.1,200);
+  const controls=new THREE.OrbitControls(camera,cv);
+  Object.assign(controls,{enableDamping:true,dampingFactor:.08,minDistance:4,maxDistance:40,maxPolarAngle:Math.PI*.62});
+  scene.add(new THREE.HemisphereLight(0xffffff,0x8a7f70,.78));
+  const dl=new THREE.DirectionalLight(0xffffff,.6);dl.position.set(4,8,6);scene.add(dl);
+
+  const KEYS=['cross','graded','ripple','mud'],W={};
+  KEYS.forEach(k=>{const S=SCENES[k],c=S.center,pivot=new THREE.Group(),root=new THREE.Group();
+    pivot.position.set(c[0],c[1],c[2]);root.position.set(-c[0],-c[1],-c[2]);pivot.add(root);scene.add(pivot);
+    S.build(root);pivot.visible=false;const shadows=[];
+    root.traverse(o=>{if(o.isMesh&&o.geometry.type==='PlaneGeometry'&&o.material.map&&!o.material.isSpriteMaterial)shadows.push(o);});
+    W[k]={S,pivot,root,shadows};});
+
+  /* 3D overlays (arrows, orbit rings) follow the page theme */
+  function applyTheme(){
+    const cs=getComputedStyle(document.documentElement),ink=cs.getPropertyValue('--ink').trim()||'#1E2422',acc=cs.getPropertyValue('--accent').trim()||'#1D6579';
+    OVERLAY.forEach(o=>{try{o.mat.color.set(o.role==='accent'?acc:ink);}catch(e){}});
+  }
+  applyTheme();
+  try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme);}catch(e){}
+  new MutationObserver(applyTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme','class','style']});
+
+  let key=null,t=0,playing=false,speed=1,stageIdx=-1,tween=null;
+  const orient={flipped:false,anim:null};
+  const V=a=>new THREE.Vector3(a[0],a[1],a[2]);
+  const cur=()=>W[key];
+
+  function preset(i){const c=cur().S.cams[i],tg=V(c.t),p=V(c.p),k=Math.max(1,1.45/camera.aspect);
+    return{p:tg.clone().add(p.sub(tg).multiplyScalar(k)),t:tg};}
+  function flyTo(pr,instant){
+    if(instant||RM){camera.position.copy(pr.p);controls.target.copy(pr.t);tween=null;controls.update();return;}
+    tween={p0:camera.position.clone(),t0:controls.target.clone(),p1:pr.p,t1:pr.t,s:performance.now(),d:1300};}
+  controls.addEventListener('start',()=>{tween=null;});
+
+  function stageText(i){const C=CONTENT[key],M=C.modes;let s=C.stages[i];
+    if(M){const alt=C.alt&&C.alt[STATE[M.key]];if(alt&&alt[i])s=alt[i];}return s;}
+  function renderModes(){
+    const M=CONTENT[key].modes,box=$('modeBox');box.hidden=!M;if(!M)return;
+    $('modeLabel').textContent=M.label;
+    $('modeSeg').innerHTML=M.opts.map(o=>`<button type="button" data-m="${o[0]}" class="${STATE[M.key]===o[0]?'on':''}" aria-pressed="${STATE[M.key]===o[0]}">${o[1]}</button>`).join('');
+    const n=$('modeNote');n.hidden=!M.note;n.textContent=M.note||'';
+    $('modeSeg').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+      STATE[M.key]=b.dataset.m;$('modeSeg').querySelectorAll('button').forEach(x=>{x.classList.toggle('on',x===b);x.setAttribute('aria-pressed',String(x===b));});
+      cur().S.update(t);showStage(stageIdx);renderOrientText();}));
+  }
+  function showStage(i){
+    const s=stageText(i);
+    $('stageTitle').textContent=s[0];$('stageText').textContent=s[1];$('vpStage').textContent=s[0];
+  }
+  function setT(nt){
+    const S=cur().S;t=clamp(nt,0,S.end);
+    const sc=$('scrub');sc.value=Math.round(t/S.end*1000);sc.style.setProperty('--p',(t/S.end*100)+'%');
+    S.update(t);
+    let i=0;S.stages.forEach((s,j)=>{if(t>=s-1e-6)i=j;});
+    if(i!==stageIdx){stageIdx=i;showStage(i);if($('autoCam').checked&&!orient.flipped)flyTo(preset(i));}
+  }
+  function syncPlay(){
+    $('playIcon').innerHTML=playing?'<path d="M3 2h3.5v12H3zM9.5 2H13v12H9.5z"/>':'<path d="M4 2l10 6-10 6z"/>';
+    $('btnPlay').setAttribute('aria-label',playing?'일시 정지':'재생');}
+  function play(on){playing=on;syncPlay();}
+
+  /* ---- normal / overturned strata ---- */
+  function setShadows(v){cur().shadows.forEach(s=>s.visible=v);}
+  function renderOrientText(){
+    const C=CONTENT[key],f=orient.flipped;
+    let txt=C.orient[f?'flip':'normal'];
+    if(key==='ripple'&&STATE.rippleMode==='current')txt+=f?' 비대칭형 연흔도 마루가 아래를 향하면 역전된 것입니다.':'';
+    $('orientText').innerHTML=`<b>${f?'역전된 지층':'정상 지층'}</b> · ${txt}`;
+  }
+  function setOrient(flip,instant){
+    const pv=cur().pivot;
+    orient.flipped=flip;
+    document.querySelectorAll('#orientSeg button').forEach(b=>{const on=(b.dataset.o==='flip')===flip;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
+    $('orientBadge').hidden=!flip;
+    renderOrientText();
+    if(flip){play(false);const S=cur().S;if(t<S.end-1e-3)setT(S.end);flyTo(preset(3));setShadows(false);}
+    const to=flip?Math.PI:0;
+    if(instant||RM){pv.rotation.set(0,0,to);orient.anim=null;if(!flip)setShadows(true);}
+    else if(Math.abs(pv.rotation.z-to)>1e-4)orient.anim={s:performance.now(),from:pv.rotation.z,to};
+  }
+  function unflip(){if(orient.flipped||orient.anim)setOrient(false,true);}
+
+  function setKey(k,fromHash){
+    if(!W[k])k='cross';
+    if(key){unflip();W[key].pivot.visible=false;}
+    key=k;W[k].pivot.visible=true;
+    document.querySelectorAll('.tab').forEach(b=>{const on=b.dataset.key===k;b.setAttribute('aria-selected',String(on));b.tabIndex=on?0:-1;});
+    const C=CONTENT[k];
+    $('vpName').textContent=C.name;
+    renderModes();
+    stageIdx=-1;
+    const auto=$('autoCam').checked;$('autoCam').checked=false;setT(0);$('autoCam').checked=auto;
+    setOrient(false,true);
+    flyTo(preset(0),true);
+    play(!RM);
+    if(!fromHash&&location.hash!=='#'+HASH[k]){try{history.replaceState(null,'','#'+HASH[k]);}catch(e){}}
+  }
+
+  /* ---- events ---- */
+  const tabs=[...document.querySelectorAll('.tab')];
+  tabs.forEach((b,i)=>{
+    b.addEventListener('click',()=>setKey(b.dataset.key));
+    b.addEventListener('keydown',e=>{
+      if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;e.preventDefault();
+      const n=tabs[(i+(e.key==='ArrowRight'?1:tabs.length-1))%tabs.length];n.focus();setKey(n.dataset.key);});
+  });
+  window.addEventListener('hashchange',()=>{const k=Object.keys(HASH).find(x=>'#'+HASH[x]===location.hash);if(k&&k!==key)setKey(k,true);});
+  $('btnPlay').addEventListener('click',()=>{unflip();if(!playing&&t>=cur().S.end-1e-3){stageIdx=-1;setT(0);}play(!playing);});
+  $('btnRestart').addEventListener('click',()=>{unflip();stageIdx=-1;setT(0);play(true);});
+  $('scrub').addEventListener('input',e=>{unflip();play(false);setT(e.target.value/1000*cur().S.end);});
+  document.querySelectorAll('.speed button').forEach(b=>b.addEventListener('click',()=>{speed=+b.dataset.s;
+    document.querySelectorAll('.speed button').forEach(x=>{x.classList.toggle('on',x===b);x.setAttribute('aria-pressed',String(x===b));});}));
+  $('btnIso').addEventListener('click',()=>flyTo(preset(orient.flipped?2:Math.min(stageIdx,2))));
+  $('btnFront').addEventListener('click',()=>flyTo(preset(3)));
+  document.querySelectorAll('#orientSeg button').forEach(b=>b.addEventListener('click',()=>setOrient(b.dataset.o==='flip')));
+  document.addEventListener('keydown',e=>{
+    if(e.code!=='Space'&&e.key!==' ')return;
+    const tg=e.target;if(tg&&tg.closest&&tg.closest('button,input,select,textarea,a,label,[contenteditable]'))return;
+    e.preventDefault();$('btnPlay').click();});
+
+  const dbs=new THREE.Vector2();
+  function resize(){const w=vp.clientWidth,h=vp.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+    renderer.getDrawingBufferSize(dbs);PUFF_UNI.uScale.value=dbs.y/(2*Math.tan(THREE.MathUtils.degToRad(camera.fov/2)));
+    LABELS.forEach(L=>L.dirty=true);}
+  new ResizeObserver(resize).observe(vp);resize();
+
+  /* ---- labels: project, keep inside the frame, and stack when they would overlap ---- */
+  const pv3=new THREE.Vector3(),OBST=[document.querySelector('.vp-title'),document.querySelector('.vp-tools'),document.querySelector('.vp-hint'),$('orientBadge')];
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>LABELS.forEach(L=>L.dirty=true));
+  function placeLabels(){
+    const w=vp.clientWidth,h=vp.clientHeight,root=cur().root,vis=[];
+    for(const L of LABELS){
+      const fl=orient.flipped,want=fl&&L.flip?L.flip:L.text;
+      if(L.cur!==want){L.cur=want;L.el.textContent=want;L.dirty=true;}
+      let show=L.on&&L.owner===key&&!orient.anim&&(!fl||!!L.flip);
+      if(show){pv3.copy(L.pos);root.localToWorld(pv3);pv3.project(camera);
+        if(pv3.z>1||Math.abs(pv3.x)>1.02||Math.abs(pv3.y)>1.02)show=false;
+        else{L.ax=(pv3.x*.5+.5)*w;L.ay=(-pv3.y*.5+.5)*h;vis.push(L);}}
+      if(L.shown!==show){L.shown=show;L.el.classList.toggle('show',show);}
+    }
+    if(!vis.length)return;
+    const vr=vp.getBoundingClientRect(),obs=[];
+    OBST.forEach(el=>{if(!el||el.offsetParent===null)return;const r=el.getBoundingClientRect();if(r.width)obs.push({cx:(r.left+r.right)/2-vr.left,top:r.top-vr.top,w:r.width,h:r.height});});
+    const hitIn=(cx,top,bw,bh,list)=>{for(const p of list)if(Math.abs(p.cx-cx)<(p.w+bw)/2+4&&top<p.top+p.h+3&&top+bh>p.top-3)return p;return null;};
+    vis.sort((a,b)=>b.ay-a.ay);
+    const placed=[];
+    for(const L of vis){
+      if(L.dirty||!L.bw){L.bw=L.el.offsetWidth;L.bh=L.el.offsetHeight;L.dirty=false;}
+      const bw=L.bw,bh=L.bh,half=bw/2;let cx=clamp(L.ax,half+6,Math.max(half+6,w-half-6));
+      let top=L.ay-14-bh,below=false;
+      for(let it=0;it<10;it++){const p=hitIn(cx,top,bw,bh,placed);if(!p)break;top=p.top-bh-4;}
+      if(top<4||hitIn(cx,top,bw,bh,obs)){
+        let t2=L.ay+14;
+        for(let it=0;it<10;it++){const p=hitIn(cx,t2,bw,bh,placed);if(!p)break;t2=p.top+p.h+4;}
+        if(t2+bh<h-4&&!hitIn(cx,t2,bw,bh,obs)){top=t2;below=true;}
+        else{const o=hitIn(cx,Math.max(4,top),bw,bh,obs);
+          if(o){const nx=L.ax>=o.cx?o.cx+o.w/2+half+8:o.cx-o.w/2-half-8;if(nx-half>=4&&nx+half<=w-4){cx=nx;top=Math.max(4,top);}}}
+      }
+      top=clamp(top,4,Math.max(4,h-bh-4));placed.push({cx,top,w:bw,h:bh});
+      const sx=clamp(L.ax-cx,-half+6,half-6),sh=Math.max(3,below?top-5-L.ay:L.ay-5-(top+bh));
+      if(L.below!==below){L.below=below;L.el.classList.toggle('below',below);}
+      L.el.style.transform=`translate(${(cx-half).toFixed(1)}px,${top.toFixed(1)}px)`;
+      L.el.style.setProperty('--sx',sx.toFixed(1)+'px');L.el.style.setProperty('--sh',sh.toFixed(1)+'px');
+    }
+  }
+
+  /* ---- loop ---- */
+  let last=performance.now();
+  function loop(now){
+    const dt=Math.min(.05,(now-last)/1000);last=now;
+    if(playing){setT(t+dt*speed);if(t>=cur().S.end-1e-6)play(false);}
+    if(tween){const u=ease((now-tween.s)/tween.d);camera.position.lerpVectors(tween.p0,tween.p1,u);controls.target.lerpVectors(tween.t0,tween.t1,u);if(u>=1)tween=null;}
+    if(orient.anim){const A=orient.anim,u=ease((now-A.s)/1300),pv=cur().pivot;
+      pv.rotation.z=lerp(A.from,A.to,u);pv.position.y=cur().S.center[1]+.6*Math.sin(Math.PI*u);
+      if(u>=1){orient.anim=null;pv.position.y=cur().S.center[1];if(!orient.flipped)setShadows(true);}}
+    controls.update();
+    const S=cur().S;if(S.beforeRender){scene.updateMatrixWorld();S.beforeRender(camera);}
+    renderer.render(scene,camera);placeLabels();
+    requestAnimationFrame(loop);
+  }
+  const fromHash=Object.keys(HASH).find(x=>'#'+HASH[x]===location.hash);
+  setKey(fromHash||'cross',true);
+  requestAnimationFrame(loop);
+})();
+</script>
+
+</body></html>
